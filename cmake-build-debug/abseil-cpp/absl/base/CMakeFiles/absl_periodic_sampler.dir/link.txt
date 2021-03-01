@@ -1,0 +1,2 @@
+/Library/Developer/CommandLineTools/usr/bin/ar qc libabsl_periodic_sampler.a  CMakeFiles/absl_periodic_sampler.dir/internal/periodic_sampler.cc.o
+/Library/Developer/CommandLineTools/usr/bin/ranlib libabsl_periodic_sampler.a

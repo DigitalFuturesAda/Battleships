@@ -1,0 +1,2 @@
+/Library/Developer/CommandLineTools/usr/bin/ar qc libabsl_malloc_internal.a  CMakeFiles/absl_malloc_internal.dir/internal/low_level_alloc.cc.o
+/Library/Developer/CommandLineTools/usr/bin/ranlib libabsl_malloc_internal.a
