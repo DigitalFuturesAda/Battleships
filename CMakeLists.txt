@@ -8,6 +8,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 add_subdirectory(abseil-cpp)
 
 add_executable(battleships
+        tabulate.hpp
         main.cpp components/grid/GameGrid.cpp components/grid/GameGrid.h
         components/util/strings.cpp components/util/strings.h components/player/Player.cpp components/player/Player.h components/ship/Ship.cpp components/ship/Ship.h)
 

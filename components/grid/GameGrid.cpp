@@ -10,9 +10,11 @@
 
 std::string GameGrid::getGrid() {
     int verticalCounter = 1;
-    int horizontalPadding = std::to_string(HEIGHT).length() + 1;
+    int horizontalPadding = std::to_string(HEIGHT).length();
 
     std::ostringstream stringStream;
+
+    stringStream << "X";
 
     stringStream << std::string(horizontalPadding, ' ');
     for (int i = 1; i <= WIDTH; i ++){
