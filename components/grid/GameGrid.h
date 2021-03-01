@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <utility>
 
 #ifndef BATTLESHIPS_GAMEGRID_H
 #define BATTLESHIPS_GAMEGRID_H
@@ -24,6 +25,13 @@ enum Orientation {
     VERTICAL
 };
 
+struct attemptPlacementResponse {
+    bool success;
+    std::string message;
+
+    explicit attemptPlacementResponse(bool success, std::string message = "") : success(success), message(std::move(message)) {}
+};
+
 class GameGrid {
 
 private:
@@ -42,7 +50,7 @@ public:
 
     void printGrid();
 
-    bool attemptPlacement(int x, int y, GridNodes node, Orientation orientation);
+    attemptPlacementResponse attemptPlacement(int x, int y, GridNodes node, Orientation orientation);
 };
 
 

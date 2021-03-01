@@ -60,32 +60,29 @@ int GameGrid::getEntityConstraints(GridNodes placeableNodes){
     }
 }
 
-bool GameGrid::attemptPlacement(int x, int y, GridNodes node, Orientation orientation) {
+attemptPlacementResponse GameGrid::attemptPlacement(int x, int y, GridNodes node, Orientation orientation) {
     int entityConstraints = getEntityConstraints(node);
 
     // Ensure x,y coords are within the confines of the grid.
     if (y > HEIGHT || x > WIDTH){
-        return false;
+        return attemptPlacementResponse(false, "xy coordinates not within the confines of the grid");
     }
 
     // Ensure we're not trying to place the starting node on a taken tile.
     GridNodes existingNode = battleshipGameGrid[y][x];
     if (existingNode != EMPTY){
-        std::cout << "Can not place starting node in non-empty tile" << std::endl;
-        return false;
+        return attemptPlacementResponse(false, "Can not place starting node in non-empty tile");
     }
 
     if (orientation == VERTICAL){
         if (y + entityConstraints > HEIGHT){
-            std::cout << "Entity height exceeds grid dimensions" << std::endl;
-            return false;
+            return attemptPlacementResponse(false, "Entity height exceeds grid dimensions");
         }
 
         for (int i = y; i <= y + entityConstraints - 1; i++){
             GridNodes potentialNode = battleshipGameGrid[i][x];
             if (potentialNode != EMPTY){
-                std::cout << "Can not place node in non-empty tile" << std::endl;
-                return false;
+                return attemptPlacementResponse(false, "Can not place node in non-empty tile");
             }
         }
 
@@ -94,15 +91,13 @@ bool GameGrid::attemptPlacement(int x, int y, GridNodes node, Orientation orient
         }
     } else {
         if (x + entityConstraints > WIDTH){
-            std::cout << "Entity width exceeds grid dimensions" << std::endl;
-            return false;
+            return attemptPlacementResponse(false, "Entity width exceeds grid dimensions");
         }
 
         for (int i = x; i <= x + entityConstraints - 1; i++){
             GridNodes potentialNode = battleshipGameGrid[y][i];
             if (potentialNode != EMPTY){
-                std::cout << "Can not place node in non-empty tile" << std::endl;
-                return false;
+                return attemptPlacementResponse(false, "Can not place node in non-empty tile");
             }
         }
 
@@ -111,7 +106,7 @@ bool GameGrid::attemptPlacement(int x, int y, GridNodes node, Orientation orient
         }
     }
 
-    return true;
+    return attemptPlacementResponse(true);
 }
 
 GameGrid::GameGrid() = default;
