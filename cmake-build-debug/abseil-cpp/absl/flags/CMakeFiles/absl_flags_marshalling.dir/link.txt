@@ -1,2 +1,0 @@
-/Library/Developer/CommandLineTools/usr/bin/ar qc libabsl_flags_marshalling.a  CMakeFiles/absl_flags_marshalling.dir/marshalling.cc.o
-/Library/Developer/CommandLineTools/usr/bin/ranlib libabsl_flags_marshalling.a

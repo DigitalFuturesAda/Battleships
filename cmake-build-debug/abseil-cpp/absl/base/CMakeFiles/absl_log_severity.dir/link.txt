@@ -1,2 +1,0 @@
-/Library/Developer/CommandLineTools/usr/bin/ar qc libabsl_log_severity.a  CMakeFiles/absl_log_severity.dir/log_severity.cc.o
-/Library/Developer/CommandLineTools/usr/bin/ranlib libabsl_log_severity.a

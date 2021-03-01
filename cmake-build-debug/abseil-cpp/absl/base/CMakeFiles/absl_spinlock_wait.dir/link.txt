@@ -1,2 +1,0 @@
-/Library/Developer/CommandLineTools/usr/bin/ar qc libabsl_spinlock_wait.a  CMakeFiles/absl_spinlock_wait.dir/internal/spinlock_wait.cc.o
-/Library/Developer/CommandLineTools/usr/bin/ranlib libabsl_spinlock_wait.a

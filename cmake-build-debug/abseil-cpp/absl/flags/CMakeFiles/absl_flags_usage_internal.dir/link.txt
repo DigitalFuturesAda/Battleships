@@ -1,2 +1,0 @@
-/Library/Developer/CommandLineTools/usr/bin/ar qc libabsl_flags_usage_internal.a  CMakeFiles/absl_flags_usage_internal.dir/internal/usage.cc.o
-/Library/Developer/CommandLineTools/usr/bin/ranlib libabsl_flags_usage_internal.a

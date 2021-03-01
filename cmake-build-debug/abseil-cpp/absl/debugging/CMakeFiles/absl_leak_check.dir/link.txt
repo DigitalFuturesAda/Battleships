@@ -1,2 +1,0 @@
-/Library/Developer/CommandLineTools/usr/bin/ar qc libabsl_leak_check.a  CMakeFiles/absl_leak_check.dir/leak_check.cc.o
-/Library/Developer/CommandLineTools/usr/bin/ranlib libabsl_leak_check.a

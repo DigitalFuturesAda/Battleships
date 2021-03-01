@@ -1,2 +1,0 @@
-/Library/Developer/CommandLineTools/usr/bin/ar qc libabsl_flags_reflection.a  CMakeFiles/absl_flags_reflection.dir/reflection.cc.o
-/Library/Developer/CommandLineTools/usr/bin/ranlib libabsl_flags_reflection.a

@@ -1,2 +1,0 @@
-/Library/Developer/CommandLineTools/usr/bin/ar qc libabsl_scoped_set_env.a  CMakeFiles/absl_scoped_set_env.dir/internal/scoped_set_env.cc.o
-/Library/Developer/CommandLineTools/usr/bin/ranlib libabsl_scoped_set_env.a

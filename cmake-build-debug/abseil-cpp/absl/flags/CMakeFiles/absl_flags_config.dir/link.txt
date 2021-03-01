@@ -1,2 +1,0 @@
-/Library/Developer/CommandLineTools/usr/bin/ar qc libabsl_flags_config.a  CMakeFiles/absl_flags_config.dir/usage_config.cc.o
-/Library/Developer/CommandLineTools/usr/bin/ranlib libabsl_flags_config.a

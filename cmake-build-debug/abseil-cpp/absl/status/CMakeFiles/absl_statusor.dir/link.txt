@@ -1,2 +1,0 @@
-/Library/Developer/CommandLineTools/usr/bin/ar qc libabsl_statusor.a  CMakeFiles/absl_statusor.dir/statusor.cc.o
-/Library/Developer/CommandLineTools/usr/bin/ranlib libabsl_statusor.a
