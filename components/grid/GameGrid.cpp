@@ -3,41 +3,54 @@
 //
 
 #include "GameGrid.h"
+#include "../util/strings.h"
 #include <iostream>
 #include <absl/strings/str_format.h>
+#include <absl/strings/ascii.h>
 
-void GameGrid::printGrid() {
+std::string GameGrid::getGrid() {
     int verticalCounter = 1;
+    int horizontalPadding = std::to_string(HEIGHT).length() + 1;
+
+    std::ostringstream stringStream;
+
+    stringStream << std::string(horizontalPadding, ' ');
+    for (int i = 1; i <= WIDTH; i ++){
+        stringStream << " " << convertIncrementingIntegerToAlpha(i) << " ";
+    }
+    stringStream << std::endl;
 
     for (const auto& gridRow : battleshipGameGrid){
-        std::cout << absl::StrFormat("%-2d", verticalCounter) << " ";
+        stringStream << absl::StrFormat("%-2d", verticalCounter) << " ";
         for (const GridNodes node : gridRow){
-            std::cout << formatNode(node) << "";
+            stringStream << formatNode(node) << "";
         }
-        std::cout << std::endl;
+        stringStream << std::endl;
 
         verticalCounter ++;
     }
+
+    return stringStream.str();
 }
 
 std::string GameGrid::formatNode(GridNodes node) {
     switch (node) {
         case EMPTY:
-            return "[ ]";
+            return "\033[1;37m[ ]\033[0m";
         case DESTROYED:
-            return " X ";
+            return "\033[1;30m[■]\033[0m";
         case MINE:
-            return " M ";
+            return " \033[1;36mM\033[0m ";
         case CARRIER:
-            return " C ";
+            return " \033[1;31mC\033[0m ";
         case BATTLESHIP:
-            return " B ";
+            return " \033[1;31mB\033[0m ";
         case DESTROYER:
-            return " D ";
+            return " \033[1;31mD\033[0m ";
         case SUBMARINE:
-            return " S ";
+            return " \033[1;31mS\033[0m ";
         case PATROL:
-            return " P ";
+            return " \033[1;31mP\033[0m ";
     }
 }
 

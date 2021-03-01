@@ -48,7 +48,7 @@ private:
 public:
     GameGrid();
 
-    void printGrid();
+    std::string getGrid();
 
     attemptPlacementResponse attemptPlacement(int x, int y, GridNodes node, Orientation orientation);
 };
