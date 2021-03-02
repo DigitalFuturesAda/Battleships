@@ -15,6 +15,7 @@ private:
     Orientation orientation{};
     bool deployed = false;
     int lives = -1;
+    int maxLives = -1;
 
 public:
     Ship(GridNodes type, bool deployed);
@@ -22,12 +23,17 @@ public:
     std::string getName();
     GridNodes getShipType() const;
     int getLives() const;
+    int getMaxLives() const;
 
     bool isDeployed() const;
 
     Ship setOrientation(Orientation orientation);
 
     Ship setDeployed();
+
+    Ship setLives(int lives);
+
+    std::string getShipStatusFormatted();
 };
 
 

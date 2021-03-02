@@ -15,25 +15,23 @@ public:
     Player();
 
     void setOpposingPlayer(Player *player);
-    attemptPlacementResponse attemptToDeployShip(GridNodes shipType, const std::string& x, int y, Orientation orientation);
+    attemptPlacementResponse deployShip(GridNodes shipType, const std::string& x, int y, Orientation orientation);
 
     // Ship data utilities
     std::string getDeployedShips();
     std::string getStationaryShips();
-    std::string getShipData();
+    std::vector<std::string> getShipInformation();
 
-    std::string name;
-
-    attemptHitResponse fireWarheadStrikeAtOpposingPlayer(std::string letter, int number);
-
-    GameGrid battleshipGameGrid;
-    HitGrid battleshipHitGrid;
+    attemptHitResponse executeWarheadStrike(std::string letter, int number);
 
     GameGrid *getGameGrid();
     HitGrid *getHitGrid();
 
 private:
     Player *opposingPlayer;
+
+    GameGrid battleshipGameGrid;
+    HitGrid battleshipHitGrid;
 
     std::vector<Ship> playerShips;
 };

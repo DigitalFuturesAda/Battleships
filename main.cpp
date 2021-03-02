@@ -5,38 +5,64 @@
 #include "components/player/Player.h"
 
 int main() {
-    tabulate::Table battleshipGameTable;
-    battleshipGameTable.add_row({"Game board", "Hit board"});
-
+    // Testing logic
     Player humanPlayer;
     Player computerPlayer;
 
     humanPlayer.setOpposingPlayer(&computerPlayer);
     computerPlayer.setOpposingPlayer(&humanPlayer);
 
-    attemptPlacementResponse placeShipRequest = humanPlayer.attemptToDeployShip(CARRIER, "E", 5, VERTICAL);
+//    do {
+        humanPlayer.deployShip(CARRIER, "E", 4, VERTICAL);
+        computerPlayer.executeWarheadStrike("E", 5);
 
-//    // Computer: Deploy some ships
-//    computerPlayer.getGameGrid()->attemptPlacement("E", 5, CARRIER, VERTICAL);
-//    computerPlayer.getGameGrid()->attemptPlacement("A", 2, BATTLESHIP, HORIZONTAL);
-//    computerPlayer.getGameGrid()->attemptPlacement("H", 7, PATROL, HORIZONTAL);
-//
-//    // Human: Fire warheads at ships
-//    humanPlayer.fireWarheadStrikeAtOpposingPlayer("E", 5); // Hit the Aircraft Carrier
-//    humanPlayer.fireWarheadStrikeAtOpposingPlayer("E", 6); // ^
-//
-//    humanPlayer.fireWarheadStrikeAtOpposingPlayer("B", 2); // Missed warhead strikes
-//    humanPlayer.fireWarheadStrikeAtOpposingPlayer("B", 3); // ^
-//    humanPlayer.fireWarheadStrikeAtOpposingPlayer("C", 5); // ^
-//
-//    // Any logic called after this will not be displayed in the board.
-    battleshipGameTable.add_row({humanPlayer.getGameGrid()->renderGrid(), humanPlayer.getHitGrid()->renderGrid()});
-    battleshipGameTable.add_row({humanPlayer.getStationaryShips(), humanPlayer.getDeployedShips()});
-    battleshipGameTable.column(0).format().width(GameGrid::getObservableGridWidth());
-    battleshipGameTable.column(1).format().width(HitGrid::getObservableGridWidth());
-//
-//    // Output Computer board
-//    battleshipGameTable.add_row({computerPlayer.getGameGrid()->renderGrid(), computerPlayer.getHitGrid()->renderGrid()});
+        computerPlayer.deployShip(CARRIER, "E", 4, VERTICAL);
+        computerPlayer.deployShip(DESTROYER, "A", 3, VERTICAL);
+        computerPlayer.deployShip(CARRIER, "D", 6, VERTICAL);
 
-    std::cout << battleshipGameTable << std::endl;
+        computerPlayer.executeWarheadStrike("E", 5);
+        computerPlayer.executeWarheadStrike("A", 3);
+        computerPlayer.executeWarheadStrike("G", 5);
+
+        // Tabulate definitions - any logic after this will not be rendered.
+        tabulate::Table battleshipGameTable;
+        battleshipGameTable.format()
+                .border_color(tabulate::Color::white)
+                .corner("⋅")
+                .corner_color(tabulate::Color::red);
+        battleshipGameTable.add_row({"Game board", "Hit board"});
+
+        tabulate::Table statisticsBoard;
+        statisticsBoard.format()
+                .border_color(tabulate::Color::white)
+                .corner("⋅")
+                .corner_color(tabulate::Color::red);
+
+        battleshipGameTable.add_row({humanPlayer.getGameGrid()->renderGrid(), humanPlayer.getHitGrid()->renderGrid()});
+        battleshipGameTable.add_row({computerPlayer.getGameGrid()->renderGrid(), computerPlayer.getHitGrid()->renderGrid()});
+
+        battleshipGameTable.column(0).format().width(GameGrid::getObservableGridWidth());
+        battleshipGameTable.column(1).format().width(HitGrid::getObservableGridWidth());
+
+        // Statistics board
+        statisticsBoard.add_row({"Boat", "Status", "Remaining lives"});
+        statisticsBoard.add_row({
+                                        humanPlayer.getShipInformation().at(0),
+                                        humanPlayer.getShipInformation().at(1),
+                                        humanPlayer.getShipInformation().at(2)});
+
+        std::cout << battleshipGameTable << std::endl;
+        std::cout << statisticsBoard << std::endl;
+
+//        std::cout << "Enter where you want to move (eg. A1 or H8): "; // [A-Z](?:[A-B])?[1-9](?:[1-10])?
+//
+//        std::string userInput;
+//        std::cin >> userInput;
+//
+//        if (userInput == "exit"){
+//            break;
+//        }
+//
+//        std::cout << "\x1B[2J\x1B[H";
+//    } while (true);
 }

@@ -97,7 +97,7 @@ attemptPlacementResponse GameGrid::attemptPlacement(int x, int y, GridNodes node
 
     // Ensure we're not trying to place the starting node on a taken tile unless we're placing an empty node.
     GridNodes existingNode = battleshipGameGrid[y][x];
-    if (existingNode != EMPTY && node != EMPTY){ // TODO(slyo): Access whether overwriting is allowed.
+    if (existingNode != EMPTY && node != DESTROYED){
         return attemptPlacementResponse(false, "Can not place starting node in non-empty tile");
     }
 
@@ -108,7 +108,7 @@ attemptPlacementResponse GameGrid::attemptPlacement(int x, int y, GridNodes node
 
         for (int i = y; i <= y + entityConstraints - 1; i++){
             GridNodes potentialNode = battleshipGameGrid[i][x];
-            if (potentialNode != EMPTY && node != EMPTY){ // TODO(slyo): Access whether overwriting is allowed.
+            if (potentialNode != EMPTY && node != DESTROYED){
                 return attemptPlacementResponse(false, "Can not place node in non-empty tile");
             }
         }
@@ -133,7 +133,11 @@ attemptPlacementResponse GameGrid::attemptPlacement(int x, int y, GridNodes node
         }
     }
 
-    return attemptPlacementResponse(true);
+    attemptPlacementResponse response = attemptPlacementResponse(true);
+    response.existingNode = attemptPlacementNodeHitResponse(existingNode);
+    // This logic allows us to return a response which includes the node which has been replaced, this is useful if we
+    // have just fired a torpedo.
+    return response;
 }
 
 attemptPlacementResponse GameGrid::attemptPlacement(std::string letter, int number, GridNodes node, Orientation orientation) {
@@ -156,7 +160,9 @@ attemptHitResponse GameGrid::receiveWarheadStrike(std::string letter, int number
     attemptPlacementResponse hitResponse = this->checkIfNodeExists(std::move(letter), number);
 
     if (hitResponse.success){
-        if (hitResponse.existingNode.node == EMPTY){
+        if (hitResponse.existingNode.node == DESTROYED){
+            return attemptHitResponse(false, false, hitResponse.existingNode, "Cannot fire at a destroyed tile");
+        } else if (hitResponse.existingNode.node == EMPTY){
             return attemptHitResponse(true, false, hitResponse.existingNode);
         }
         return attemptHitResponse(true, true, hitResponse.existingNode);

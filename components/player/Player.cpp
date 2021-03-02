@@ -8,6 +8,7 @@
 #include <absl/strings/str_format.h>
 #include <absl/strings/ascii.h>
 #include "../../components/grid/GameGrid.h"
+#include "../util/strings.h"
 
 Player::Player() {
     this->playerShips = {
@@ -19,7 +20,7 @@ Player::Player() {
     };
 };
 
-attemptPlacementResponse Player::attemptToDeployShip(GridNodes shipType, const std::string& letterIndex, int y, Orientation orientation) {
+attemptPlacementResponse Player::deployShip(GridNodes shipType, const std::string& letterIndex, int y, Orientation orientation) {
     int counter = 0;
     for (auto &ship : playerShips){
         if (ship.getShipType() == shipType && ship.isDeployed() == false){
@@ -35,7 +36,7 @@ attemptPlacementResponse Player::attemptToDeployShip(GridNodes shipType, const s
         counter ++;
     }
 
-    return attemptPlacementResponse(false, "GenericErrorMessage");
+    return attemptPlacementResponse(false, "All ships already deployed.");
 }
 
 std::string Player::getStationaryShips() {
@@ -80,28 +81,37 @@ std::string Player::getDeployedShips() {
     return stringStream.str();
 }
 
-std::string Player::getShipData() {
-    return getStationaryShips() +  getDeployedShips();
-}
-
 void Player::setOpposingPlayer(Player *player) {
     this->opposingPlayer = player;
 }
 
-attemptHitResponse Player::fireWarheadStrikeAtOpposingPlayer(std::string letter, int number) {
-    attemptHitResponse response = opposingPlayer->battleshipGameGrid.receiveWarheadStrike(std::move(letter), number);
+attemptHitResponse Player::executeWarheadStrike(std::string letter, int y) {
+    attemptHitResponse response = opposingPlayer->battleshipGameGrid.receiveWarheadStrike(letter, y);
 
     if (response.validAttempt){
         if (response.didHitTarget){
             battleshipHitGrid.markSuccessfulWarheadStrike(response.hitNode.x, response.hitNode.y);
+            attemptPlacementResponse responseTest = opposingPlayer->getGameGrid()->attemptPlacement(letter, y, DESTROYED, VERTICAL);
+            int counter = 0;
+            for (auto &ship : opposingPlayer->playerShips){
+                if (ship.getShipType() == responseTest.existingNode.node){
+                    Ship replacementShip = Ship(responseTest.existingNode.node, true);
+                    replacementShip.setLives(ship.getLives() - 1);
+                    opposingPlayer->playerShips.at(counter) = replacementShip;
+                }
+
+                counter++;
+            }
         } else {
             battleshipHitGrid.markFailedWarheadStrike(response.hitNode.x, response.hitNode.y);
+            return response;
         }
     } else {
         std::cout << "Invalid attempt!" << std::endl;
+        return response;
     }
 
-    return attemptHitResponse(true, "true");
+    return response;
 }
 
 GameGrid *Player::getGameGrid() {
@@ -110,4 +120,16 @@ GameGrid *Player::getGameGrid() {
 
 HitGrid *Player::getHitGrid() {
     return &battleshipHitGrid;
+}
+
+std::vector<std::string> Player::getShipInformation(){
+    std::ostringstream stringStream[3];
+
+    for (auto &&ship : playerShips){
+        stringStream[0] << ship.getName() << std::endl;
+        stringStream[1] << ship.getShipStatusFormatted() << std::endl;
+        stringStream[2] << ship.getLives() << " / " << ship.getMaxLives() << std::endl;
+    }
+
+    return {stringStream[0].str(), stringStream[1].str(), stringStream[2].str()};
 }

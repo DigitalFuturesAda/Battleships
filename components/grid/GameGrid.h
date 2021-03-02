@@ -39,7 +39,8 @@ struct attemptPlacementNodeHitResponse {
 
     GridNodes node;
 
-    attemptPlacementNodeHitResponse()= default;
+    attemptPlacementNodeHitResponse() = default;
+    attemptPlacementNodeHitResponse(GridNodes node) : node(node) {}
     attemptPlacementNodeHitResponse(int x, int y, GridNodes node) : x(x), y(y), node(node) {}
 };
 
@@ -64,7 +65,7 @@ struct attemptHitResponse {
 
     std::string message;
 
-    attemptHitResponse(bool validAttempt, bool didHitTarget, attemptPlacementNodeHitResponse hitNode) : validAttempt(validAttempt),
+    attemptHitResponse(bool validAttempt, bool didHitTarget, attemptPlacementNodeHitResponse hitNode, std::string message = "") : validAttempt(validAttempt),
                                                                                   didHitTarget(didHitTarget),
                                                                                   hitNode(hitNode) {};
 

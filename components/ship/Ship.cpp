@@ -21,6 +21,8 @@ std::string Ship::getName() {
         case PATROL:
             return "Patrol Boat";
     }
+
+    return "Test";
 }
 
 GridNodes Ship::getShipType() const {
@@ -31,8 +33,17 @@ bool Ship::isDeployed() const {
     return deployed;
 }
 
+std::string Ship::getShipStatusFormatted() {
+    if (deployed){
+        return "Deployed";
+    } else {
+        return "Stationary";
+    }
+}
+
 Ship::Ship(GridNodes type, bool deployed) : type(type), deployed(deployed) {
-    this->lives = GameGrid::getEntityConstraints(type);
+    this->maxLives = GameGrid::getEntityConstraints(type);
+    this->lives = maxLives;
 }
 
 Ship Ship::setOrientation(Orientation orientation_) {
@@ -49,4 +60,12 @@ Ship Ship::setDeployed() {
 
 int Ship::getLives() const {
     return lives;
+}
+
+int Ship::getMaxLives() const {
+    return maxLives;
+}
+
+Ship Ship::setLives(int lives_) {
+    lives = lives_;
 }
