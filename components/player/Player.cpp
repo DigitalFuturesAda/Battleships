@@ -11,25 +11,37 @@
 
 Player::Player() {
     this->playerShips = {
-            Ship(CARRIER, true),
+            Ship(CARRIER, false),
             Ship(BATTLESHIP, false),
-            Ship(DESTROYER, true),
-            Ship(SUBMARINE, true),
+            Ship(DESTROYER, false),
+            Ship(SUBMARINE, false),
             Ship(PATROL, false),
     };
-
-//    this->battleshipGameGrid;
 };
 
-bool Player::attemptToDeployShip(Ship) {
-    return false;
+attemptPlacementResponse Player::attemptToDeployShip(GridNodes shipType, const std::string& letterIndex, int y, Orientation orientation) {
+    int counter = 0;
+    for (auto &ship : playerShips){
+        if (ship.getShipType() == shipType && ship.isDeployed() == false){
+            attemptPlacementResponse response = getGameGrid()->attemptPlacement(letterIndex, y, shipType, orientation);
+
+            if (response.success == true){
+                playerShips.at(counter) = Ship(shipType, true).setOrientation(orientation);
+            }
+
+            return response;
+        }
+
+        counter ++;
+    }
+
+    return attemptPlacementResponse(false, "GenericErrorMessage");
 }
 
 std::string Player::getStationaryShips() {
     int counter = 0;
     std::ostringstream stringStream;
 
-//    stringStream << "\033[1;32mStationary ships:\033[0m ";
     stringStream << "Stationary ships: ";
     for (auto &&ship : playerShips){
         if (!ship.isDeployed()){

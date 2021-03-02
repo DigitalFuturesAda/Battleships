@@ -12,20 +12,22 @@ class Ship {
 
 private:
     GridNodes type;
-    bool deployed;
-
-    int x = -1;
-    int y = -1;
+    Orientation orientation{};
+    bool deployed = false;
+    int lives = -1;
 
 public:
     Ship(GridNodes type, bool deployed);
 
     std::string getName();
-
-    int getXCoordinate() const;
-    int getYCoordinate() const;
+    GridNodes getShipType() const;
+    int getLives() const;
 
     bool isDeployed() const;
+
+    Ship setOrientation(Orientation orientation);
+
+    Ship setDeployed();
 };
 
 

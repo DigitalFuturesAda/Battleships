@@ -6,6 +6,7 @@
 #define BATTLESHIPS_PLAYER_H
 
 #include <vector>
+#include <map>
 #include "../ship/Ship.h"
 #include "../grid/HitGrid.h"
 
@@ -14,7 +15,7 @@ public:
     Player();
 
     void setOpposingPlayer(Player *player);
-    bool attemptToDeployShip(Ship);
+    attemptPlacementResponse attemptToDeployShip(GridNodes shipType, const std::string& x, int y, Orientation orientation);
 
     // Ship data utilities
     std::string getDeployedShips();
@@ -23,7 +24,6 @@ public:
 
     std::string name;
 
-    // Competitive methods
     attemptHitResponse fireWarheadStrikeAtOpposingPlayer(std::string letter, int number);
 
     GameGrid battleshipGameGrid;

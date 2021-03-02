@@ -23,16 +23,30 @@ std::string Ship::getName() {
     }
 }
 
-int Ship::getXCoordinate() const {
-    return x;
-}
-
-int Ship::getYCoordinate() const {
-    return y;
+GridNodes Ship::getShipType() const {
+    return type;
 }
 
 bool Ship::isDeployed() const {
     return deployed;
 }
 
-Ship::Ship(GridNodes type, bool deployed) : type(type), deployed(deployed) {}
+Ship::Ship(GridNodes type, bool deployed) : type(type), deployed(deployed) {
+    this->lives = GameGrid::getEntityConstraints(type);
+}
+
+Ship Ship::setOrientation(Orientation orientation_) {
+    orientation = orientation_;
+
+    return *this;
+}
+
+Ship Ship::setDeployed() {
+    deployed = true;
+
+    return *this;
+}
+
+int Ship::getLives() const {
+    return lives;
+}

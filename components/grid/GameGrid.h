@@ -81,13 +81,12 @@ private:
 
     static std::string formatNode(GridNodes node);
 
-    static int getEntityConstraints(GridNodes placeableNodes);
-
 public:
     GameGrid();
 
     std::string renderGrid();
     static int getObservableGridWidth();
+    static int getEntityConstraints(GridNodes placeableNodes);
 
     attemptPlacementResponse attemptPlacement(int x, int y, GridNodes node, Orientation orientation);
     attemptPlacementResponse attemptPlacement(std::string letter, int number, GridNodes node, Orientation orientation);
