@@ -1,5 +1,5 @@
 #include <iostream>
-#include "tabulate.hpp"
+#include "lib/tabulate.hpp"
 
 #include "components/grid/GameGrid.h"
 #include "components/player/Player.h"
