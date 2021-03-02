@@ -18,7 +18,7 @@ Player::Player() {
             Ship(PATROL, false),
     };
 
-    this->battleshipGameGrid;
+//    this->battleshipGameGrid;
 };
 
 bool Player::attemptToDeployShip(Ship) {
@@ -51,7 +51,6 @@ std::string Player::getDeployedShips() {
     int counter = 0;
     std::ostringstream stringStream;
 
-//    stringStream << "\033[1;31mDeployed ships:\033[0m ";
     stringStream << "Deployed ships: ";
     for (auto &&ship : playerShips){
         if (ship.isDeployed()){
@@ -73,14 +72,12 @@ std::string Player::getShipData() {
     return getStationaryShips() +  getDeployedShips();
 }
 
-Player Player::setOpposingPlayer(Player player) {
-    this->opposingPlayer = &player;
-    return *this->opposingPlayer;
+void Player::setOpposingPlayer(Player *player) {
+    this->opposingPlayer = player;
 }
 
 attemptHitResponse Player::fireWarheadStrikeAtOpposingPlayer(std::string letter, int number) {
-    Player player = *this->opposingPlayer;
-    attemptHitResponse response = player.battleshipGameGrid.receiveWarheadStrike(std::move(letter), number); // todo
+    attemptHitResponse response = opposingPlayer->battleshipGameGrid.receiveWarheadStrike(std::move(letter), number);
 
     if (response.validAttempt){
         if (response.didHitTarget){
@@ -93,4 +90,12 @@ attemptHitResponse Player::fireWarheadStrikeAtOpposingPlayer(std::string letter,
     }
 
     return attemptHitResponse(true, "true");
+}
+
+GameGrid *Player::getGameGrid() {
+    return &battleshipGameGrid;
+}
+
+HitGrid *Player::getHitGrid() {
+    return &battleshipHitGrid;
 }

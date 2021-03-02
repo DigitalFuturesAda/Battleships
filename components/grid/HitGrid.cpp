@@ -4,8 +4,6 @@
 
 #include "HitGrid.h"
 
-#include <utility>
-
 void HitGrid::markSuccessfulWarheadStrike(int x, int y) {
     this->attemptPlacement(x, y, VALID_HIT, VERTICAL);
 }

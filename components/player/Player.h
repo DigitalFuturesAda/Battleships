@@ -13,7 +13,7 @@ class Player {
 public:
     Player();
 
-    Player setOpposingPlayer(Player player);
+    void setOpposingPlayer(Player *player);
     bool attemptToDeployShip(Ship);
 
     // Ship data utilities
@@ -21,11 +21,16 @@ public:
     std::string getStationaryShips();
     std::string getShipData();
 
+    std::string name;
+
     // Competitive methods
     attemptHitResponse fireWarheadStrikeAtOpposingPlayer(std::string letter, int number);
 
     GameGrid battleshipGameGrid;
     HitGrid battleshipHitGrid;
+
+    GameGrid *getGameGrid();
+    HitGrid *getHitGrid();
 
 private:
     Player *opposingPlayer;

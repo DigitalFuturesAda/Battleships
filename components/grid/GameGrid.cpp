@@ -9,9 +9,7 @@
 #include <absl/strings/str_format.h>
 #include <absl/strings/ascii.h>
 
-int width = -1;
-
-std::string GameGrid::getGrid() {
+std::string GameGrid::renderGrid() {
     int verticalCounter = 1;
     int horizontalPadding = std::to_string(HEIGHT).length();
 
@@ -139,19 +137,19 @@ attemptPlacementResponse GameGrid::attemptPlacement(int x, int y, GridNodes node
 }
 
 attemptPlacementResponse GameGrid::attemptPlacement(std::string letter, int number, GridNodes node, Orientation orientation) {
-    return attemptPlacement(convertAlphaToIncrementingInteger(std::move(letter)), number, node, orientation);
+    return attemptPlacement(convertAlphaToIncrementingInteger(std::move(letter)) - 1, number - 1, node, orientation);
 }
 
 attemptPlacementResponse GameGrid::checkIfNodeExists(std::string letter, int number) {
-    int x = convertAlphaToIncrementingInteger(std::move(letter));
-    int y = number;
+    int x = convertAlphaToIncrementingInteger(std::move(letter)) - 1;
+    int y = number - 1;
 
     if (y > HEIGHT || x > WIDTH){
         return attemptPlacementResponse(false, "xy coordinates not within the confines of the grid");
     }
 
     GridNodes existingNode = battleshipGameGrid[y][x];
-    return attemptPlacementResponse(true, attemptPlacementNodeHitResponse(x - 1, y - 1, existingNode));
+    return attemptPlacementResponse(true, attemptPlacementNodeHitResponse(x, y, existingNode));
 }
 
 attemptHitResponse GameGrid::receiveWarheadStrike(std::string letter, int number) {
