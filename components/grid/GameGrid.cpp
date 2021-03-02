@@ -8,6 +8,8 @@
 #include <absl/strings/str_format.h>
 #include <absl/strings/ascii.h>
 
+int width = -1;
+
 std::string GameGrid::getGrid() {
     int verticalCounter = 1;
     int horizontalPadding = std::to_string(HEIGHT).length();
@@ -18,8 +20,10 @@ std::string GameGrid::getGrid() {
 
     stringStream << std::string(horizontalPadding, ' ');
     for (int i = 1; i <= WIDTH; i ++){
-        stringStream << " " << convertIncrementingIntegerToAlpha(i) << " ";
+        std::string horizontalText = " " + convertIncrementingIntegerToAlpha(i) + " ";
+        stringStream << horizontalText;
     }
+
     stringStream << std::endl;
 
     for (const auto& gridRow : battleshipGameGrid){
@@ -33,6 +37,13 @@ std::string GameGrid::getGrid() {
     }
 
     return stringStream.str();
+}
+
+int GameGrid::getObservableGridWidth() {
+//    if (width == -1){
+//        throw std::out_of_range("Grid not set");
+//    }
+    return 50;
 }
 
 std::string GameGrid::formatNode(GridNodes node) {

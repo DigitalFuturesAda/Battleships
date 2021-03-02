@@ -35,9 +35,8 @@ struct attemptPlacementResponse {
 class GameGrid {
 
 private:
-
     static const int HEIGHT = 10;
-    static const int WIDTH = 10;
+    static const int WIDTH = 15;
 
     GridNodes battleshipGameGrid[HEIGHT][WIDTH] = { [0 ... HEIGHT - 1] = { [0 ... WIDTH - 1] = EMPTY } };
 
@@ -49,6 +48,7 @@ public:
     GameGrid();
 
     std::string getGrid();
+    int getObservableGridWidth();
 
     attemptPlacementResponse attemptPlacement(int x, int y, GridNodes node, Orientation orientation);
 };

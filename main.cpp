@@ -18,17 +18,19 @@ int main() {
     battleshipGameGrid.attemptPlacement(6, 5, CARRIER, VERTICAL);
     battleshipGameGrid.attemptPlacement(3, 2, SUBMARINE, VERTICAL);
 
-    tabulate::Table styled_table;
+    tabulate::Table battleshipGameTable;
 
-    styled_table.add_row({"Game board", "Hit board"});
-    styled_table.column(0).format().width(35);
-    styled_table.column(1).format().width(35);
-    styled_table.add_row({battleshipGameGrid.getGrid(), battleshipGameGrid.getGrid()});
+    battleshipGameTable.add_row({"Game board", "Hit board"});
+    battleshipGameTable.add_row({battleshipGameGrid.getGrid(), battleshipGameGrid.getGrid()});
 
-    std::cout << styled_table << std::endl;
+    // This currently needs to be called after calls to GameGrid#getGrid.
+    int width = battleshipGameGrid.getObservableGridWidth();
+
+    battleshipGameTable.column(0).format().width(50);
+    battleshipGameTable.column(1).format().width(50);
+
+    std::cout << battleshipGameTable << std::endl;
 
     // Logic for Player01 - print out the grid and show the available ships below.
-
-    // battleshipGameGrid.outputGrid();
      humanPlayer.outputShipData();
 }
