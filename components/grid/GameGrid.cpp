@@ -5,6 +5,7 @@
 #include "GameGrid.h"
 #include "../util/strings.h"
 #include <iostream>
+#include <utility>
 #include <absl/strings/str_format.h>
 #include <absl/strings/ascii.h>
 
@@ -41,7 +42,6 @@ std::string GameGrid::getGrid() {
 
 int GameGrid::getObservableGridWidth() {
     return (WIDTH * 3) + 5;
-
 }
 
 std::string GameGrid::formatNode(GridNodes node) {
@@ -131,6 +131,10 @@ attemptPlacementResponse GameGrid::attemptPlacement(int x, int y, GridNodes node
     }
 
     return attemptPlacementResponse(true);
+}
+
+attemptPlacementResponse GameGrid::attemptPlacement(std::string letter, int number, GridNodes node, Orientation orientation) {
+    return attemptPlacement(convertAlphaToIncrementingInteger(std::move(letter)), number, node, orientation);
 }
 
 GameGrid::GameGrid() = default;

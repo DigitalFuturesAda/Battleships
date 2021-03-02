@@ -48,9 +48,11 @@ public:
     GameGrid();
 
     std::string getGrid();
-    int getObservableGridWidth();
+    static int getObservableGridWidth();
 
     attemptPlacementResponse attemptPlacement(int x, int y, GridNodes node, Orientation orientation);
+
+    attemptPlacementResponse attemptPlacement(std::string letter, int number, GridNodes node, Orientation orientation);
 };
 
 

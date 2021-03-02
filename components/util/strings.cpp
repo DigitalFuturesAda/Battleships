@@ -12,10 +12,18 @@
 std::string convertIncrementingIntegerToAlpha(int counter){
     std::string result;
 
-    while (counter > 0){
-        result += char((counter - 1) % 26 + 'A') + result;
+    while (counter > 0) {
+        result = (char)(65 + (counter - 1) % 26) + result;
         counter = (counter - 1) / 26;
     }
 
     return result;
+}
+
+int convertAlphaToIncrementingInteger(std::string alpha){
+    int c = 0;
+    for (int i = 0; i < alpha.length(); i ++) {
+        c = c * 26 + alpha[i] - 64;
+    }
+    return c;
 }

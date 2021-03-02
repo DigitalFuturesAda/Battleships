@@ -8,4 +8,6 @@
 
 std::string convertIncrementingIntegerToAlpha(int counter);
 
+int convertAlphaToIncrementingInteger(std::string alpha);
+
 #endif //BATTLESHIPS_STRINGS_H
