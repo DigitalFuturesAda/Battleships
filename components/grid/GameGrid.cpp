@@ -62,14 +62,19 @@ std::string GameGrid::formatNode(GridNodes node) {
             return " \033[1;31mS\033[0m ";
         case PATROL:
             return " \033[1;31mP\033[0m ";
+        case VALID_HIT:
+            return "\033[1;31m[■]\033[0m";
+        case INVALID_HIT:
+            return "\033[1;37m[■]\033[0m";
     }
 }
 
 int GameGrid::getEntityConstraints(GridNodes placeableNodes){
     switch (placeableNodes) {
         case EMPTY:
-            throw std::range_error("Invalid node.");
         case DESTROYED:
+        case VALID_HIT:
+        case INVALID_HIT:
         case MINE:
             return 1;
         case CARRIER:
@@ -92,9 +97,9 @@ attemptPlacementResponse GameGrid::attemptPlacement(int x, int y, GridNodes node
         return attemptPlacementResponse(false, "xy coordinates not within the confines of the grid");
     }
 
-    // Ensure we're not trying to place the starting node on a taken tile.
+    // Ensure we're not trying to place the starting node on a taken tile unless we're placing an empty node.
     GridNodes existingNode = battleshipGameGrid[y][x];
-    if (existingNode != EMPTY){
+    if (existingNode != EMPTY && node != EMPTY){ // TODO(slyo): Access whether overwriting is allowed.
         return attemptPlacementResponse(false, "Can not place starting node in non-empty tile");
     }
 
@@ -105,7 +110,7 @@ attemptPlacementResponse GameGrid::attemptPlacement(int x, int y, GridNodes node
 
         for (int i = y; i <= y + entityConstraints - 1; i++){
             GridNodes potentialNode = battleshipGameGrid[i][x];
-            if (potentialNode != EMPTY){
+            if (potentialNode != EMPTY && node != EMPTY){ // TODO(slyo): Access whether overwriting is allowed.
                 return attemptPlacementResponse(false, "Can not place node in non-empty tile");
             }
         }
@@ -120,7 +125,7 @@ attemptPlacementResponse GameGrid::attemptPlacement(int x, int y, GridNodes node
 
         for (int i = x; i <= x + entityConstraints - 1; i++){
             GridNodes potentialNode = battleshipGameGrid[y][i];
-            if (potentialNode != EMPTY){
+            if (potentialNode != EMPTY && node != EMPTY){ // TODO(slyo): Access whether overwriting is allowed.
                 return attemptPlacementResponse(false, "Can not place node in non-empty tile");
             }
         }
@@ -136,5 +141,31 @@ attemptPlacementResponse GameGrid::attemptPlacement(int x, int y, GridNodes node
 attemptPlacementResponse GameGrid::attemptPlacement(std::string letter, int number, GridNodes node, Orientation orientation) {
     return attemptPlacement(convertAlphaToIncrementingInteger(std::move(letter)), number, node, orientation);
 }
+
+attemptPlacementResponse GameGrid::checkIfNodeExists(std::string letter, int number) {
+    int x = convertAlphaToIncrementingInteger(std::move(letter));
+    int y = number;
+
+    if (y > HEIGHT || x > WIDTH){
+        return attemptPlacementResponse(false, "xy coordinates not within the confines of the grid");
+    }
+
+    GridNodes existingNode = battleshipGameGrid[y][x];
+    return attemptPlacementResponse(true, attemptPlacementNodeHitResponse(x - 1, y - 1, existingNode));
+}
+
+attemptHitResponse GameGrid::receiveWarheadStrike(std::string letter, int number) {
+    attemptPlacementResponse hitResponse = this->checkIfNodeExists(std::move(letter), number);
+
+    if (hitResponse.success){
+        if (hitResponse.existingNode.node == EMPTY){
+            return attemptHitResponse(true, false, hitResponse.existingNode);
+        }
+        return attemptHitResponse(true, true, hitResponse.existingNode);
+    }
+
+    return attemptHitResponse(false, hitResponse.message);
+}
+
 
 GameGrid::GameGrid() = default;

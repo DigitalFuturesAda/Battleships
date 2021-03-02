@@ -4,6 +4,7 @@
 
 #include "Player.h"
 #include <iostream>
+#include <utility>
 #include <absl/strings/str_format.h>
 #include <absl/strings/ascii.h>
 #include "../../components/grid/GameGrid.h"
@@ -42,7 +43,6 @@ std::string Player::getStationaryShips() {
     if (counter == 0){
         stringStream << "None";
     }
-//    stringStream << std::endl;
 
     return stringStream.str();
 }
@@ -65,11 +65,32 @@ std::string Player::getDeployedShips() {
     if (counter == 0){
         stringStream << "None";
     }
-//    stringStream << std::endl;
 
     return stringStream.str();
 }
 
 std::string Player::getShipData() {
     return getStationaryShips() +  getDeployedShips();
+}
+
+Player Player::setOpposingPlayer(Player player) {
+    this->opposingPlayer = &player;
+    return *this->opposingPlayer;
+}
+
+attemptHitResponse Player::fireWarheadStrikeAtOpposingPlayer(std::string letter, int number) {
+    Player player = *this->opposingPlayer;
+    attemptHitResponse response = player.battleshipGameGrid.receiveWarheadStrike(std::move(letter), number); // todo
+
+    if (response.validAttempt){
+        if (response.didHitTarget){
+            battleshipHitGrid.markSuccessfulWarheadStrike(response.hitNode.x, response.hitNode.y);
+        } else {
+            battleshipHitGrid.markFailedWarheadStrike(response.hitNode.x, response.hitNode.y);
+        }
+    } else {
+        std::cout << "Invalid attempt!" << std::endl;
+    }
+
+    return attemptHitResponse(true, "true");
 }

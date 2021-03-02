@@ -7,20 +7,30 @@
 
 #include <vector>
 #include "../ship/Ship.h"
+#include "../grid/HitGrid.h"
 
 class Player {
 public:
     Player();
 
-    std::vector<Ship> playerShips;
-    GameGrid battleshipGameGrid;
-    GameGrid battleshipHitGrid;
+    Player setOpposingPlayer(Player player);
+    bool attemptToDeployShip(Ship);
 
+    // Ship data utilities
     std::string getDeployedShips();
     std::string getStationaryShips();
     std::string getShipData();
 
-    bool attemptToDeployShip(Ship);
+    // Competitive methods
+    attemptHitResponse fireWarheadStrikeAtOpposingPlayer(std::string letter, int number);
+
+    GameGrid battleshipGameGrid;
+    HitGrid battleshipHitGrid;
+
+private:
+    Player *opposingPlayer;
+
+    std::vector<Ship> playerShips;
 };
 
 

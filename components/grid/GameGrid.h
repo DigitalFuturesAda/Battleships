@@ -1,3 +1,4 @@
+#include <__bit_reference>
 //
 // Created by Suraj Lyons on 01/03/2021.
 //
@@ -9,10 +10,17 @@
 #define BATTLESHIPS_GAMEGRID_H
 
 enum GridNodes {
+    // States
     EMPTY = -1,
     DESTROYED = 0,
-    MINE = 1,
 
+    VALID_HIT,
+    INVALID_HIT,
+
+    // Misc objects
+    MINE,
+
+    // Ships
     CARRIER,
     BATTLESHIP,
     DESTROYER,
@@ -25,11 +33,42 @@ enum Orientation {
     VERTICAL
 };
 
+struct attemptPlacementNodeHitResponse {
+    int x{};
+    int y{};
+
+    GridNodes node;
+
+    attemptPlacementNodeHitResponse()= default;
+    attemptPlacementNodeHitResponse(int x, int y, GridNodes node) : x(x), y(y), node(node) {}
+};
+
 struct attemptPlacementResponse {
     bool success;
     std::string message;
+    attemptPlacementNodeHitResponse existingNode;
 
-    explicit attemptPlacementResponse(bool success, std::string message = "") : success(success), message(std::move(message)) {}
+    explicit attemptPlacementResponse( // NOLINT(cppcoreguidelines-pro-type-member-init)
+            bool success,
+            std::string message = "") : success(success), message(std::move(message)) {};
+
+    explicit attemptPlacementResponse(
+            bool success,
+            attemptPlacementNodeHitResponse existingNode): success(success), existingNode(existingNode) {};
+};
+
+struct attemptHitResponse {
+    bool validAttempt;
+    bool didHitTarget{};
+    attemptPlacementNodeHitResponse hitNode;
+
+    std::string message;
+
+    attemptHitResponse(bool validAttempt, bool didHitTarget, attemptPlacementNodeHitResponse hitNode) : validAttempt(validAttempt),
+                                                                                  didHitTarget(didHitTarget),
+                                                                                  hitNode(hitNode) {};
+
+    attemptHitResponse(bool validAttempt, std::string message): validAttempt(validAttempt), message(std::move(message)) {};
 };
 
 class GameGrid {
@@ -51,8 +90,10 @@ public:
     static int getObservableGridWidth();
 
     attemptPlacementResponse attemptPlacement(int x, int y, GridNodes node, Orientation orientation);
-
     attemptPlacementResponse attemptPlacement(std::string letter, int number, GridNodes node, Orientation orientation);
+    attemptPlacementResponse checkIfNodeExists(std::string letter, int number);
+
+    attemptHitResponse receiveWarheadStrike(std::string letter, int number);
 };
 
 
