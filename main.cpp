@@ -5,32 +5,28 @@
 #include "components/player/Player.h"
 
 int main() {
-    GameGrid battleshipGameGrid;
+//    GameGrid battleshipGameGrid;
     Player humanPlayer;
 
-    battleshipGameGrid.attemptPlacement(2, 4, MINE, VERTICAL);
-    battleshipGameGrid.attemptPlacement(2, 5, MINE, VERTICAL);
+    humanPlayer.battleshipGameGrid.attemptPlacement(2, 4, MINE, VERTICAL);
+    humanPlayer.battleshipGameGrid.attemptPlacement(2, 5, MINE, VERTICAL);
 
-    battleshipGameGrid.attemptPlacement(2, 7, DESTROYED, VERTICAL);
-    battleshipGameGrid.attemptPlacement(1, 7, DESTROYED, VERTICAL);
+    humanPlayer.battleshipGameGrid.attemptPlacement(2, 7, DESTROYED, VERTICAL);
+    humanPlayer.battleshipGameGrid.attemptPlacement(1, 7, DESTROYED, VERTICAL);
 
-    battleshipGameGrid.attemptPlacement(5, 5, DESTROYER, VERTICAL);
-    battleshipGameGrid.attemptPlacement(6, 5, CARRIER, VERTICAL);
-    battleshipGameGrid.attemptPlacement(3, 2, SUBMARINE, VERTICAL);
+    humanPlayer.battleshipGameGrid.attemptPlacement(5, 5, DESTROYER, VERTICAL);
+    humanPlayer.battleshipGameGrid.attemptPlacement(6, 5, CARRIER, VERTICAL);
+    humanPlayer.battleshipGameGrid.attemptPlacement(3, 2, SUBMARINE, VERTICAL);
 
     tabulate::Table battleshipGameTable;
 
     battleshipGameTable.add_row({"Game board", "Hit board"});
-    battleshipGameTable.add_row({battleshipGameGrid.getGrid(), battleshipGameGrid.getGrid()});
+    battleshipGameTable.add_row({humanPlayer.battleshipGameGrid.getGrid(), humanPlayer.battleshipHitGrid.getGrid()});
 
-    // This currently needs to be called after calls to GameGrid#getGrid.
-    int width = battleshipGameGrid.getObservableGridWidth();
+    battleshipGameTable.add_row({humanPlayer.getStationaryShips(), humanPlayer.getDeployedShips()}).format().border_color(tabulate::Color::white);
 
-    battleshipGameTable.column(0).format().width(50);
-    battleshipGameTable.column(1).format().width(50);
+    battleshipGameTable.column(0).format().width(humanPlayer.battleshipGameGrid.getObservableGridWidth());
+    battleshipGameTable.column(1).format().width(humanPlayer.battleshipHitGrid.getObservableGridWidth());
 
     std::cout << battleshipGameTable << std::endl;
-
-    // Logic for Player01 - print out the grid and show the available ships below.
-     humanPlayer.outputShipData();
 }

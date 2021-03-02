@@ -40,10 +40,8 @@ std::string GameGrid::getGrid() {
 }
 
 int GameGrid::getObservableGridWidth() {
-//    if (width == -1){
-//        throw std::out_of_range("Grid not set");
-//    }
-    return 50;
+    return (WIDTH * 3) + 5;
+
 }
 
 std::string GameGrid::formatNode(GridNodes node) {

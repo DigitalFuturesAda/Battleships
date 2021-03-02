@@ -36,7 +36,7 @@ class GameGrid {
 
 private:
     static const int HEIGHT = 10;
-    static const int WIDTH = 15;
+    static const int WIDTH = 10;
 
     GridNodes battleshipGameGrid[HEIGHT][WIDTH] = { [0 ... HEIGHT - 1] = { [0 ... WIDTH - 1] = EMPTY } };
 

@@ -13,10 +13,12 @@ public:
     Player();
 
     std::vector<Ship> playerShips;
+    GameGrid battleshipGameGrid;
+    GameGrid battleshipHitGrid;
 
-    void outputDeployedShips();
-    void outputStationaryShips();
-    void outputShipData();
+    std::string getDeployedShips();
+    std::string getStationaryShips();
+    std::string getShipData();
 
     bool attemptToDeployShip(Ship);
 };

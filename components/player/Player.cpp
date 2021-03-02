@@ -3,60 +3,73 @@
 //
 
 #include "Player.h"
+#include <iostream>
+#include <absl/strings/str_format.h>
+#include <absl/strings/ascii.h>
+#include "../../components/grid/GameGrid.h"
 
 Player::Player() {
     this->playerShips = {
-            Ship(CARRIER, false),
+            Ship(CARRIER, true),
             Ship(BATTLESHIP, false),
-            Ship(DESTROYER, false),
-            Ship(SUBMARINE, false),
+            Ship(DESTROYER, true),
+            Ship(SUBMARINE, true),
             Ship(PATROL, false),
     };
-};
 
-void Player::outputStationaryShips() {
-    int counter = 0;
-    std::cout << "\033[1;32mStationary ships:\033[0m ";
-    for (auto &&ship : playerShips){
-        if (!ship.isDeployed()){
-            std::cout << ship.getName();
-            if (counter < playerShips.size() - 1){
-                std::cout << ", ";
-            }
-            counter ++;
-        }
-    }
-    if (counter == 0){
-        std::cout << "None";
-    }
-    std::cout << std::endl;
-}
+    this->battleshipGameGrid;
+};
 
 bool Player::attemptToDeployShip(Ship) {
     return false;
 }
 
-void Player::outputShipData() {
-    std::cout << std::endl;
-
-    outputStationaryShips();
-    outputDeployedShips();
-}
-
-void Player::outputDeployedShips() {
+std::string Player::getStationaryShips() {
     int counter = 0;
-    std::cout << "\033[1;31mDeployed ships:\033[0m ";
+    std::ostringstream stringStream;
+
+//    stringStream << "\033[1;32mStationary ships:\033[0m ";
+    stringStream << "Stationary ships: ";
     for (auto &&ship : playerShips){
-        if (ship.isDeployed()){
-            std::cout << ship.getName();
+        if (!ship.isDeployed()){
+            stringStream << ship.getName();
             if (counter < playerShips.size() - 1){
-                std::cout << ", ";
+                stringStream << ", ";
             }
             counter ++;
         }
     }
     if (counter == 0){
-        std::cout << "None";
+        stringStream << "None";
     }
-    std::cout << std::endl;
+//    stringStream << std::endl;
+
+    return stringStream.str();
+}
+
+std::string Player::getDeployedShips() {
+    int counter = 0;
+    std::ostringstream stringStream;
+
+//    stringStream << "\033[1;31mDeployed ships:\033[0m ";
+    stringStream << "Deployed ships: ";
+    for (auto &&ship : playerShips){
+        if (ship.isDeployed()){
+            stringStream << ship.getName();
+            if (counter < playerShips.size() - 1){
+                stringStream << ", ";
+            }
+            counter ++;
+        }
+    }
+    if (counter == 0){
+        stringStream << "None";
+    }
+//    stringStream << std::endl;
+
+    return stringStream.str();
+}
+
+std::string Player::getShipData() {
+    return getStationaryShips() +  getDeployedShips();
 }
