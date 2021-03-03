@@ -1,7 +1,8 @@
 language = "bash"
-run = """ # for dumb reason repls toml syntax highlighter doesn't recognise multiline strings. this file is valid.
+run = """ # For dumb reason replits toml syntax highlighter doesn't recognise multiline strings - this file is valid.
 clear && source=$(pwd) &&mkdir -p ../build && cd ../build
+echo "$(tput setaf 1)-- Running CMake Build gen(tput sgr 0)"
 cmake -D CMAKE_BUILD_TYPE=Debug -G Ninja $source && cmake --build .
 echo "$(tput setaf 1)-- Executing binary$(tput sgr 0)"
-/home/runner/build/main
+$source/battleships;
 """
