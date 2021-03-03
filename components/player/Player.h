@@ -34,14 +34,13 @@ public:
 
     void showShipDeploymentInterface();
 
+    void renderPlayerUserInterface();
+
 private:
     Player *opposingPlayer{};
 
     GameGrid battleshipGameGrid;
     HitGrid battleshipHitGrid;
-
-    tabulate::Table playerBattleshipGameTable;
-    tabulate::Table playerStatisticsBoard;
 
     std::vector<Ship> playerShips{};
 

@@ -165,6 +165,8 @@ bool Player::deployShipInterface(Ship ship){
 
         if (!response.success){
             std::cout << "Failed to deploy ship. Error: " << response.message << std::endl;
+        } else {
+            renderPlayerUserInterface();
         }
     }
 
@@ -172,6 +174,7 @@ bool Player::deployShipInterface(Ship ship){
 }
 
 void Player::renderPlayerGrid() {
+    tabulate::Table playerBattleshipGameTable;
     playerBattleshipGameTable.format()
             .border_color(tabulate::Color::white)
             .corner("⋅")
@@ -189,6 +192,7 @@ void Player::renderPlayerGrid() {
 }
 
 void Player::renderStatisticsBoard() {
+    tabulate::Table playerStatisticsBoard;
     playerStatisticsBoard.format()
             .border_color(tabulate::Color::white)
             .corner("⋅")
@@ -201,4 +205,10 @@ void Player::renderStatisticsBoard() {
         getShipInformation().at(2)});
 
     std::cout << playerStatisticsBoard << std::endl;
+}
+
+void Player::renderPlayerUserInterface() {
+    clearConsole();
+    renderPlayerGrid();
+    renderStatisticsBoard();
 }

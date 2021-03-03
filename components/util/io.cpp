@@ -45,3 +45,7 @@ regexMatch getRegexInputWithPromptAsRegex(const std::string& prompt, const std::
 
     return result;
 }
+
+void clearConsole() {
+    std::cout << "\x1B[2J\x1B[H";
+}
