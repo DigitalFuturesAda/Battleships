@@ -9,8 +9,9 @@
 #include <absl/strings/ascii.h>
 #include "../../components/grid/GameGrid.h"
 #include "../util/strings.h"
+#include "../util/io.h"
 
-Player::Player() {
+Player::Player(std::string _playerName) {
     this->playerShips = {
             Ship(CARRIER, false),
             Ship(BATTLESHIP, false),
@@ -18,6 +19,7 @@ Player::Player() {
             Ship(SUBMARINE, false),
             Ship(PATROL, false),
     };
+    this->playerName = std::move(_playerName);
 };
 
 attemptPlacementResponse Player::deployShip(GridNodes shipType, const std::string& letterIndex, int y, Orientation orientation) {
@@ -92,7 +94,6 @@ attemptHitResponse Player::executeWarheadStrike(std::string letter, int y) {
     if (response.validAttempt){
         if (response.didHitTarget){
             battleshipHitGrid.markSuccessfulWarheadStrike(response.hitNode.x, response.hitNode.y);
-            // TODO(slyo): Abstract this away
             attemptPlacementResponse responseTest = opposingPlayer->getGameGrid()->attemptPlacement(letter, y, DESTROYED, VERTICAL);
             int counter = 0;
             for (auto &ship : opposingPlayer->playerShips){
@@ -134,4 +135,70 @@ std::vector<std::string> Player::getShipInformation(){
     }
 
     return {stringStream[0].str(), stringStream[1].str(), stringStream[2].str()};
+}
+
+void Player::showShipDeploymentInterface() {
+    for (auto &&ship : playerShips){
+        deployShipInterface(ship);
+    }
+}
+
+bool Player::deployShipInterface(Ship ship){
+    attemptPlacementResponse response;
+
+    while (!response.success){
+        regexMatch coordinateInput = getRegexInputWithPromptAsRegex(
+                "Enter where you want to move your " + ship.getName() + " (eg. A1 or H8): ",
+                std::regex("([A-a-Z-z](?:[A-a-B-b])?)([1-9](?:[1-10])?)"));
+
+        std::string orientation = getRegexInputWithPromptAsString(
+                "Enter ship orientation (vertical/horizontal): ",
+                std::regex("(\\b[Vv][Ee][Rr][Tt][Ii][Cc][Aa][Ll]|[Hh][Oo][Rr][Ii][Zz][Oo][Nn][Tt][Aa][Ll]|[Vv]\\b|[Hh]\\b)"));
+
+        int yCoordinate = stoi(coordinateInput.matches[1]);
+
+        response = deployShip(
+                ship.getShipType(),
+                convertToUpperCase(coordinateInput.matches[0]),
+                yCoordinate,
+                convertToUpperCase(orientation).at(0) == 'V' ? VERTICAL : HORIZONTAL);
+
+        if (!response.success){
+            std::cout << "Failed to deploy ship. Error: " << response.message << std::endl;
+        }
+    }
+
+    return response.success;
+}
+
+void Player::renderPlayerGrid() {
+    playerBattleshipGameTable.format()
+            .border_color(tabulate::Color::white)
+            .corner("⋅")
+            .corner_color(tabulate::Color::red);
+
+
+    playerBattleshipGameTable.add_row({playerName + "'s Game board", playerName + "'s Hit board"});
+
+    playerBattleshipGameTable.column(0).format().width(GameGrid::getObservableGridWidth());
+    playerBattleshipGameTable.column(1).format().width(GameGrid::getObservableGridWidth());
+
+    playerBattleshipGameTable.add_row({getGameGrid()->renderGrid(), getHitGrid()->renderGrid()});
+
+    std::cout << playerBattleshipGameTable << std::endl;
+}
+
+void Player::renderStatisticsBoard() {
+    playerStatisticsBoard.format()
+            .border_color(tabulate::Color::white)
+            .corner("⋅")
+            .corner_color(tabulate::Color::red);
+
+    playerStatisticsBoard.add_row({"Boat", "Status", "Durability"});
+    playerStatisticsBoard.add_row({
+        getShipInformation().at(0),
+        getShipInformation().at(1),
+        getShipInformation().at(2)});
+
+    std::cout << playerStatisticsBoard << std::endl;
 }

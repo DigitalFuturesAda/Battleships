@@ -5,14 +5,16 @@
 #ifndef BATTLESHIPS_PLAYER_H
 #define BATTLESHIPS_PLAYER_H
 
+#include <utility>
 #include <vector>
 #include <map>
 #include "../ship/Ship.h"
 #include "../grid/HitGrid.h"
+#include "../../lib/tabulate.hpp"
 
 class Player {
 public:
-    Player();
+    explicit Player(std::string playerName);
 
     void setOpposingPlayer(Player *player);
     attemptPlacementResponse deployShip(GridNodes shipType, const std::string& x, int y, Orientation orientation);
@@ -27,13 +29,25 @@ public:
     GameGrid *getGameGrid();
     HitGrid *getHitGrid();
 
+    void renderPlayerGrid();
+    void renderStatisticsBoard();
+
+    void showShipDeploymentInterface();
+
 private:
-    Player *opposingPlayer;
+    Player *opposingPlayer{};
 
     GameGrid battleshipGameGrid;
     HitGrid battleshipHitGrid;
 
-    std::vector<Ship> playerShips;
+    tabulate::Table playerBattleshipGameTable;
+    tabulate::Table playerStatisticsBoard;
+
+    std::vector<Ship> playerShips{};
+
+    bool deployShipInterface(Ship ship);
+
+    std::string playerName;
 };
 
 

@@ -25,7 +25,9 @@ enum GridNodes {
     BATTLESHIP,
     DESTROYER,
     SUBMARINE,
-    PATROL
+    PATROL,
+
+    UNKNOWN,
 };
 
 enum Orientation {
@@ -37,25 +39,27 @@ struct attemptPlacementNodeHitResponse {
     int x{};
     int y{};
 
-    GridNodes node;
+    GridNodes node = UNKNOWN;
 
     attemptPlacementNodeHitResponse() = default;
-    attemptPlacementNodeHitResponse(GridNodes node) : node(node) {}
+    explicit attemptPlacementNodeHitResponse(GridNodes node) : node(node) {}
     attemptPlacementNodeHitResponse(int x, int y, GridNodes node) : x(x), y(y), node(node) {}
 };
 
 struct attemptPlacementResponse {
-    bool success;
+    bool success = false;
     std::string message;
     attemptPlacementNodeHitResponse existingNode;
 
-    explicit attemptPlacementResponse( // NOLINT(cppcoreguidelines-pro-type-member-init)
+    explicit attemptPlacementResponse(
             bool success,
             std::string message = "") : success(success), message(std::move(message)) {};
 
     explicit attemptPlacementResponse(
             bool success,
-            attemptPlacementNodeHitResponse existingNode): success(success), existingNode(existingNode) {};
+            attemptPlacementNodeHitResponse existingNode): success(success), existingNode(existingNode) {}
+
+    attemptPlacementResponse() = default;
 };
 
 struct attemptHitResponse {

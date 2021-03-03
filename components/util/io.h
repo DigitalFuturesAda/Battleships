@@ -9,10 +9,19 @@
 #include <regex>
 #include "strings.h"
 
+#include <vector>
+
+struct regexMatch {
+    std::string match;
+    std::vector<std::string> matches;
+};
+
 std::string getInput();
 
 std::string getStringWithPrompt(const std::string& prompt);
 
-std::string getRegexInputWithPrompt(const std::string& prompt, const std::regex& regex);
+std::string getRegexInputWithPromptAsString(const std::string& prompt, const std::regex& regex);
+
+regexMatch getRegexInputWithPromptAsRegex(const std::string& prompt, const std::regex& regex);
 
 #endif //BATTLESHIPS_IO_H

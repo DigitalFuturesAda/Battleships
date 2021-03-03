@@ -27,3 +27,14 @@ int convertAlphaToIncrementingInteger(std::string alpha){
     }
     return c;
 }
+
+std::string convertToUpperCase(std::string input){
+    std::transform(input.begin(), input.end(), input.begin(),
+                   [](unsigned char c){ return std::toupper(c); });
+    return input;
+}
+
+char convertToUpperCase(char &input){
+    std::toupper(input);
+    return input;
+}
