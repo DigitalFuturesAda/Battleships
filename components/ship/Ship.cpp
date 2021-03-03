@@ -4,6 +4,16 @@
 
 #include "Ship.h"
 
+Ship::Ship(GridNodes type, bool deployed) : type(type), deployed(deployed) {
+    this->maxLives = GameGrid::getEntityConstraints(type);
+    this->lives = maxLives;
+}
+
+Ship::Ship(GridNodes type) : type(type) {
+    this->maxLives = GameGrid::getEntityConstraints(type);
+    this->lives = maxLives;
+}
+
 std::string Ship::getName() {
     switch (type){
         case EMPTY:
@@ -35,18 +45,13 @@ bool Ship::isDeployed() const {
 
 std::string Ship::getShipStatusFormatted() {
     if (deployed){
-        if (lives == 0){
+        if (isSunk()){
             return "Sunk";
         }
         return "Deployed";
     } else {
         return "Stationary";
     }
-}
-
-Ship::Ship(GridNodes type, bool deployed) : type(type), deployed(deployed) {
-    this->maxLives = GameGrid::getEntityConstraints(type);
-    this->lives = maxLives;
 }
 
 Ship Ship::setOrientation(Orientation orientation_) {
@@ -71,4 +76,8 @@ int Ship::getMaxLives() const {
 
 Ship Ship::setLives(int lives_) {
     lives = lives_;
+}
+
+bool Ship::isSunk() {
+    return lives == 0;
 }

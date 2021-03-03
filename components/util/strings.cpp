@@ -10,6 +10,10 @@
  * @author: https://www.techiedelight.com/convert-given-number-corresponding-excel-column-name/
  */
 std::string convertIncrementingIntegerToAlpha(int counter){
+    if (counter == 0){
+        counter ++;
+    }
+
     std::string result;
 
     while (counter > 0) {

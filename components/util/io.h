@@ -28,4 +28,8 @@ void clearConsole();
 
 void displayError(const std::string error, int pruneMessagesAmount);
 
+void displayInformation(const std::string information, int pruneMessagesAmount);
+
+void awaitBlankInput();
+
 #endif //BATTLESHIPS_IO_H

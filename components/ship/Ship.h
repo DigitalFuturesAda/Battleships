@@ -19,6 +19,7 @@ private:
 
 public:
     Ship(GridNodes type, bool deployed);
+    Ship(GridNodes type);
 
     std::string getName();
     [[nodiscard]] GridNodes getShipType() const;
@@ -34,6 +35,8 @@ public:
     Ship setLives(int lives);
 
     std::string getShipStatusFormatted();
+
+    bool isSunk();
 };
 
 

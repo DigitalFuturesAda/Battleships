@@ -23,23 +23,23 @@ Player::Player(std::string _playerName) {
     this->playerName = std::move(_playerName);
 };
 
-attemptPlacementResponse Player::deployShip(GridNodes shipType, const std::string& letterIndex, int y, Orientation orientation) {
-    int counter = 0;
-    for (auto &ship : playerShips){
-        if (ship.getShipType() == shipType && ship.isDeployed() == false){
-            attemptPlacementResponse response = getGameGrid()->attemptPlacement(letterIndex, y, shipType, orientation);
-
-            if (response.success == true){
-                playerShips.at(counter) = Ship(shipType, true).setOrientation(orientation);
-            }
-
-            return response;
-        }
-
-        counter ++;
+attemptPlacementResponse Player::deployShip(int position, const std::string& letterIndex, int y, Orientation orientation) {
+    if (position > playerShips.size() || position < 0){
+        return attemptPlacementResponse(false, "Invalid position");
     }
 
-    return attemptPlacementResponse(false, "All ships already deployed.");
+    Ship ship = playerShips.at(position);
+
+    if (ship.isDeployed()){
+        return attemptPlacementResponse(false, "Ships already deployed");
+    }
+
+    attemptPlacementResponse response = getGameGrid()->attemptPlacement(letterIndex, y, ship.getShipType(), orientation);
+    if (response.success){
+        playerShips.at(position) = Ship(playerShips.at(position).getShipType(), true).setOrientation(orientation);
+    }
+
+    return response;
 }
 
 std::string Player::getStationaryShips() {
@@ -139,13 +139,18 @@ std::vector<std::string> Player::getShipInformation(){
 }
 
 void Player::showShipDeploymentInterface() {
+    int c = 0;
     for (auto &&ship : playerShips){
-        deployShipInterface(ship);
+        if (!ship.isDeployed()){
+            deployShipInterface(c);
+        }
+        c++;
     }
 }
 
-bool Player::deployShipInterface(Ship ship){
+bool Player::deployShipInterface(int shipVertexPosition){
     attemptPlacementResponse response;
+    Ship ship = playerShips.at(shipVertexPosition);
 
     while (!response.success){
         regexMatch coordinateInput = getRegexInputWithPromptAsRegex(
@@ -158,11 +163,8 @@ bool Player::deployShipInterface(Ship ship){
 
         int yCoordinate = stoi(coordinateInput.matches[1]);
 
-        response = deployShip(
-                ship.getShipType(),
-                convertToUpperCase(coordinateInput.matches[0]),
-                yCoordinate,
-                convertToUpperCase(orientation).at(0) == 'V' ? VERTICAL : HORIZONTAL);
+        response = deployShip(shipVertexPosition, convertToUpperCase(coordinateInput.matches[0]),
+                yCoordinate, convertToUpperCase(orientation).at(0) == 'V' ? VERTICAL : HORIZONTAL);
 
         if (!response.success){
             displayError("Failed to deploy ship - " + response.message + "\n", 2);
@@ -223,29 +225,50 @@ void Player::setPlayingAgainstComputer() {
     alsoRenderComputerBoard = true;
 }
 
-void Player::deployWarshipAutomatically(Ship ship) {
-    Orientation randomOrientation = VERTICAL; //randomBool() ? VERTICAL : HORIZONTAL;
+bool Player::deployWarshipAutomatically(int shipVertexPosition, int attempts = 0) {
+    Ship ship = playerShips.at(shipVertexPosition);
+
+    if (ship.isDeployed()){
+        return true;
+    }
+
+    if (attempts == 10000){
+        return false;
+    }
+
+    Orientation randomOrientation = randomBool() ? VERTICAL : HORIZONTAL;
+
+    int length = ship.getMaxLives();
+    int gridHeight = GameGrid::HEIGHT;
+    int gridWidth = GameGrid::WIDTH;
+
+    attemptPlacementResponse response;
 
     if (randomOrientation == VERTICAL){
-        int length = ship.getMaxLives();
-        int gridHeight = GameGrid::HEIGHT;
-        int gridWidth = GameGrid::WIDTH;
-
         int validPositionLow = 0;
         int validPositionHigh = gridHeight - length;
 
         int randomXCoordinate = randomBetween(validPositionLow - 1, validPositionHigh + 1);
         int randomYCoordinate = randomBetween(validPositionLow, gridWidth);
 
-//        std::cout << "randomXCoordinate: " << randomXCoordinate << "(" << validPositionLow << ", " << validPositionHigh << ")" << std::endl;
-//        std::cout << "randomYCoordinate: " << randomYCoordinate << "(" << validPositionLow << ", " << gridWidth << ")" << std::endl;
-//        std::cout << "convertIncrementingIntegerToAlpha: " << convertIncrementingIntegerToAlpha(randomYCoordinate) << std::endl;
+        response = deployShip(shipVertexPosition, convertIncrementingIntegerToAlpha(randomYCoordinate),
+                              randomXCoordinate, randomOrientation);
+    } else {
+        int validPositionLow = 0;
+        int validPositionHigh = gridWidth - length;
 
-        attemptPlacementResponse response = deployShip(ship.getShipType(), convertIncrementingIntegerToAlpha(randomYCoordinate), randomXCoordinate, randomOrientation);
-        if (response.success == false){
-            return deployWarshipAutomatically(ship);
-        }
+        int randomYCoordinate = randomBetween(validPositionLow, validPositionHigh);
+        int randomXCoordinate = randomBetween(validPositionLow, gridHeight);
+
+        response = deployShip(shipVertexPosition, convertIncrementingIntegerToAlpha(randomYCoordinate),
+                              randomXCoordinate, randomOrientation);
     }
+
+    if (response.success == false){
+        return deployWarshipAutomatically(shipVertexPosition, attempts + 1);
+    }
+
+    return true;
 }
 
 std::vector<Ship> *Player::getPlayerShips() {
@@ -253,7 +276,37 @@ std::vector<Ship> *Player::getPlayerShips() {
 }
 
 void Player::deployWarshipsAutomatically() {
+    int c = 0;
     for (auto &&ship : playerShips){
-        deployWarshipAutomatically(ship);
+        bool shipPlacementAttempt = deployWarshipAutomatically(c);
+        if (!shipPlacementAttempt){
+            displayError("Failed to place ships within the board, please reduce the amount of ships or increase the board size", 0);
+            exit (EXIT_FAILURE);
+        }
+        c++;
     }
+}
+
+void Player::renderWarheadStrikeInterface() {
+    regexMatch coordinateInput = getRegexInputWithPromptAsRegex(
+            "Enter a coordinate to deploy your warhead strike (eg. A1 or H8): ",
+            std::regex("([A-a-Z-z](?:[A-a-B-b])?)([1-9](?:[1-10])?)"));
+
+    int yCoordinate = stoi(coordinateInput.matches[1]);
+    attemptHitResponse response = executeWarheadStrike(convertToUpperCase(coordinateInput.matches[0]), yCoordinate);
+
+    if (response.validAttempt){
+        if (response.didHitTarget){
+            // Update the board with the hit
+            renderPlayerUserInterface();
+
+            displayInformation("Successful warhead strike - hit a " + Ship(response.hitNode.node).getName() + "\n", 0);
+        } else {
+            displayInformation("Unsuccessful warhead strike - did not hit anything\n", 1);
+        }
+    } else {
+        displayError("Invalid coordinate - " + response.message + " - try again", 1);
+        return renderWarheadStrikeInterface();
+    }
+    awaitBlankInput();
 }

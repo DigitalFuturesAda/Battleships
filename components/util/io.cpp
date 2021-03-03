@@ -54,6 +54,17 @@ void displayError(const std::string error, int pruneMessagesAmount){
     std::cout << "\033[1;31m" << error << "\033[0m";
 }
 
+void displayInformation(const std::string information, int pruneMessagesAmount){
+    for (int i = 0; i < pruneMessagesAmount; i++){
+        std::cout << "\e[1A\e[K";
+    }
+    std::cout << "\033[1;33m" << information << "\033[0m";
+}
+
 void clearConsole() {
     std::cout << "\x1B[2J\x1B[H";
+}
+
+void awaitBlankInput() {
+    getStringWithPrompt("Press enter to continue [Q to quit or R to reset]...");
 }

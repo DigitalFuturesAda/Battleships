@@ -3,6 +3,7 @@
 //
 
 #include "rand.h"
+#include <iostream>
 
 bool randomBool(){
     static const int shift = static_cast<int>(std::log2(RAND_MAX));
@@ -21,5 +22,7 @@ int randomBetween(int min, int max){
     do {
         x = rand();
     } while (x >= RAND_MAX - remainder);
+
+//    std::cout << "Generating random between: " << min << " -> " << max << " : " << min + x % n << std::endl;
     return min + x % n;
 }

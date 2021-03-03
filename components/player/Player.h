@@ -17,7 +17,8 @@ public:
     explicit Player(std::string playerName);
 
     void setOpposingPlayer(Player *player);
-    attemptPlacementResponse deployShip(GridNodes shipType, const std::string& x, int y, Orientation orientation);
+//    attemptPlacementResponse deployShip(GridNodes shipType, const std::string& x, int y, Orientation orientation);
+    attemptPlacementResponse deployShip(int shipVertexPosition, const std::string& letterIndex, int y, Orientation orientation);
 
     // Ship data utilities
     std::string getDeployedShips();
@@ -38,7 +39,9 @@ public:
 
     void setPlayingAgainstComputer();
 
-    void deployWarshipAutomatically(Ship ship);
+    bool deployWarshipAutomatically(int shipVertexPosition, int attempts);
+
+    void renderWarheadStrikeInterface();
 
     void deployWarshipsAutomatically();
 
@@ -52,7 +55,7 @@ private:
 
     std::vector<Ship> playerShips{};
 
-    bool deployShipInterface(Ship ship);
+    bool deployShipInterface(int shipVertexPosition);
 
     std::string playerName;
 
