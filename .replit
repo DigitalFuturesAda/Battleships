@@ -1,8 +1,9 @@
 language = "bash"
 run = """ # For dumb reason replits toml syntax highlighter doesn't recognise multiline strings - this file is valid.
 clear && source=$(pwd) &&mkdir -p ../build && cd ../build
-echo "$(tput setaf 1)-- Running CMake Build gen(tput sgr 0)"
+echo "$(tput setaf 1)-- Running CMake build gen";
+echo "-- Initial builds take a while - especially on Repl.it$(tput sgr 0)";
 cmake -D CMAKE_BUILD_TYPE=Debug -G Ninja $source && cmake --build .
-echo "$(tput setaf 1)-- Executing binary$(tput sgr 0)"
+echo "$(tput setaf 1)-- Executing binary$(tput sgr 0)";
 $source/battleships;
 """
