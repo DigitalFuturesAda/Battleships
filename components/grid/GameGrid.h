@@ -77,17 +77,11 @@ struct attemptHitResponse {
 };
 
 class GameGrid {
-
-private:
-    static const int HEIGHT = 10;
-    static const int WIDTH = 10;
-
-    GridNodes battleshipGameGrid[HEIGHT][WIDTH] = { [0 ... HEIGHT - 1] = { [0 ... WIDTH - 1] = EMPTY } };
-
-    static std::string formatNode(GridNodes node);
-
 public:
     GameGrid();
+
+    static const int HEIGHT = 10;
+    static const int WIDTH = 10;
 
     std::string renderGrid();
     static int getObservableGridWidth();
@@ -98,6 +92,12 @@ public:
     attemptPlacementResponse checkIfNodeExists(std::string letter, int number);
 
     attemptHitResponse receiveWarheadStrike(std::string letter, int number);
+
+private:
+    GridNodes battleshipGameGrid[HEIGHT][WIDTH] = { [0 ... HEIGHT - 1] = { [0 ... WIDTH - 1] = EMPTY } };
+
+    static std::string formatNode(GridNodes node);
+
 };
 
 

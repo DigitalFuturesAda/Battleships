@@ -26,4 +26,6 @@ regexMatch getRegexInputWithPromptAsRegex(const std::string& prompt, const std::
 
 void clearConsole();
 
+void displayError(const std::string error, int pruneMessagesAmount);
+
 #endif //BATTLESHIPS_IO_H

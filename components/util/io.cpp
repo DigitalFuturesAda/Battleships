@@ -20,8 +20,7 @@ std::string getRegexInputWithPromptAsString(const std::string& prompt, const std
     std::string input = getStringWithPrompt(prompt);
 
     while (!regex_match(input, regex)) {
-        std::cout << "\e[1A\e[K";
-        std::cout << "\033[1;31mInvalid input! - \033[0m";
+        displayError("Invalid input! - ", 1);
         input = getStringWithPrompt(prompt);
     }
 
@@ -46,6 +45,13 @@ regexMatch getRegexInputWithPromptAsRegex(const std::string& prompt, const std::
     }
 
     return result;
+}
+
+void displayError(const std::string error, int pruneMessagesAmount){
+    for (int i = 0; i < pruneMessagesAmount; i++){
+        std::cout << "\e[1A\e[K";
+    }
+    std::cout << "\033[1;31m" << error << "\033[0m";
 }
 
 void clearConsole() {

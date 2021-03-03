@@ -10,6 +10,7 @@
 #include "../../components/grid/GameGrid.h"
 #include "../util/strings.h"
 #include "../util/io.h"
+#include "../util/rand.h"
 
 Player::Player(std::string _playerName) {
     this->playerShips = {
@@ -164,7 +165,7 @@ bool Player::deployShipInterface(Ship ship){
                 convertToUpperCase(orientation).at(0) == 'V' ? VERTICAL : HORIZONTAL);
 
         if (!response.success){
-            std::cout << "Failed to deploy ship. Error: " << response.message << std::endl;
+            displayError("Failed to deploy ship - " + response.message + "\n", 2);
         } else {
             renderPlayerUserInterface();
         }
@@ -173,7 +174,7 @@ bool Player::deployShipInterface(Ship ship){
     return response.success;
 }
 
-void Player::renderPlayerGrid(bool alsoRenderComputerBoard) {
+void Player::renderPlayerGrid() {
     tabulate::Table playerBattleshipGameTable;
     playerBattleshipGameTable.format()
             .border_color(tabulate::Color::white)
@@ -188,6 +189,7 @@ void Player::renderPlayerGrid(bool alsoRenderComputerBoard) {
 
     playerBattleshipGameTable.add_row({getGameGrid()->renderGrid(), getHitGrid()->renderGrid()});
     if (alsoRenderComputerBoard){
+        playerBattleshipGameTable.add_row({opposingPlayer->playerName + "'s Game board", opposingPlayer->playerName + "'s Hit board"});
         playerBattleshipGameTable.add_row({opposingPlayer->getGameGrid()->renderGrid(), opposingPlayer->getHitGrid()->renderGrid()});
     }
 
@@ -210,9 +212,48 @@ void Player::renderStatisticsBoard() {
     std::cout << playerStatisticsBoard << std::endl;
 }
 
-void Player::renderPlayerUserInterface(bool alsoRenderComputerBoard) {
+void Player::renderPlayerUserInterface() {
     clearConsole();
 
-    renderPlayerGrid(alsoRenderComputerBoard);
+    renderPlayerGrid();
     renderStatisticsBoard();
+}
+
+void Player::setPlayingAgainstComputer() {
+    alsoRenderComputerBoard = true;
+}
+
+void Player::deployWarshipAutomatically(Ship ship) {
+    Orientation randomOrientation = VERTICAL; //randomBool() ? VERTICAL : HORIZONTAL;
+
+    if (randomOrientation == VERTICAL){
+        int length = ship.getMaxLives();
+        int gridHeight = GameGrid::HEIGHT;
+        int gridWidth = GameGrid::WIDTH;
+
+        int validPositionLow = 0;
+        int validPositionHigh = gridHeight - length;
+
+        int randomXCoordinate = randomBetween(validPositionLow - 1, validPositionHigh + 1);
+        int randomYCoordinate = randomBetween(validPositionLow, gridWidth);
+
+//        std::cout << "randomXCoordinate: " << randomXCoordinate << "(" << validPositionLow << ", " << validPositionHigh << ")" << std::endl;
+//        std::cout << "randomYCoordinate: " << randomYCoordinate << "(" << validPositionLow << ", " << gridWidth << ")" << std::endl;
+//        std::cout << "convertIncrementingIntegerToAlpha: " << convertIncrementingIntegerToAlpha(randomYCoordinate) << std::endl;
+
+        attemptPlacementResponse response = deployShip(ship.getShipType(), convertIncrementingIntegerToAlpha(randomYCoordinate), randomXCoordinate, randomOrientation);
+        if (response.success == false){
+            return deployWarshipAutomatically(ship);
+        }
+    }
+}
+
+std::vector<Ship> *Player::getPlayerShips() {
+    return &playerShips;
+}
+
+void Player::deployWarshipsAutomatically() {
+    for (auto &&ship : playerShips){
+        deployWarshipAutomatically(ship);
+    }
 }

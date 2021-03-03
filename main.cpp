@@ -11,6 +11,10 @@ int main() {
     humanPlayer.setOpposingPlayer(&computerPlayer);
     computerPlayer.setOpposingPlayer(&humanPlayer);
 
-    humanPlayer.renderPlayerUserInterface(/* alsoRenderComputerBoard = */ true);
-    humanPlayer.showShipDeploymentInterface();
+    computerPlayer.deployWarshipsAutomatically();
+
+    computerPlayer.renderPlayerUserInterface();
+
+//    humanPlayer.renderPlayerUserInterface();
+//    humanPlayer.showShipDeploymentInterface();
 }

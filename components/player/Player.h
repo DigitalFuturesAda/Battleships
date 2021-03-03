@@ -29,12 +29,20 @@ public:
     GameGrid *getGameGrid();
     HitGrid *getHitGrid();
 
-    void renderPlayerGrid(bool alsoRenderComputerBoard = false);
+    void renderPlayerGrid();
     void renderStatisticsBoard();
 
     void showShipDeploymentInterface();
 
-    void renderPlayerUserInterface(bool alsoRenderComputerBoard = false);
+    void renderPlayerUserInterface();
+
+    void setPlayingAgainstComputer();
+
+    void deployWarshipAutomatically(Ship ship);
+
+    void deployWarshipsAutomatically();
+
+    std::vector<Ship> *getPlayerShips();
 
 private:
     Player *opposingPlayer{};
@@ -47,6 +55,8 @@ private:
     bool deployShipInterface(Ship ship);
 
     std::string playerName;
+
+    bool alsoRenderComputerBoard = false;
 };
 
 

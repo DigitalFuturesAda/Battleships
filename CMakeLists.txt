@@ -22,7 +22,7 @@ endif()
 add_executable(battleships
         lib/tabulate.hpp
         main.cpp components/grid/GameGrid.cpp components/grid/GameGrid.h
-        components/util/strings.cpp components/util/strings.h components/player/Player.cpp components/player/Player.h components/ship/Ship.cpp components/ship/Ship.h components/grid/HitGrid.cpp components/grid/HitGrid.h components/util/io.cpp components/util/io.h)
+        components/util/strings.cpp components/util/strings.h components/player/Player.cpp components/player/Player.h components/ship/Ship.cpp components/ship/Ship.h components/grid/HitGrid.cpp components/grid/HitGrid.h components/util/io.cpp components/util/io.h components/util/rand.cpp components/util/rand.h)
 
 target_link_libraries(battleships
         absl::base absl::strings absl::str_format
