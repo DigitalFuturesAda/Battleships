@@ -35,6 +35,9 @@ bool Ship::isDeployed() const {
 
 std::string Ship::getShipStatusFormatted() {
     if (deployed){
+        if (lives == 0){
+            return "Sunk";
+        }
         return "Deployed";
     } else {
         return "Stationary";

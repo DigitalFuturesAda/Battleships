@@ -86,11 +86,13 @@ void Player::setOpposingPlayer(Player *player) {
 }
 
 attemptHitResponse Player::executeWarheadStrike(std::string letter, int y) {
+    // TODO(slyo): Handle mines differently.
     attemptHitResponse response = opposingPlayer->battleshipGameGrid.receiveWarheadStrike(letter, y);
 
     if (response.validAttempt){
         if (response.didHitTarget){
             battleshipHitGrid.markSuccessfulWarheadStrike(response.hitNode.x, response.hitNode.y);
+            // TODO(slyo): Abstract this away
             attemptPlacementResponse responseTest = opposingPlayer->getGameGrid()->attemptPlacement(letter, y, DESTROYED, VERTICAL);
             int counter = 0;
             for (auto &ship : opposingPlayer->playerShips){

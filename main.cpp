@@ -3,6 +3,7 @@
 
 #include "components/grid/GameGrid.h"
 #include "components/player/Player.h"
+#include "components/util/io.h"
 
 int main() {
     // Testing logic
@@ -14,7 +15,14 @@ int main() {
 
 //    do {
         humanPlayer.deployShip(CARRIER, "E", 4, VERTICAL);
+
+        humanPlayer.getGameGrid()->attemptPlacement("G", 5, MINE, VERTICAL);
+
+        computerPlayer.executeWarheadStrike("E", 4);
         computerPlayer.executeWarheadStrike("E", 5);
+        computerPlayer.executeWarheadStrike("D", 6);
+        computerPlayer.executeWarheadStrike("H", 7);
+        computerPlayer.executeWarheadStrike("B", 8);
 
         computerPlayer.deployShip(CARRIER, "E", 4, VERTICAL);
         computerPlayer.deployShip(DESTROYER, "A", 3, VERTICAL);
@@ -22,7 +30,7 @@ int main() {
 
         computerPlayer.executeWarheadStrike("E", 5);
         computerPlayer.executeWarheadStrike("A", 3);
-        computerPlayer.executeWarheadStrike("G", 5);
+//        computerPlayer.executeWarheadStrike("G", 5);
 
         // Tabulate definitions - any logic after this will not be rendered.
         tabulate::Table battleshipGameTable;
@@ -45,7 +53,7 @@ int main() {
         battleshipGameTable.column(1).format().width(HitGrid::getObservableGridWidth());
 
         // Statistics board
-        statisticsBoard.add_row({"Boat", "Status", "Remaining lives"});
+        statisticsBoard.add_row({"Boat", "Status", "Durability"});
         statisticsBoard.add_row({
                                         humanPlayer.getShipInformation().at(0),
                                         humanPlayer.getShipInformation().at(1),
@@ -53,6 +61,11 @@ int main() {
 
         std::cout << battleshipGameTable << std::endl;
         std::cout << statisticsBoard << std::endl;
+
+        std::string coordinateInput = getRegexInputWithPrompt(
+                "Enter where you want to move (eg. A1 or H8): ",
+                std::regex("[A-a-Z-z](?:[A-a-B-b])?[1-9](?:[1-10])?"));
+        std::cout << "Input: " << coordinateInput;
 
 //        std::cout << "Enter where you want to move (eg. A1 or H8): "; // [A-Z](?:[A-B])?[1-9](?:[1-10])?
 //

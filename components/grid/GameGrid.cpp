@@ -49,7 +49,7 @@ std::string GameGrid::formatNode(GridNodes node) {
         case DESTROYED:
             return "\033[1;30m[■]\033[0m";
         case MINE:
-            return " \033[1;36mM\033[0m ";
+            return "\033[1;34m[◘]\033[0m";
         case CARRIER:
             return " \033[1;31mC\033[0m ";
         case BATTLESHIP:

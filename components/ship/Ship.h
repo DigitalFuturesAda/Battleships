@@ -21,11 +21,11 @@ public:
     Ship(GridNodes type, bool deployed);
 
     std::string getName();
-    GridNodes getShipType() const;
-    int getLives() const;
-    int getMaxLives() const;
+    [[nodiscard]] GridNodes getShipType() const;
+    [[nodiscard]] int getLives() const;
+    [[nodiscard]] int getMaxLives() const;
 
-    bool isDeployed() const;
+    [[nodiscard]] bool isDeployed() const;
 
     Ship setOrientation(Orientation orientation);
 
