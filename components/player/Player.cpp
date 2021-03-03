@@ -173,7 +173,7 @@ bool Player::deployShipInterface(Ship ship){
     return response.success;
 }
 
-void Player::renderPlayerGrid() {
+void Player::renderPlayerGrid(bool alsoRenderComputerBoard) {
     tabulate::Table playerBattleshipGameTable;
     playerBattleshipGameTable.format()
             .border_color(tabulate::Color::white)
@@ -187,6 +187,9 @@ void Player::renderPlayerGrid() {
     playerBattleshipGameTable.column(1).format().width(GameGrid::getObservableGridWidth());
 
     playerBattleshipGameTable.add_row({getGameGrid()->renderGrid(), getHitGrid()->renderGrid()});
+    if (alsoRenderComputerBoard){
+        playerBattleshipGameTable.add_row({opposingPlayer->getGameGrid()->renderGrid(), opposingPlayer->getHitGrid()->renderGrid()});
+    }
 
     std::cout << playerBattleshipGameTable << std::endl;
 }
@@ -207,8 +210,9 @@ void Player::renderStatisticsBoard() {
     std::cout << playerStatisticsBoard << std::endl;
 }
 
-void Player::renderPlayerUserInterface() {
+void Player::renderPlayerUserInterface(bool alsoRenderComputerBoard) {
     clearConsole();
-    renderPlayerGrid();
+
+    renderPlayerGrid(alsoRenderComputerBoard);
     renderStatisticsBoard();
 }

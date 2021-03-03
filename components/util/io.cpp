@@ -20,6 +20,8 @@ std::string getRegexInputWithPromptAsString(const std::string& prompt, const std
     std::string input = getStringWithPrompt(prompt);
 
     while (!regex_match(input, regex)) {
+        std::cout << "\e[1A\e[K";
+        std::cout << "\033[1;31mInvalid input! - \033[0m";
         input = getStringWithPrompt(prompt);
     }
 

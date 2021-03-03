@@ -29,12 +29,12 @@ public:
     GameGrid *getGameGrid();
     HitGrid *getHitGrid();
 
-    void renderPlayerGrid();
+    void renderPlayerGrid(bool alsoRenderComputerBoard = false);
     void renderStatisticsBoard();
 
     void showShipDeploymentInterface();
 
-    void renderPlayerUserInterface();
+    void renderPlayerUserInterface(bool alsoRenderComputerBoard = false);
 
 private:
     Player *opposingPlayer{};

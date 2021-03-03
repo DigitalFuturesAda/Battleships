@@ -51,15 +51,15 @@ std::string GameGrid::formatNode(GridNodes node) {
         case MINE:
             return "\033[1;34m[◘]\033[0m";
         case CARRIER:
-            return " \033[1;31mC\033[0m ";
+            return "\033[1;31m C \033[0m";
         case BATTLESHIP:
-            return " \033[1;31mB\033[0m ";
+            return "\033[1;31m B \033[0m";
         case DESTROYER:
-            return " \033[1;31mD\033[0m ";
+            return "\033[1;31m D \033[0m";
         case SUBMARINE:
-            return " \033[1;31mS\033[0m ";
+            return "\033[1;31m S \033[0m";
         case PATROL:
-            return " \033[1;31mP\033[0m ";
+            return "\033[1;31m P \033[0m";
         case VALID_HIT:
             return "\033[1;31m[■]\033[0m";
         case INVALID_HIT:
