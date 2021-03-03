@@ -15,11 +15,14 @@ Ship::Ship(GridNodes type) : type(type) {
 }
 
 std::string Ship::getName() {
-    switch (type){
+    switch (type) {
         case EMPTY:
         case DESTROYED:
         case MINE:
-            throw std::invalid_argument("Invalid ship type.");
+        case VALID_HIT:
+        case INVALID_HIT:
+        case UNKNOWN:
+            throw std::runtime_error("Ship#getName called with an invalid Invalid ship type");
         case CARRIER:
             return "Carrier";
         case BATTLESHIP:
@@ -43,9 +46,9 @@ bool Ship::isDeployed() const {
     return deployed;
 }
 
-std::string Ship::getShipStatusFormatted() {
-    if (deployed){
-        if (isSunk()){
+std::string Ship::getShipStatusFormatted() const {
+    if (deployed) {
+        if (isSunk()) {
             return "Sunk";
         }
         return "Deployed";
@@ -76,8 +79,10 @@ int Ship::getMaxLives() const {
 
 Ship Ship::setLives(int lives_) {
     lives = lives_;
+
+    return *this;
 }
 
-bool Ship::isSunk() {
+bool Ship::isSunk() const {
     return lives == 0;
 }

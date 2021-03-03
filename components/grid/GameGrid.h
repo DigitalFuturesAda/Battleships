@@ -1,4 +1,3 @@
-#include <__bit_reference>
 //
 // Created by Suraj Lyons on 01/03/2021.
 //
@@ -94,7 +93,7 @@ public:
     attemptHitResponse receiveWarheadStrike(std::string letter, int number);
 
 private:
-    GridNodes battleshipGameGrid[HEIGHT][WIDTH] = { [0 ... HEIGHT - 1] = { [0 ... WIDTH - 1] = EMPTY } };
+    GridNodes battleshipGameGrid[HEIGHT][WIDTH] = {};
 
     static std::string formatNode(GridNodes node);
 

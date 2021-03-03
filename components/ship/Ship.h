@@ -34,9 +34,9 @@ public:
 
     Ship setLives(int lives);
 
-    std::string getShipStatusFormatted();
+    std::string getShipStatusFormatted() const;
 
-    bool isSunk();
+    bool isSunk() const;
 };
 
 

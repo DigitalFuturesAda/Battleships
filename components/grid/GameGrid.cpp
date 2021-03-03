@@ -64,6 +64,8 @@ std::string GameGrid::formatNode(GridNodes node) {
             return "\033[1;31m[■]\033[0m";
         case INVALID_HIT:
             return "\033[1;37m[■]\033[0m";
+        case UNKNOWN:
+            return "\033[1;37m<?>\033[0m";
     }
 }
 
@@ -84,6 +86,8 @@ int GameGrid::getEntityConstraints(GridNodes placeableNodes){
             return 3;
         case PATROL:
             return 2;
+        case UNKNOWN:
+            throw std::runtime_error("GameGrid#getEntityConstraints canot be called with an UNKNOWN GridNode");
     }
 }
 
@@ -172,4 +176,8 @@ attemptHitResponse GameGrid::receiveWarheadStrike(std::string letter, int number
 }
 
 
-GameGrid::GameGrid() = default;
+GameGrid::GameGrid() {
+    for ( auto & v : battleshipGameGrid )
+        for ( auto & e : v )
+            e = EMPTY;
+};
