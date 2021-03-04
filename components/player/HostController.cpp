@@ -19,4 +19,3 @@ void HostController::renderWinConditionInterface() {
         std::cout << "Congratulations: \033[1;31m" << playerOneHost->playerName << "\033[0m you have won!" << std::endl;
     }
 }
-

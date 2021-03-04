@@ -65,15 +65,18 @@ void clearConsole() {
     std::cout << "\x1B[2J\x1B[H";
 }
 
-void awaitBlankInput() {
+void displayBlankInputDialog() {
+    std::string input = getStringWithPrompt("Press enter to continue... ");
+}
+
+void displayContinueGameConfirmationDialog(GameFlowController *gameFlowController) {
     std::string input = getStringWithPrompt("Press enter to continue \033[1;33m[Q to quit or R to reset]:\033[0m ");
     char letter = convertToUpperCase(input).at(0);
 
     if (letter == 'R'){
-        displayInformation("Resetting board. Stand by...", 1);
-        exit (EXIT_SUCCESS);
+        gameFlowController->setUserRequestToRestart();
     } else if (letter == 'Q'){
-        displayInformation("Quitting program. Thanks for using!", 1);
+        displayInformation("Quitting program. Thanks for using!\n", 1);
         exit (EXIT_SUCCESS);
     }
 }

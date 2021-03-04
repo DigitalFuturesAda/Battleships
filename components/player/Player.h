@@ -11,6 +11,7 @@
 #include "../ship/Ship.h"
 #include "../grid/HitGrid.h"
 #include "../../lib/tabulate.hpp"
+#include "GameFlowController.h"
 
 class Player {
 public:
@@ -18,7 +19,7 @@ public:
     static const int MAX_WARHEAD_STRIKES_ATTEMPTS = 10000;
     static const int MAX_SHIP_DEPLOYMENT_ATTEMPTS = 10000;
 
-    explicit Player(std::string playerName);
+    explicit Player(std::string playerName, GameFlowController& gameFlowController);
 
     void setOpposingPlayer(Player *player);
     attemptPlacementResponse deployShip(int shipVertexPosition, const std::string& letterIndex, int y, Orientation orientation);
@@ -32,6 +33,8 @@ public:
 
     GameGrid *getGameGrid();
     HitGrid *getHitGrid();
+
+    GameFlowController *getGameFlowController();
 
     void renderPlayerGrid();
     void renderStatisticsBoard();
@@ -57,6 +60,8 @@ public:
     std::string playerName = "Player";
 private:
     Player *opposingPlayer{};
+
+    GameFlowController *gameFlowController;
 
     GameGrid battleshipGameGrid;
     HitGrid battleshipHitGrid;

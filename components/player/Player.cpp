@@ -12,7 +12,7 @@
 #include "../util/io.h"
 #include "../util/rand.h"
 
-Player::Player(std::string _playerName) {
+Player::Player(std::string playerName, GameFlowController &gameFlowController) {
     this->playerShips = {
             Ship(CARRIER, false),
             Ship(BATTLESHIP, false),
@@ -20,8 +20,9 @@ Player::Player(std::string _playerName) {
             Ship(SUBMARINE, false),
             Ship(PATROL, false),
     };
-    this->playerName = std::move(_playerName);
-};
+    this->playerName = std::move(playerName);
+    this->gameFlowController = &gameFlowController;
+}
 
 attemptPlacementResponse Player::deployShip(int position, const std::string& letterIndex, int y, Orientation orientation) {
     if (position > playerShips.size() || position < 0){
@@ -321,7 +322,8 @@ void Player::renderWarheadStrikeInterface() {
         displayError(response.message + ": ", 1);
         return renderWarheadStrikeInterface();
     }
-    awaitBlankInput();
+
+    displayContinueGameConfirmationDialog(getGameFlowController());
 }
 
 attemptHitResponse Player::deployWarheadStrikeAutomatically(int attempts) {
@@ -351,10 +353,9 @@ attemptHitResponse Player::deployWarheadStrikeAutomatically(int attempts) {
 }
 
 bool Player::hasPlayerLostAllShips() {
-    for (auto&& ship : playerShips){
-        if (!ship.isSunk()){
-            return false;
-        }
-    }
-    return true;
+    return (std::all_of(playerShips.cbegin(), playerShips.cend(), [](auto&& ship){ return ship.isSunk(); }));
+}
+
+GameFlowController *Player::getGameFlowController() {
+    return gameFlowController;
 }

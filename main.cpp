@@ -5,14 +5,17 @@
 #include "components/player/Player.h"
 #include "components/util/io.h"
 #include "components/player/HostController.h"
+#include "components/player/GameFlowController.h"
 #include <thread>
 #include <chrono>
 
 int main() {
     srand( time( nullptr ) );
 
-    Player humanPlayer("Suraj");
-    Player computerPlayer("Computer");
+    GameFlowController gameFlowController;
+
+    Player humanPlayer("Suraj", gameFlowController);
+    Player computerPlayer("Computer", gameFlowController);
 
     computerPlayer.setOpposingPlayer(&humanPlayer);
     humanPlayer.setOpposingPlayer(&computerPlayer);
@@ -23,8 +26,8 @@ int main() {
     humanPlayer.deployWarshipsAutomatically();
     
     // Render the ship deployment UI with a sample of the board, this will be no-op if all ships are deployed.
-    humanPlayer.renderPlayerUserInterface();
-    humanPlayer.showShipDeploymentInterface();
+    // humanPlayer.renderPlayerUserInterface();
+    // humanPlayer.showShipDeploymentInterface();
 
     // We call this afterwards, as this augments the computer board onto the player board
     humanPlayer.setPlayingAgainstComputer();
@@ -34,6 +37,12 @@ int main() {
 
     // Warhead strike interface
     while (true){
+        if (gameFlowController.hasUserRequestedToRestart()){
+            clearConsole();
+            displayInformation("Resetting board. Stand by...\n", 1);
+            break;
+        }
+
         if (hostController.hasEitherPlayerLost()){
             hostController.renderWinConditionInterface();
             break;

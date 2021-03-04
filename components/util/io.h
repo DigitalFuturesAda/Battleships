@@ -8,6 +8,7 @@
 #include <iostream>
 #include <regex>
 #include "strings.h"
+#include "../player/GameFlowController.h"
 
 #include <vector>
 
@@ -30,6 +31,8 @@ void displayError(const std::string error, int pruneMessagesAmount = 0);
 
 void displayInformation(const std::string information, int pruneMessagesAmount = 0);
 
-void awaitBlankInput();
+void displayBlankInputDialog();
+
+void displayContinueGameConfirmationDialog(GameFlowController *gameFlowController);
 
 #endif //BATTLESHIPS_IO_H
