@@ -66,5 +66,14 @@ void clearConsole() {
 }
 
 void awaitBlankInput() {
-    getStringWithPrompt("Press enter to continue [Q to quit or R to reset]...");
+    std::string input = getStringWithPrompt("Press enter to continue \033[1;33m[Q to quit or R to reset]:\033[0m ");
+    char letter = convertToUpperCase(input).at(0);
+
+    if (letter == 'R'){
+        displayInformation("Resetting board. Stand by...", 1);
+        exit (EXIT_SUCCESS);
+    } else if (letter == 'Q'){
+        displayInformation("Quitting program. Thanks for using!", 1);
+        exit (EXIT_SUCCESS);
+    }
 }
