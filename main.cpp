@@ -4,6 +4,7 @@
 #include "components/grid/GameGrid.h"
 #include "components/player/Player.h"
 #include "components/util/io.h"
+#include "components/player/HostController.h"
 #include <thread>
 #include <chrono>
 
@@ -13,8 +14,8 @@ int main() {
     Player humanPlayer("Suraj");
     Player computerPlayer("Computer");
 
-    computerPlayer.setOpposingPlayer(&humanPlayer);
-    humanPlayer.setOpposingPlayer(&computerPlayer);
+    HostController hostController(&humanPlayer, &computerPlayer);
+
     computerPlayer.setOpposingPlayer(&humanPlayer);
     humanPlayer.setOpposingPlayer(&computerPlayer);
 
@@ -35,19 +36,24 @@ int main() {
 
     // Warhead strike interface
     while (true){
-        humanPlayer.renderWarheadStrikeInterface();
-        humanPlayer.renderPlayerUserInterface();
+        if (hostController.hasEitherPlayerLost()){
+            hostController.renderWinConditionInterface();
+            break;
+        } else {
+            humanPlayer.renderWarheadStrikeInterface();
+            humanPlayer.renderPlayerUserInterface();
+        };
     }
 
 /////// <>
 //
-    for (int i = 0;  i < 100; i ++){
-        computerPlayer.deployWarheadStrikeAutomatically();
-    }
+//    for (int i = 0;  i < 100; i ++){
+//        computerPlayer.deployWarheadStrikeAutomatically();
+//    }
 //
 //
-    humanPlayer.setPlayingAgainstComputer();
-    humanPlayer.renderPlayerUserInterface();
+//    humanPlayer.setPlayingAgainstComputer();
+//    humanPlayer.renderPlayerUserInterface();
 
 //    while (true){
 //        computerPlayer.deployWarheadStrikeAutomatically();

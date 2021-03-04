@@ -349,3 +349,12 @@ attemptHitResponse Player::deployWarheadStrikeAutomatically(int attempts) {
 
     return hitResponse;
 }
+
+bool Player::hasPlayerLostAllShips() {
+    for (auto&& ship : playerShips){
+        if (!ship.isSunk()){
+            return false;
+        }
+    }
+    return true;
+}

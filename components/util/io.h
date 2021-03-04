@@ -26,9 +26,9 @@ regexMatch getRegexInputWithPromptAsRegex(const std::string& prompt, const std::
 
 void clearConsole();
 
-void displayError(const std::string error, int pruneMessagesAmount);
+void displayError(const std::string error, int pruneMessagesAmount = 0);
 
-void displayInformation(const std::string information, int pruneMessagesAmount);
+void displayInformation(const std::string information, int pruneMessagesAmount = 0);
 
 void awaitBlankInput();
 

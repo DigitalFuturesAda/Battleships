@@ -50,6 +50,8 @@ public:
 
     void deployWarshipsAutomatically();
 
+    bool hasPlayerLostAllShips();
+
     std::vector<Ship> *getPlayerShips();
 
 private:
