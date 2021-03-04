@@ -62,9 +62,8 @@ struct attemptPlacementResponse {
 };
 
 struct attemptHitResponse {
-    bool validAttempt;
-    bool didHitTarget{};
-    bool appendNewLineToErrorMessage = false;
+    bool validAttempt = false;
+    bool didHitTarget = false;
     attemptPlacementNodeHitResponse hitNode;
 
     std::string message;
@@ -74,6 +73,8 @@ struct attemptHitResponse {
                                                                                   hitNode(hitNode) {};
 
     attemptHitResponse(bool validAttempt, std::string message): validAttempt(validAttempt), message(std::move(message)) {};
+
+    attemptHitResponse() = default;
 };
 
 class GameGrid {
@@ -93,9 +94,9 @@ public:
 
     attemptHitResponse receiveWarheadStrike(std::string letter, int number);
 
-private:
     GridNodes battleshipGameGrid[HEIGHT][WIDTH] = {};
 
+private:
     static std::string formatNode(GridNodes node);
 
 };

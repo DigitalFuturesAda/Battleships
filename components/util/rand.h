@@ -13,4 +13,6 @@ bool randomBool();
 
 int randomBetween(int low, int high);
 
+int randomBetween19937(int low, int high);
+
 #endif //BATTLESHIPS_RAND_H

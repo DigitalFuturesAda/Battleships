@@ -151,9 +151,9 @@ attemptPlacementResponse GameGrid::attemptPlacement(std::string letter, int numb
 attemptPlacementResponse GameGrid::checkIfNodeExists(std::string letter, int number) {
     int x = convertAlphaToIncrementingInteger(std::move(letter)) - 1;
     // Arrays start at 0
-    int y = number - 2;
+    int y = number - 1;
 
-    if (y > HEIGHT || x > WIDTH){
+    if (y > HEIGHT - 1|| x > WIDTH){
         return attemptPlacementResponse(false, "xy coordinates not within the confines of the grid");
     }
 

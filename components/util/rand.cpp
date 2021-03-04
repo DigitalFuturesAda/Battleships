@@ -26,3 +26,16 @@ int randomBetween(int min, int max){
 //    std::cout << "Generating random between: " << min << " -> " << max << " : " << min + x % n << std::endl;
     return min + x % n;
 }
+
+/**
+ * Random number between using std::mt19937
+ *
+ * @author Cornstalks - https://stackoverflow.com/a/13445752/14937517
+ */
+int randomBetween19937(int low, int high){
+    std::random_device dev;
+    std::mt19937 rng(dev());
+    std::uniform_int_distribution<std::mt19937::result_type> dist6(low, high);
+
+    return dist6(rng);
+}

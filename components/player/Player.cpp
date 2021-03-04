@@ -91,11 +91,11 @@ void Player::setOpposingPlayer(Player *player) {
 attemptHitResponse Player::executeWarheadStrike(std::string letter, int y) {
     // TODO(slyo): Handle mines differently.
 
+    if (y == 0) y++; // We don't like 0's round here.
+
     attemptPlacementResponse playerHitBoardResponse = getHitGrid()->checkIfNodeExists(letter, y);
     if (playerHitBoardResponse.existingNode.node == VALID_HIT || playerHitBoardResponse.existingNode.node == INVALID_HIT){
-        attemptHitResponse response = attemptHitResponse(false, "Cannot fire twice at the same node");
-        response.appendNewLineToErrorMessage = true;
-        return response;
+        return attemptHitResponse(false, "Cannot fire twice at the same node");
     }
 
     attemptHitResponse response = opposingPlayer->battleshipGameGrid.receiveWarheadStrike(letter, y);
@@ -225,14 +225,14 @@ void Player::renderPlayerUserInterface() {
     clearConsole();
 
     renderPlayerGrid();
-    renderStatisticsBoard();
+//    renderStatisticsBoard();
 }
 
 void Player::setPlayingAgainstComputer() {
     alsoRenderComputerBoard = true;
 }
 
-bool Player::deployWarshipAutomatically(int shipVertexPosition, int attempts = 0) {
+bool Player::deployWarshipAutomatically(int shipVertexPosition, int attempts) {
     Ship ship = playerShips.at(shipVertexPosition);
 
     if (ship.isDeployed()){
@@ -317,31 +317,28 @@ void Player::renderWarheadStrikeInterface() {
     awaitBlankInput();
 }
 
-attemptHitResponse Player::deployWarheadStrikeAutomatically(int attempts = 0) {
+attemptHitResponse Player::deployWarheadStrikeAutomatically(int attempts) {
     // TODO(slyo): Verify all ships not destroyed. Maybe for the purposes of this game we can assume the computer has
     //  rudimentary knowledge of the approx bounds of players ships location as to decrease trial and error.
 
-    if (attempts == MAX_WARHEAD_STRIKES_ATTEMPTS){
-        displayError("Unable to strike any warships, please increase the board size", 0);
-        exit (EXIT_FAILURE);
-    }
-
     int gridHeight = GameGrid::HEIGHT;
     int gridWidth = GameGrid::WIDTH;
+    attemptHitResponse hitResponse;
 
-    int randomXCoordinate = randomBetween(0, gridWidth);
-    int randomYCoordinate = randomBetween(0, gridHeight);
+    while (!hitResponse.validAttempt){
+        int randomXCoordinate = randomBetween19937(0, gridWidth);
+        int randomYCoordinate = randomBetween19937(0, gridHeight);
 
-    std::string letter = convertToUpperCase(convertIncrementingIntegerToAlpha(randomXCoordinate));
+        std::string letter = convertToUpperCase(convertIncrementingIntegerToAlpha(randomXCoordinate));
+        hitResponse = executeWarheadStrike(letter, randomYCoordinate);
 
-//    std::cout << "Deploying warhead strike to: x: " << randomXCoordinate << " y: " << randomYCoordinate << " - " << letter << std::endl;
+        if (attempts == MAX_WARHEAD_STRIKES_ATTEMPTS){
+            displayError("Max strikes attempted reached, please increase the board size", 0);
+            exit (EXIT_FAILURE);
+        }
 
-    attemptHitResponse response = executeWarheadStrike(letter, randomYCoordinate);
-
-    if (!response.validAttempt){
-        return deployWarheadStrikeAutomatically(attempts + 1);
+        attempts ++;
     }
 
-    //    std::cout << "Response: " << response.validAttempt << " - " << response.message << std::endl;
-    return response;
+    return hitResponse;
 }

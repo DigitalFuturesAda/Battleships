@@ -42,9 +42,9 @@ public:
 
     void setPlayingAgainstComputer();
 
-    bool deployWarshipAutomatically(int shipVertexPosition, int attempts);
+    bool deployWarshipAutomatically(int shipVertexPosition, int attempts = 0);
 
-    attemptHitResponse deployWarheadStrikeAutomatically(int attempts);
+    attemptHitResponse deployWarheadStrikeAutomatically(int attempts = 0);
 
     void renderWarheadStrikeInterface();
 
@@ -62,7 +62,7 @@ private:
 
     bool deployShipInterface(int shipVertexPosition);
 
-    std::string playerName;
+    std::string playerName = "Player";
 
     bool alsoRenderComputerBoard = false;
 };
