@@ -15,10 +15,10 @@
 Player::Player(std::string _playerName) {
     this->playerShips = {
             Ship(CARRIER, false),
-            Ship(BATTLESHIP, false),
-            Ship(DESTROYER, false),
-            Ship(SUBMARINE, false),
-            Ship(PATROL, false),
+//            Ship(BATTLESHIP, false),
+//            Ship(DESTROYER, false),
+//            Ship(SUBMARINE, false),
+//            Ship(PATROL, false),
     };
     this->playerName = std::move(_playerName);
 };
@@ -218,14 +218,21 @@ void Player::renderStatisticsBoard() {
         getShipInformation().at(1),
         getShipInformation().at(2)});
 
+    std::cout << "\033[1;31m⋅ " << playerName << "'s ship status board\033[0m" << std::endl;
     std::cout << playerStatisticsBoard << std::endl;
+
+    if (alsoRenderComputerBoard){
+        // Add some spacing between the boards
+        std::cout << std::endl;
+        opposingPlayer->renderStatisticsBoard();
+    }
 }
 
 void Player::renderPlayerUserInterface() {
     clearConsole();
 
     renderPlayerGrid();
-//    renderStatisticsBoard();
+    renderStatisticsBoard();
 }
 
 void Player::setPlayingAgainstComputer() {
