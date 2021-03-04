@@ -14,24 +14,22 @@ int main() {
     Player humanPlayer("Suraj");
     Player computerPlayer("Computer");
 
-    HostController hostController(&humanPlayer, &computerPlayer);
-
     computerPlayer.setOpposingPlayer(&humanPlayer);
     humanPlayer.setOpposingPlayer(&computerPlayer);
 
+    HostController hostController(&humanPlayer, &computerPlayer);
+
     computerPlayer.deployWarshipsAutomatically();
     humanPlayer.deployWarshipsAutomatically();
-
-/////// <>
-
-    // Render the ship deployment UI with a sample of the board
+    
+    // Render the ship deployment UI with a sample of the board, this will be no-op if all ships are deployed.
     humanPlayer.renderPlayerUserInterface();
     humanPlayer.showShipDeploymentInterface();
 
     // We call this afterwards, as this augments the computer board onto the player board
     humanPlayer.setPlayingAgainstComputer();
 
-    // Show the interface having enabled the computer board
+    // Show the interface having enabled the computer board. Any board mutations should happen before this call.
     humanPlayer.renderPlayerUserInterface();
 
     // Warhead strike interface
@@ -41,23 +39,8 @@ int main() {
             break;
         } else {
             humanPlayer.renderWarheadStrikeInterface();
+            computerPlayer.deployWarheadStrikeAutomatically();
             humanPlayer.renderPlayerUserInterface();
         };
     }
-
-/////// <>
-//
-//    for (int i = 0;  i < 100; i ++){
-//        computerPlayer.deployWarheadStrikeAutomatically();
-//    }
-//
-//
-//    humanPlayer.setPlayingAgainstComputer();
-//    humanPlayer.renderPlayerUserInterface();
-
-//    while (true){
-//        computerPlayer.deployWarheadStrikeAutomatically();
-//        humanPlayer.renderPlayerUserInterface();
-//        awaitBlankInput();
-//    }
 }

@@ -12,9 +12,11 @@ bool HostController::hasEitherPlayerLost() {
 void HostController::renderWinConditionInterface() {
     clearConsole();
     if (playerOneHost->hasPlayerLostAllShips()){
-        std::cout << "The player \033[1;33m" << playerOneHost << "\033[0m has lost";
+        std::cout << "Player: \033[1;31m" << playerOneHost->playerName << "\033[0m has lost the game!" << std::endl;
+        std::cout << "Congratulations: \033[1;31m" << playerTwo->playerName << "\033[0m you have won!" << std::endl;
     } else {
-        std::cout << "The player \033[1;33m" << playerTwo << "\033[0m has lost";
+        std::cout << "Player: \033[1;31m" << playerTwo->playerName << "\033[0m has lost!" << std::endl;
+        std::cout << "Congratulations: \033[1;31m" << playerOneHost->playerName << "\033[0m you have won!" << std::endl;
     }
 }
 

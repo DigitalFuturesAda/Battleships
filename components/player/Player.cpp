@@ -15,10 +15,10 @@
 Player::Player(std::string _playerName) {
     this->playerShips = {
             Ship(CARRIER, false),
-//            Ship(BATTLESHIP, false),
-//            Ship(DESTROYER, false),
-//            Ship(SUBMARINE, false),
-//            Ship(PATROL, false),
+            Ship(BATTLESHIP, false),
+            Ship(DESTROYER, false),
+            Ship(SUBMARINE, false),
+            Ship(PATROL, false),
     };
     this->playerName = std::move(_playerName);
 };

@@ -54,6 +54,7 @@ public:
 
     std::vector<Ship> *getPlayerShips();
 
+    std::string playerName = "Player";
 private:
     Player *opposingPlayer{};
 
@@ -63,8 +64,6 @@ private:
     std::vector<Ship> playerShips{};
 
     bool deployShipInterface(int shipVertexPosition);
-
-    std::string playerName = "Player";
 
     bool alsoRenderComputerBoard = false;
 };
