@@ -90,6 +90,14 @@ void Player::setOpposingPlayer(Player *player) {
 
 attemptHitResponse Player::executeWarheadStrike(std::string letter, int y) {
     // TODO(slyo): Handle mines differently.
+
+    attemptPlacementResponse playerHitBoardResponse = getHitGrid()->checkIfNodeExists(letter, y);
+    if (playerHitBoardResponse.existingNode.node == VALID_HIT || playerHitBoardResponse.existingNode.node == INVALID_HIT){
+        attemptHitResponse response = attemptHitResponse(false, "Cannot fire twice at the same node");
+        response.appendNewLineToErrorMessage = true;
+        return response;
+    }
+
     attemptHitResponse response = opposingPlayer->battleshipGameGrid.receiveWarheadStrike(letter, y);
 
     if (response.validAttempt){
@@ -111,7 +119,6 @@ attemptHitResponse Player::executeWarheadStrike(std::string letter, int y) {
             return response;
         }
     } else {
-        std::cout << "Invalid attempt!" << std::endl;
         return response;
     }
 
@@ -183,13 +190,13 @@ void Player::renderPlayerGrid() {
             .corner("⋅")
             .corner_color(tabulate::Color::red);
 
-
     playerBattleshipGameTable.add_row({playerName + "'s Game board", playerName + "'s Hit board"});
 
     playerBattleshipGameTable.column(0).format().width(GameGrid::getObservableGridWidth());
     playerBattleshipGameTable.column(1).format().width(GameGrid::getObservableGridWidth());
 
     playerBattleshipGameTable.add_row({getGameGrid()->renderGrid(), getHitGrid()->renderGrid()});
+
     if (alsoRenderComputerBoard){
         playerBattleshipGameTable.add_row({opposingPlayer->playerName + "'s Game board", opposingPlayer->playerName + "'s Hit board"});
         playerBattleshipGameTable.add_row({opposingPlayer->getGameGrid()->renderGrid(), opposingPlayer->getHitGrid()->renderGrid()});
@@ -232,7 +239,7 @@ bool Player::deployWarshipAutomatically(int shipVertexPosition, int attempts = 0
         return true;
     }
 
-    if (attempts == 10000){
+    if (attempts == MAX_SHIP_DEPLOYMENT_ATTEMPTS){
         return false;
     }
 
@@ -296,17 +303,45 @@ void Player::renderWarheadStrikeInterface() {
     attemptHitResponse response = executeWarheadStrike(convertToUpperCase(coordinateInput.matches[0]), yCoordinate);
 
     if (response.validAttempt){
+        // Update the board with the hit
+        renderPlayerUserInterface();
         if (response.didHitTarget){
-            // Update the board with the hit
-            renderPlayerUserInterface();
-
             displayInformation("Successful warhead strike - hit a " + Ship(response.hitNode.node).getName() + "\n", 0);
         } else {
-            displayInformation("Unsuccessful warhead strike - did not hit anything\n", 1);
+            displayInformation("Unsuccessful warhead strike - did not hit anything\n", 0);
         }
     } else {
-        displayError("Invalid coordinate - " + response.message + " - try again", 1);
+        displayError(response.message + ": ", 1);
         return renderWarheadStrikeInterface();
     }
     awaitBlankInput();
+}
+
+attemptHitResponse Player::deployWarheadStrikeAutomatically(int attempts = 0) {
+    // TODO(slyo): Verify all ships not destroyed. Maybe for the purposes of this game we can assume the computer has
+    //  rudimentary knowledge of the approx bounds of players ships location as to decrease trial and error.
+
+    if (attempts == MAX_WARHEAD_STRIKES_ATTEMPTS){
+        displayError("Unable to strike any warships, please increase the board size", 0);
+        exit (EXIT_FAILURE);
+    }
+
+    int gridHeight = GameGrid::HEIGHT;
+    int gridWidth = GameGrid::WIDTH;
+
+    int randomXCoordinate = randomBetween(0, gridWidth);
+    int randomYCoordinate = randomBetween(0, gridHeight);
+
+    std::string letter = convertToUpperCase(convertIncrementingIntegerToAlpha(randomXCoordinate));
+
+//    std::cout << "Deploying warhead strike to: x: " << randomXCoordinate << " y: " << randomYCoordinate << " - " << letter << std::endl;
+
+    attemptHitResponse response = executeWarheadStrike(letter, randomYCoordinate);
+
+    if (!response.validAttempt){
+        return deployWarheadStrikeAutomatically(attempts + 1);
+    }
+
+    //    std::cout << "Response: " << response.validAttempt << " - " << response.message << std::endl;
+    return response;
 }

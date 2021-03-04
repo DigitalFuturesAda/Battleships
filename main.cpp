@@ -6,8 +6,10 @@
 #include "components/util/io.h"
 
 int main() {
+    srand( time( nullptr ) );
+
     Player humanPlayer("Suraj");
-    Player computerPlayer("Computer");
+    Player computerPlayer("Mike");
 
     humanPlayer.setOpposingPlayer(&computerPlayer);
     computerPlayer.setOpposingPlayer(&humanPlayer);
@@ -31,4 +33,13 @@ int main() {
         humanPlayer.renderPlayerUserInterface();
     }
 
+/////// <>
+
+//    humanPlayer.deployWarshipsAutomatically();
+//
+//    humanPlayer.setPlayingAgainstComputer();
+//
+//    computerPlayer.deployWarheadStrikeAutomatically();
+//
+//    humanPlayer.renderPlayerUserInterface();
 }

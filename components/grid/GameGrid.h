@@ -64,11 +64,12 @@ struct attemptPlacementResponse {
 struct attemptHitResponse {
     bool validAttempt;
     bool didHitTarget{};
+    bool appendNewLineToErrorMessage = false;
     attemptPlacementNodeHitResponse hitNode;
 
     std::string message;
 
-    attemptHitResponse(bool validAttempt, bool didHitTarget, attemptPlacementNodeHitResponse hitNode, std::string message = "") : validAttempt(validAttempt),
+    attemptHitResponse(bool validAttempt, bool didHitTarget, attemptPlacementNodeHitResponse hitNode, const std::string& message = "") : validAttempt(validAttempt),
                                                                                   didHitTarget(didHitTarget),
                                                                                   hitNode(hitNode) {};
 

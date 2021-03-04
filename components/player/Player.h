@@ -14,10 +14,13 @@
 
 class Player {
 public:
+
+    static const int MAX_WARHEAD_STRIKES_ATTEMPTS = 10000;
+    static const int MAX_SHIP_DEPLOYMENT_ATTEMPTS = 10000;
+
     explicit Player(std::string playerName);
 
     void setOpposingPlayer(Player *player);
-//    attemptPlacementResponse deployShip(GridNodes shipType, const std::string& x, int y, Orientation orientation);
     attemptPlacementResponse deployShip(int shipVertexPosition, const std::string& letterIndex, int y, Orientation orientation);
 
     // Ship data utilities
@@ -40,6 +43,8 @@ public:
     void setPlayingAgainstComputer();
 
     bool deployWarshipAutomatically(int shipVertexPosition, int attempts);
+
+    attemptHitResponse deployWarheadStrikeAutomatically(int attempts);
 
     void renderWarheadStrikeInterface();
 
