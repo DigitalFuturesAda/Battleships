@@ -19,7 +19,7 @@ private:
 
 public:
     Ship(GridNodes type, bool deployed);
-    Ship(GridNodes type);
+    explicit Ship(GridNodes type);
 
     std::string getName();
     [[nodiscard]] GridNodes getShipType() const;
@@ -34,9 +34,18 @@ public:
 
     Ship setLives(int lives);
 
-    std::string getShipStatusFormatted() const;
+    [[nodiscard]] std::string getShipStatusFormatted() const;
 
-    bool isSunk() const;
+    [[nodiscard]] bool isSunk() const;
+
+    Ship setShipCoordinatePositions(std::vector<shipCoordinatePosition> coordinatePositions);
+
+    std::vector<shipCoordinatePosition> getShipCoordinatePositions();
+
+    [[maybe_unused]] bool doesCoordinateIntersectShip(int x, int y);
+
+private:
+    std::vector<shipCoordinatePosition> shipCoordinatePositions;
 };
 
 

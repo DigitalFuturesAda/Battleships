@@ -42,3 +42,29 @@ char convertToUpperCase(char &input){
     std::toupper(input);
     return input;
 }
+
+/**
+ * Replaces a string with another
+ *
+ * @author Gauthier - https://stackoverflow.com/a/24315631/14937517
+ */
+std::string replaceStringOccurrences(std::string inputString, const std::string& source, const std::string& substitution){
+    size_t start_pos = 0;
+    while((start_pos = inputString.find(source, start_pos)) != std::string::npos) {
+        inputString.replace(start_pos, source.length(), substitution);
+        start_pos += substitution.length();
+    }
+    return inputString;
+}
+
+std::string replaceStringOccurrencesFromVector(std::string inputString, const std::vector<std::string>& sourceVec, std::vector<std::string> substitutionVec){
+    std::string stringCache = std::move(inputString);
+    int c = 0;
+
+    for (auto&& a1: sourceVec){
+        stringCache = replaceStringOccurrences(stringCache, a1, substitutionVec.at(c));
+        c++;
+    }
+
+    return stringCache;
+};

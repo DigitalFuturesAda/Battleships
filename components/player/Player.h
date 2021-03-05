@@ -34,7 +34,7 @@ public:
     GameGrid *getGameGrid();
     HitGrid *getHitGrid();
 
-    GameFlowController *getGameFlowController();
+    [[nodiscard]] GameFlowController * getGameFlowController() const;
 
     void renderPlayerGrid();
     void renderStatisticsBoard();
@@ -42,6 +42,10 @@ public:
     void showShipDeploymentInterface();
 
     void renderPlayerUserInterface();
+
+    tabulate::Table getPlayerShipStatisticsBoard();
+
+    void renderCachedComputerWarheadDeploymentResponse(const attemptHitResponse& cachedHitResponse) const;
 
     void setPlayingAgainstComputer();
 
@@ -58,6 +62,8 @@ public:
     std::vector<Ship> *getPlayerShips();
 
     std::string playerName = "Player";
+
+    bool isComputer = false;
 private:
     Player *opposingPlayer{};
 
@@ -72,6 +78,5 @@ private:
 
     bool alsoRenderComputerBoard = false;
 };
-
 
 #endif //BATTLESHIPS_PLAYER_H

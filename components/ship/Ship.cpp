@@ -4,6 +4,8 @@
 
 #include "Ship.h"
 
+#include <utility>
+
 Ship::Ship(GridNodes type, bool deployed) : type(type), deployed(deployed) {
     this->maxLives = GameGrid::getEntityConstraints(type);
     this->lives = maxLives;
@@ -85,4 +87,22 @@ Ship Ship::setLives(int lives_) {
 
 bool Ship::isSunk() const {
     return lives == 0;
+}
+
+Ship Ship::setShipCoordinatePositions(std::vector<shipCoordinatePosition> coordinatePositions) {
+    shipCoordinatePositions = std::move(coordinatePositions);
+
+    return *this;
+}
+
+std::vector<shipCoordinatePosition> Ship::getShipCoordinatePositions() {
+    return shipCoordinatePositions;
+}
+
+[[maybe_unused]] bool Ship::doesCoordinateIntersectShip(int x, int y) {
+    for (auto&& coordinate: shipCoordinatePositions){
+        if (coordinate.x == x && coordinate.y == y) return true;
+    }
+
+    return false;
 }

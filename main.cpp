@@ -8,34 +8,46 @@
 #include "components/player/GameFlowController.h"
 #include <thread>
 #include <chrono>
+#include <utility>
 
 int main() {
     srand( time( nullptr ) );
 
     GameFlowController gameFlowController;
 
-    Player humanPlayer("Suraj", gameFlowController);
-    Player computerPlayer("Computer", gameFlowController);
+    Player hostPlayer("Suraj", gameFlowController);
+    Player secondaryPlayer("Computer", gameFlowController);
 
-    computerPlayer.setOpposingPlayer(&humanPlayer);
-    humanPlayer.setOpposingPlayer(&computerPlayer);
+    secondaryPlayer.setOpposingPlayer(&hostPlayer);
+    hostPlayer.setOpposingPlayer(&secondaryPlayer);
 
-    HostController hostController(&humanPlayer, &computerPlayer);
+    HostController hostController(&hostPlayer, &secondaryPlayer);
 
-    computerPlayer.deployWarshipsAutomatically();
-    humanPlayer.deployWarshipsAutomatically();
-    
+    hostPlayer.deployShip(0, "B", 2, VERTICAL);
+//    hostPlayer.deployShip(2, "C", 2, VERTICAL);
+//    hostPlayer.deployShip(4, "D", 2, VERTICAL);
+//
+//    secondaryPlayer.executeWarheadStrike("B", 2);
+//    secondaryPlayer.executeWarheadStrike("C", 3);
+//    secondaryPlayer.executeWarheadStrike("D", 4);
+
+    secondaryPlayer.executeWarheadStrike("B", 2);
+    secondaryPlayer.executeWarheadStrike("B", 3);
+    secondaryPlayer.executeWarheadStrike("B", 4);
+
+    hostPlayer.renderPlayerUserInterface();
+
+    /*
+    hostPlayer.deployWarshipsAutomatically();
+    secondaryPlayer.deployWarshipsAutomatically();
+
     // Render the ship deployment UI with a sample of the board, this will be no-op if all ships are deployed.
-    // humanPlayer.renderPlayerUserInterface();
-    // humanPlayer.showShipDeploymentInterface();
+     hostPlayer.renderPlayerUserInterface();
+     hostPlayer.showShipDeploymentInterface();
 
     // We call this afterwards, as this augments the computer board onto the player board
-    humanPlayer.setPlayingAgainstComputer();
+    hostPlayer.setPlayingAgainstComputer();
 
-    // Show the interface having enabled the computer board. Any board mutations should happen before this call.
-    humanPlayer.renderPlayerUserInterface();
-
-    // Warhead strike interface
     while (true){
         if (gameFlowController.hasUserRequestedToRestart()){
             clearConsole();
@@ -47,9 +59,11 @@ int main() {
             hostController.renderWinConditionInterface();
             break;
         } else {
-            humanPlayer.renderWarheadStrikeInterface();
-            computerPlayer.deployWarheadStrikeAutomatically();
-            humanPlayer.renderPlayerUserInterface();
+            hostPlayer.renderPlayerUserInterface();
+            hostPlayer.renderWarheadStrikeInterface();
+
+            secondaryPlayer.deployWarheadStrikeAutomatically();
         };
     }
+    */
 }

@@ -35,4 +35,6 @@ void displayBlankInputDialog();
 
 void displayContinueGameConfirmationDialog(GameFlowController *gameFlowController);
 
+void clearBuffer();
+
 #endif //BATTLESHIPS_IO_H

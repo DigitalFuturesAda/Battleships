@@ -93,6 +93,7 @@ int GameGrid::getEntityConstraints(GridNodes placeableNodes){
 
 attemptPlacementResponse GameGrid::attemptPlacement(int x, int y, GridNodes node, Orientation orientation) {
     int entityConstraints = getEntityConstraints(node);
+    std::vector<shipCoordinatePosition> shipCoordinatePositions;
 
     // Ensure x,y coords are within the confines of the grid.
     if (y > HEIGHT || x > WIDTH){
@@ -119,6 +120,9 @@ attemptPlacementResponse GameGrid::attemptPlacement(int x, int y, GridNodes node
 
         for (int i = y; i <= y + entityConstraints - 1; i++){
             battleshipGameGrid[i][x] = node;
+            shipCoordinatePositions.emplace_back(
+                    /* x = */ x, /* y = */ i,
+                    convertIncrementingIntegerToAlpha(x + 1), i + 1);
         }
     } else {
         if (x + entityConstraints > WIDTH){
@@ -134,14 +138,21 @@ attemptPlacementResponse GameGrid::attemptPlacement(int x, int y, GridNodes node
 
         for (int i = x; i <= x + entityConstraints - 1; i++){
             battleshipGameGrid[y][i] = node;
+            shipCoordinatePositions.emplace_back(
+                    /* x = */ i, /* y = */ y,
+                    convertIncrementingIntegerToAlpha(i + 1), y + 1);
         }
     }
 
-    attemptPlacementResponse response = attemptPlacementResponse(true);
-    response.existingNode = attemptPlacementNodeHitResponse(existingNode);
-    // This logic allows us to return a response which includes the node which has been replaced, this is useful if we
-    // have just fired a torpedo.
-    return response;
+    if (entityConstraints == 1){
+        // This logic allows us to return a response which includes the node which has been replaced, this is useful if we
+        // have just fired a torpedo.
+        attemptPlacementResponse response = attemptPlacementResponse(true);
+        response.singleExistingNode = attemptPlacementNodeHitResponse(existingNode);
+        return response;
+    }
+
+    return attemptPlacementResponse(true, shipCoordinatePositions);
 }
 
 attemptPlacementResponse GameGrid::attemptPlacement(std::string letter, int number, GridNodes node, Orientation orientation) {
@@ -165,12 +176,12 @@ attemptHitResponse GameGrid::receiveWarheadStrike(std::string letter, int number
     attemptPlacementResponse hitResponse = this->checkIfNodeExists(std::move(letter), number);
 
     if (hitResponse.success){
-        if (hitResponse.existingNode.node == DESTROYED){
-            return attemptHitResponse(false, false, hitResponse.existingNode, "Cannot fire at a destroyed tile");
-        } else if (hitResponse.existingNode.node == EMPTY){
-            return attemptHitResponse(true, false, hitResponse.existingNode);
+        if (hitResponse.singleExistingNode.node == DESTROYED){
+            return attemptHitResponse(false, false, hitResponse.singleExistingNode, "Cannot fire at a destroyed tile");
+        } else if (hitResponse.singleExistingNode.node == EMPTY){
+            return attemptHitResponse(true, false, hitResponse.singleExistingNode);
         }
-        return attemptHitResponse(true, true, hitResponse.existingNode);
+        return attemptHitResponse(true, true, hitResponse.singleExistingNode);
     }
 
     return attemptHitResponse(false, hitResponse.message);
