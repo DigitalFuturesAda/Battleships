@@ -52,46 +52,11 @@ attemptPlacementResponse Player::deployShip(int position, const std::string& let
     return response;
 }
 
-std::string Player::getStationaryShips() {
-    int counter = 0;
-    std::ostringstream stringStream;
+void Player::deployMine(int x, int y) {
+    // NOTE: You can not deploy a ship on a mine, but you can deploy a mine on a ship.
 
-    stringStream << "Stationary ships: ";
-    for (auto &&ship : playerShips){
-        if (!ship.isDeployed()){
-            stringStream << ship.getName();
-            if (counter < playerShips.size() - 1){
-                stringStream << ", ";
-            }
-            counter ++;
-        }
-    }
-    if (counter == 0){
-        stringStream << "None";
-    }
-
-    return stringStream.str();
-}
-
-std::string Player::getDeployedShips() {
-    int counter = 0;
-    std::ostringstream stringStream;
-
-    stringStream << "Deployed ships: ";
-    for (auto &&ship : playerShips){
-        if (ship.isDeployed()){
-            stringStream << ship.getName();
-            if (counter < playerShips.size() - 1){
-                stringStream << ", ";
-            }
-            counter ++;
-        }
-    }
-    if (counter == 0){
-        stringStream << "None";
-    }
-
-    return stringStream.str();
+    attemptPlacementResponse response = getGameGrid()->attemptPlacement(x, y, MINE, VERTICAL);
+    std::cout << "Mine deployment success: " << response.success << " : " << response.message << std::endl;
 }
 
 void Player::setOpposingPlayer(Player *player) {

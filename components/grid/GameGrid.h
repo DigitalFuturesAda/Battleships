@@ -27,6 +27,12 @@ enum GridNodes {
     SUBMARINE,
     PATROL,
 
+    CARRIER_MINE,
+    BATTLESHIP_MINE,
+    DESTROYER_MINE,
+    SUBMARINE_MINE,
+    PATROL_MINE,
+
     UNKNOWN,
 };
 

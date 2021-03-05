@@ -44,12 +44,21 @@ int GameGrid::getObservableGridWidth() {
 
 std::string GameGrid::formatNode(GridNodes node) {
     switch (node) {
+        case UNKNOWN:
+            return "\033[1;37m<?>\033[0m";
         case EMPTY:
             return "\033[1;37m[ ]\033[0m";
         case DESTROYED:
             return "\033[1;30m[■]\033[0m";
+
         case MINE:
             return "\033[1;34m[◘]\033[0m";
+
+        case VALID_HIT:
+            return "\033[1;31m[■]\033[0m";
+        case INVALID_HIT:
+            return "\033[1;37m[■]\033[0m";
+
         case CARRIER:
             return "\033[1;31m C \033[0m";
         case BATTLESHIP:
@@ -60,16 +69,21 @@ std::string GameGrid::formatNode(GridNodes node) {
             return "\033[1;31m S \033[0m";
         case PATROL:
             return "\033[1;31m P \033[0m";
-        case VALID_HIT:
-            return "\033[1;31m[■]\033[0m";
-        case INVALID_HIT:
-            return "\033[1;37m[■]\033[0m";
-        case UNKNOWN:
-            return "\033[1;37m<?>\033[0m";
+
+        case CARRIER_MINE:
+            return "\033[1;34m[C]\033[0m";
+        case BATTLESHIP_MINE:
+            return "\033[1;34m[B]\033[0m";
+        case DESTROYER_MINE:
+            return "\033[1;34m[D]\033[0m";
+        case SUBMARINE_MINE:
+            return "\033[1;34m[S]\033[0m";
+        case PATROL_MINE:
+            return "\033[1;34m[P]\033[0m";
     }
 }
 
-int GameGrid::getEntityConstraints(GridNodes placeableNodes){
+int GameGrid::getEntityConstraints(GridNodes placeableNodes){ // NOLINT(misc-no-recursion) - max 1 recursion.
     switch (placeableNodes) {
         case EMPTY:
         case DESTROYED:
@@ -77,6 +91,7 @@ int GameGrid::getEntityConstraints(GridNodes placeableNodes){
         case INVALID_HIT:
         case MINE:
             return 1;
+
         case CARRIER:
             return 5;
         case BATTLESHIP:
@@ -86,9 +101,59 @@ int GameGrid::getEntityConstraints(GridNodes placeableNodes){
             return 3;
         case PATROL:
             return 2;
+
+        case CARRIER_MINE:
+            return getEntityConstraints(CARRIER);
+        case BATTLESHIP_MINE:
+            return getEntityConstraints(BATTLESHIP);
+        case DESTROYER_MINE:
+            return getEntityConstraints(DESTROYER);
+        case SUBMARINE_MINE:
+            return getEntityConstraints(SUBMARINE);
+        case PATROL_MINE:
+            return getEntityConstraints(PATROL);
+
         case UNKNOWN:
-            throw std::runtime_error("GameGrid#getEntityConstraints canot be called with an UNKNOWN GridNode");
+            throw std::runtime_error("GameGrid#getEntityConstraints cannot be called with an UNKNOWN GridNode");
     }
+}
+
+GridNodes convertShipToMineWithShip(GridNodes currentShip){
+    switch (currentShip){
+        case EMPTY:
+        case DESTROYED:
+        case VALID_HIT:
+        case INVALID_HIT:
+        case MINE:
+        case UNKNOWN:
+            return MINE;
+        case CARRIER:
+        case CARRIER_MINE:
+            return CARRIER_MINE;
+        case BATTLESHIP:
+        case BATTLESHIP_MINE:
+            return BATTLESHIP_MINE;
+        case DESTROYER:
+        case DESTROYER_MINE:
+            return DESTROYER_MINE;
+        case SUBMARINE:
+        case SUBMARINE_MINE:
+            return SUBMARINE_MINE;
+        case PATROL:
+        case PATROL_MINE:
+            return PATROL_MINE;
+    }
+}
+
+attemptPlacementResponse validateAttemptPlacement(GridNodes existingNode, GridNodes placementNode){
+    if (existingNode != EMPTY && !(placementNode == DESTROYED || placementNode == MINE)){
+        return attemptPlacementResponse(false, "Can not place node in non-empty tile");
+    }
+    if (placementNode == MINE && (existingNode == UNKNOWN || existingNode == DESTROYED || existingNode == MINE)){
+        return attemptPlacementResponse(false, "Can not place a mine on a restricted tile");
+    }
+
+    return attemptPlacementResponse(true);
 }
 
 attemptPlacementResponse GameGrid::attemptPlacement(int x, int y, GridNodes node, Orientation orientation) {
@@ -102,8 +167,9 @@ attemptPlacementResponse GameGrid::attemptPlacement(int x, int y, GridNodes node
 
     // Ensure we're not trying to place the starting node on a taken tile unless we're placing an empty node.
     GridNodes existingNode = battleshipGameGrid[y][x];
-    if (existingNode != EMPTY && node != DESTROYED){
-        return attemptPlacementResponse(false, "Can not place starting node in non-empty tile");
+    attemptPlacementResponse placementRequest = validateAttemptPlacement(existingNode, node);
+    if (!placementRequest.success){
+        return placementRequest;
     }
 
     if (orientation == VERTICAL){
@@ -113,13 +179,18 @@ attemptPlacementResponse GameGrid::attemptPlacement(int x, int y, GridNodes node
 
         for (int i = y; i <= y + entityConstraints - 1; i++){
             GridNodes potentialNode = battleshipGameGrid[i][x];
-            if (potentialNode != EMPTY && node != DESTROYED){
-                return attemptPlacementResponse(false, "Can not place node in non-empty tile");
+            attemptPlacementResponse placementRequestWithPotentialNode = validateAttemptPlacement(potentialNode, node);
+            if (!placementRequestWithPotentialNode.success){
+                return placementRequestWithPotentialNode;
             }
         }
 
         for (int i = y; i <= y + entityConstraints - 1; i++){
-            battleshipGameGrid[i][x] = node;
+            if (node == MINE){
+                battleshipGameGrid[i][x] = convertShipToMineWithShip(battleshipGameGrid[i][x]);
+            } else {
+                battleshipGameGrid[i][x] = node;
+            }
             shipCoordinatePositions.emplace_back(
                     /* x = */ x, /* y = */ i,
                     convertIncrementingIntegerToAlpha(x + 1), i + 1);
@@ -131,8 +202,9 @@ attemptPlacementResponse GameGrid::attemptPlacement(int x, int y, GridNodes node
 
         for (int i = x; i <= x + entityConstraints - 1; i++){
             GridNodes potentialNode = battleshipGameGrid[y][i];
-            if (potentialNode != EMPTY && node != EMPTY){ // TODO(slyo): Access whether overwriting is allowed.
-                return attemptPlacementResponse(false, "Can not place node in non-empty tile");
+            attemptPlacementResponse placementRequestWithPotentialNode = validateAttemptPlacement(potentialNode, node);
+            if (!placementRequestWithPotentialNode.success){
+                return placementRequestWithPotentialNode;
             }
         }
 

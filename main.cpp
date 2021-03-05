@@ -8,7 +8,6 @@
 #include "components/player/GameFlowController.h"
 #include <thread>
 #include <chrono>
-#include <utility>
 
 int main() {
     srand( time( nullptr ) );
@@ -24,16 +23,7 @@ int main() {
     HostController hostController(&hostPlayer, &secondaryPlayer);
 
     hostPlayer.deployShip(0, "B", 2, VERTICAL);
-//    hostPlayer.deployShip(2, "C", 2, VERTICAL);
-//    hostPlayer.deployShip(4, "D", 2, VERTICAL);
-//
-//    secondaryPlayer.executeWarheadStrike("B", 2);
-//    secondaryPlayer.executeWarheadStrike("C", 3);
-//    secondaryPlayer.executeWarheadStrike("D", 4);
-
-    secondaryPlayer.executeWarheadStrike("B", 2);
-    secondaryPlayer.executeWarheadStrike("B", 3);
-    secondaryPlayer.executeWarheadStrike("B", 4);
+    hostPlayer.deployMine(1,1);
 
     hostPlayer.renderPlayerUserInterface();
 

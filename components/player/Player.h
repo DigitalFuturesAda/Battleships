@@ -25,8 +25,6 @@ public:
     attemptPlacementResponse deployShip(int shipVertexPosition, const std::string& letterIndex, int y, Orientation orientation);
 
     // Ship data utilities
-    std::string getDeployedShips();
-    std::string getStationaryShips();
     std::vector<std::string> getShipInformation();
 
     attemptHitResponse executeWarheadStrike(std::string letter, int number);
@@ -60,6 +58,8 @@ public:
     bool hasPlayerLostAllShips();
 
     std::vector<Ship> *getPlayerShips();
+
+    void deployMine(int x, int y);
 
     std::string playerName = "Player";
 

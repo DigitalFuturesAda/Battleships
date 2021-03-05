@@ -26,18 +26,21 @@ std::string Ship::getName() {
         case UNKNOWN:
             throw std::runtime_error("Ship#getName called with an invalid Invalid ship type");
         case CARRIER:
+        case CARRIER_MINE:
             return "Carrier";
         case BATTLESHIP:
+        case BATTLESHIP_MINE:
             return "Battleship";
         case DESTROYER:
+        case DESTROYER_MINE:
             return "Destroyer";
         case SUBMARINE:
+        case SUBMARINE_MINE:
             return "Submarine";
         case PATROL:
+        case PATROL_MINE:
             return "Patrol Boat";
     }
-
-    return "Test";
 }
 
 GridNodes Ship::getShipType() const {
