@@ -44,8 +44,15 @@ public:
 
     [[maybe_unused]] bool doesCoordinateIntersectShip(int x, int y);
 
+
+    Ship setTakenHitFromCoordinate(const std::string& coordinateNotation);
+
+    bool hasTakenHitFromCoordinate(const std::string& coordinateNotation);
+
 private:
     std::vector<shipCoordinatePosition> shipCoordinatePositions;
+
+    std::vector<std::string> takenHitsFromCoordinate = {};
 };
 
 

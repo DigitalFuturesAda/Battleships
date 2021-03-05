@@ -13,6 +13,14 @@
 #include "../../lib/tabulate.hpp"
 #include "GameFlowController.h"
 
+struct adjacentNodeEntry {
+    std::string letter{};
+    int yCoordinate{};
+
+    adjacentNodeEntry(std::string letter, int yCoordinate) : letter(std::move(letter)), yCoordinate(yCoordinate) {}
+    adjacentNodeEntry() = default;
+};
+
 class Player {
 public:
 
@@ -59,11 +67,15 @@ public:
 
     std::vector<Ship> *getPlayerShips();
 
-    void deployMine(int x, int y);
+    void handleMineDetonationLogic(const attemptHitResponse& response);
+
+    attemptPlacementResponse deployMine(int x, int y);
 
     std::string playerName = "Player";
 
     bool isComputer = false;
+
+    std::map<std::string, bool> registeredMineDetonationAtRegion = {};
 private:
     Player *opposingPlayer{};
 

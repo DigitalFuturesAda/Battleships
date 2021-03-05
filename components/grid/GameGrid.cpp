@@ -220,7 +220,8 @@ attemptPlacementResponse GameGrid::attemptPlacement(int x, int y, GridNodes node
         // This logic allows us to return a response which includes the node which has been replaced, this is useful if we
         // have just fired a torpedo.
         attemptPlacementResponse response = attemptPlacementResponse(true);
-        response.singleExistingNode = attemptPlacementNodeHitResponse(existingNode);
+        response.singleExistingNode = attemptPlacementNodeHitResponse(x, y, existingNode);
+
         return response;
     }
 

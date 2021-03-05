@@ -83,8 +83,12 @@ int Ship::getMaxLives() const {
 }
 
 Ship Ship::setLives(int lives_) {
-    lives = lives_;
+//    if (lives < 1){
+//        lives = 0;
+//        return *this;
+//    }
 
+    lives = lives_;
     return *this;
 }
 
@@ -107,5 +111,19 @@ std::vector<shipCoordinatePosition> Ship::getShipCoordinatePositions() {
         if (coordinate.x == x && coordinate.y == y) return true;
     }
 
+    return false;
+}
+
+Ship Ship::setTakenHitFromCoordinate(const std::string& coordinateNotation) {
+
+    this->takenHitsFromCoordinate.emplace_back(coordinateNotation);
+
+    return *this;
+}
+
+bool Ship::hasTakenHitFromCoordinate(const std::string &coordinateNotation) {
+    for (auto&& notation: takenHitsFromCoordinate){
+        if (notation == coordinateNotation) return true;
+    }
     return false;
 }

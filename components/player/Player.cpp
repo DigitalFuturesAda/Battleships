@@ -4,6 +4,7 @@
 
 #include "Player.h"
 #include <iostream>
+#include <set>
 #include <utility>
 #include <absl/strings/ascii.h>
 #include "../../components/grid/GameGrid.h"
@@ -14,15 +15,10 @@
 Player::Player(std::string playerName, GameFlowController &gameFlowController) {
     this->playerShips = {
             Ship(CARRIER, false),
-            Ship(CARRIER, false),
-            Ship(CARRIER, false),
-            Ship(CARRIER, false),
-            Ship(CARRIER, false),
-            Ship(CARRIER, false),
-//            Ship(BATTLESHIP, false),
-//            Ship(DESTROYER, false),
-//            Ship(SUBMARINE, false),
-//            Ship(PATROL, false),
+            Ship(BATTLESHIP, false),
+            Ship(DESTROYER, false),
+            Ship(SUBMARINE, false),
+            Ship(PATROL, false),
     };
     this->playerName = std::move(playerName);
     this->gameFlowController = &gameFlowController;
@@ -51,10 +47,9 @@ attemptPlacementResponse Player::deployShip(int position, const std::string& let
     return response;
 }
 
-void Player::deployMine(int x, int y) {
+attemptPlacementResponse Player::deployMine(int x, int y) {
     // NOTE: You can not deploy a ship on a mine, but you can deploy a mine on a ship.
-
-    attemptPlacementResponse response = getGameGrid()->attemptPlacement(x, y, MINE, VERTICAL);
+    return getGameGrid()->attemptPlacement(x, y, MINE, VERTICAL);
 }
 
 void Player::setOpposingPlayer(Player *player) {
@@ -84,32 +79,70 @@ bool hitMine(GridNodes hitNode){
     }
 }
 
-void getNodeAsAlpha(int x, int y){
-    if (x < 1) return;
-    if (y < 1) return;
-    if (y > GameGrid::HEIGHT) return;
-    if (x > GameGrid::WIDTH) return;
-
-    std::cout << ">> " << convertIncrementingIntegerToAlpha(x) << y << std::endl;
+void pushNodeAsAlphaIntoVector(int x, int y, std::vector<adjacentNodeEntry> *adjacentNodeEntries){
+    if (x < 1 || y < 1 || y > GameGrid::HEIGHT || x > GameGrid::WIDTH) return;
+    adjacentNodeEntries->push_back(adjacentNodeEntry(convertIncrementingIntegerToAlpha(x), y));
 }
 
-void getAdjacentNodes(int x, int y){
+std::vector<adjacentNodeEntry> getAdjacentNodes(int x, int y){
     int currentNodeY = y + 1;
     int currentNodeX = x + 1;
+    std::vector<adjacentNodeEntry> adjacentNodeEntries = {};
 
-    getNodeAsAlpha(currentNodeX - 1, currentNodeY - 1); // Above
-    getNodeAsAlpha(currentNodeX - 1, currentNodeY);        // Current
-    getNodeAsAlpha(currentNodeX - 1, currentNodeY + 1); // Below
-    std::cout << std::endl;
+    pushNodeAsAlphaIntoVector(currentNodeX - 1, currentNodeY - 1, &adjacentNodeEntries);
+    pushNodeAsAlphaIntoVector(currentNodeX - 1, currentNodeY, &adjacentNodeEntries);
+    pushNodeAsAlphaIntoVector(currentNodeX - 1, currentNodeY + 1, &adjacentNodeEntries);
 
-    getNodeAsAlpha(currentNodeX, currentNodeY - 1); // Above
-    getNodeAsAlpha(currentNodeX, currentNodeY);        // Current
-    getNodeAsAlpha(currentNodeX, currentNodeY + 1); // Below
-    std::cout << std::endl;
+    pushNodeAsAlphaIntoVector(currentNodeX, currentNodeY - 1, &adjacentNodeEntries);
+    pushNodeAsAlphaIntoVector(currentNodeX, currentNodeY, &adjacentNodeEntries); // We don't want to shoot our own mine.
+    pushNodeAsAlphaIntoVector(currentNodeX, currentNodeY + 1, &adjacentNodeEntries);
 
-    getNodeAsAlpha(currentNodeX + 1, currentNodeY - 1); // Above
-    getNodeAsAlpha(currentNodeX + 1, currentNodeY);        // Current
-    getNodeAsAlpha(currentNodeX + 1, currentNodeY + 1); // Below
+    pushNodeAsAlphaIntoVector(currentNodeX + 1, currentNodeY - 1, &adjacentNodeEntries);
+    pushNodeAsAlphaIntoVector(currentNodeX + 1, currentNodeY, &adjacentNodeEntries);
+    pushNodeAsAlphaIntoVector(currentNodeX + 1, currentNodeY + 1, &adjacentNodeEntries);
+
+    return adjacentNodeEntries;
+}
+
+void Player::handleMineDetonationLogic(const attemptHitResponse& response) {
+    if (hitMine(response.hitNode.node)){
+        // The hit grid should update to show a mine has been hit.
+        std::vector<adjacentNodeEntry> adjacentNodeEntries = getAdjacentNodes(response.hitNode.x, response.hitNode.y);
+
+        std::set<std::string> uniqueElementsSet{};
+
+        for (auto&& nodeEntry : adjacentNodeEntries){
+            attemptPlacementResponse mineExplosionResponse = opposingPlayer->getGameGrid()->attemptPlacement(nodeEntry.letter, nodeEntry.yCoordinate, DESTROYED, VERTICAL);
+
+            if (hitMine(mineExplosionResponse.singleExistingNode.node)){
+                // Recursively call this method to deal with scenarios where a mine explosion affects other mines.
+                handleMineDetonationLogic(attemptHitResponse(
+                        true,
+                        true,
+                        attemptPlacementNodeHitResponse(
+                                mineExplosionResponse.singleExistingNode.x,
+                                mineExplosionResponse.singleExistingNode.y,
+                                mineExplosionResponse.singleExistingNode.node)));
+            }
+
+            std::string coordinateLetter =
+                    convertIncrementingIntegerToAlpha(mineExplosionResponse.singleExistingNode.x + 1)
+                    + std::to_string(mineExplosionResponse.singleExistingNode.y + 1);
+
+            for (auto &&ship : opposingPlayer->playerShips){
+                if (ship.doesCoordinateIntersectShip(mineExplosionResponse.singleExistingNode.x,
+                                                     mineExplosionResponse.singleExistingNode.y)){
+                    if (ship.hasTakenHitFromCoordinate(coordinateLetter)){
+                        std::cout << "Ignored hit a: " << ship.getName() << std::endl;
+                    } else {
+                        ship.setTakenHitFromCoordinate(coordinateLetter);
+                        std::cout << "Hit a: " << ship.getName() << std::endl;
+                        ship.setLives(ship.getLives() - 1);
+                    }
+                }
+            }
+        }
+    }
 }
 
 attemptHitResponse Player::executeWarheadStrike(std::string letter, int y) {
@@ -124,28 +157,10 @@ attemptHitResponse Player::executeWarheadStrike(std::string letter, int y) {
 
     if (response.validAttempt){
         if (hitMine(response.hitNode.node)){
-            // The hit grid should update to show a mine has been hit.
-            std::cout << "You hit a mine at: " << response.hitNode.x << " : " << response.hitNode.y << std::endl;
-            getAdjacentNodes(response.hitNode.x, response.hitNode.y);
-
-//            for (int i = 0; i <= 2; i++){
-//                std::cout << convertIncrementingIntegerToAlpha(response.hitNode.y + i) << ":" << response.hitNode.x << ", ";
-//            }
-//            std::cout << std::endl;
-//
-//            for (int i = 0; i <= 2; i+=2){
-//                std::cout << convertIncrementingIntegerToAlpha(response.hitNode.y + i) << ":" << response.hitNode.x + 1 << ", ";
-//            }
-//            std::cout << std::endl;
-//
-//            for (int i = 0; i <= 2; i++){
-//                std::cout << convertIncrementingIntegerToAlpha(response.hitNode.y + i) << ":" << response.hitNode.x + 2 << ", ";
-//            }
-//            std::cout << std::endl;
-        }
-        if (response.didHitTarget){
+            handleMineDetonationLogic(response);
+        } else if (response.didHitTarget){
             battleshipHitGrid.markSuccessfulWarheadStrike(response.hitNode.x, response.hitNode.y);
-            attemptPlacementResponse responseTest = opposingPlayer->getGameGrid()->attemptPlacement(letter, y, DESTROYED, VERTICAL);
+            opposingPlayer->getGameGrid()->attemptPlacement(letter, y, DESTROYED, VERTICAL);
             for (auto &&ship : opposingPlayer->playerShips){
                  if (ship.doesCoordinateIntersectShip(response.hitNode.x, response.hitNode.y)){
                      ship.setLives(ship.getLives() - 1);
