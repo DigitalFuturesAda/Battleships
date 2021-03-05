@@ -5,7 +5,6 @@
 #include "Player.h"
 #include <iostream>
 #include <utility>
-#include <absl/strings/str_format.h>
 #include <absl/strings/ascii.h>
 #include "../../components/grid/GameGrid.h"
 #include "../util/strings.h"
@@ -56,16 +55,64 @@ void Player::deployMine(int x, int y) {
     // NOTE: You can not deploy a ship on a mine, but you can deploy a mine on a ship.
 
     attemptPlacementResponse response = getGameGrid()->attemptPlacement(x, y, MINE, VERTICAL);
-    std::cout << "Mine deployment success: " << response.success << " : " << response.message << std::endl;
 }
 
 void Player::setOpposingPlayer(Player *player) {
     this->opposingPlayer = player;
 }
 
-attemptHitResponse Player::executeWarheadStrike(std::string letter, int y) {
-    // TODO(slyo): Handle mines differently.
+bool hitMine(GridNodes hitNode){
+    switch (hitNode){
+        case EMPTY:
+        case UNKNOWN:
+        case DESTROYED:
+        case VALID_HIT:
+        case INVALID_HIT:
+        case CARRIER:
+        case BATTLESHIP:
+        case DESTROYER:
+        case SUBMARINE:
+        case PATROL:
+            return false;
+        case MINE:
+        case CARRIER_MINE:
+        case BATTLESHIP_MINE:
+        case DESTROYER_MINE:
+        case SUBMARINE_MINE:
+        case PATROL_MINE:
+            return true;
+    }
+}
 
+void getNodeAsAlpha(int x, int y){
+    if (x < 1) return;
+    if (y < 1) return;
+    if (y > GameGrid::HEIGHT) return;
+    if (x > GameGrid::WIDTH) return;
+
+    std::cout << ">> " << convertIncrementingIntegerToAlpha(x) << y << std::endl;
+}
+
+void getAdjacentNodes(int x, int y){
+    int currentNodeY = y + 1;
+    int currentNodeX = x + 1;
+
+    getNodeAsAlpha(currentNodeX - 1, currentNodeY - 1); // Above
+    getNodeAsAlpha(currentNodeX - 1, currentNodeY);        // Current
+    getNodeAsAlpha(currentNodeX - 1, currentNodeY + 1); // Below
+    std::cout << std::endl;
+
+    getNodeAsAlpha(currentNodeX, currentNodeY - 1); // Above
+    getNodeAsAlpha(currentNodeX, currentNodeY);        // Current
+    getNodeAsAlpha(currentNodeX, currentNodeY + 1); // Below
+    std::cout << std::endl;
+
+    getNodeAsAlpha(currentNodeX + 1, currentNodeY - 1); // Above
+    getNodeAsAlpha(currentNodeX + 1, currentNodeY);        // Current
+    getNodeAsAlpha(currentNodeX + 1, currentNodeY + 1); // Below
+}
+
+attemptHitResponse Player::executeWarheadStrike(std::string letter, int y) {
     if (y == 0) y++; // We don't like 0's round here.
 
     attemptPlacementResponse playerHitBoardResponse = getHitGrid()->checkIfNodeExists(letter, y);
@@ -76,6 +123,26 @@ attemptHitResponse Player::executeWarheadStrike(std::string letter, int y) {
     attemptHitResponse response = opposingPlayer->battleshipGameGrid.receiveWarheadStrike(letter, y);
 
     if (response.validAttempt){
+        if (hitMine(response.hitNode.node)){
+            // The hit grid should update to show a mine has been hit.
+            std::cout << "You hit a mine at: " << response.hitNode.x << " : " << response.hitNode.y << std::endl;
+            getAdjacentNodes(response.hitNode.x, response.hitNode.y);
+
+//            for (int i = 0; i <= 2; i++){
+//                std::cout << convertIncrementingIntegerToAlpha(response.hitNode.y + i) << ":" << response.hitNode.x << ", ";
+//            }
+//            std::cout << std::endl;
+//
+//            for (int i = 0; i <= 2; i+=2){
+//                std::cout << convertIncrementingIntegerToAlpha(response.hitNode.y + i) << ":" << response.hitNode.x + 1 << ", ";
+//            }
+//            std::cout << std::endl;
+//
+//            for (int i = 0; i <= 2; i++){
+//                std::cout << convertIncrementingIntegerToAlpha(response.hitNode.y + i) << ":" << response.hitNode.x + 2 << ", ";
+//            }
+//            std::cout << std::endl;
+        }
         if (response.didHitTarget){
             battleshipHitGrid.markSuccessfulWarheadStrike(response.hitNode.x, response.hitNode.y);
             attemptPlacementResponse responseTest = opposingPlayer->getGameGrid()->attemptPlacement(letter, y, DESTROYED, VERTICAL);

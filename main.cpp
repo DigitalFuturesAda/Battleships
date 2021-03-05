@@ -22,8 +22,9 @@ int main() {
 
     HostController hostController(&hostPlayer, &secondaryPlayer);
 
-    hostPlayer.deployShip(0, "B", 2, VERTICAL);
-    hostPlayer.deployMine(1,1);
+//    hostPlayer.deployShip(1, "A", 10, VERTICAL);
+    hostPlayer.deployMine(9,0);
+    secondaryPlayer.executeWarheadStrike("J", 1);
 
     hostPlayer.renderPlayerUserInterface();
 
