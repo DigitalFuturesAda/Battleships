@@ -48,7 +48,9 @@ attemptPlacementResponse Player::deployShip(int position, const std::string& let
 }
 
 attemptPlacementResponse Player::deployMine(int x, int y) {
+    // TODO(slyo): Add an assertion that all ships have been placed.
     // NOTE: You can not deploy a ship on a mine, but you can deploy a mine on a ship.
+
     return getGameGrid()->attemptPlacement(x, y, MINE, VERTICAL);
 }
 

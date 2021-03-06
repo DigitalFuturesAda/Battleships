@@ -6,6 +6,7 @@
 #include "components/util/io.h"
 #include "components/player/HostController.h"
 #include "components/player/GameFlowController.h"
+#include "components/util/rand.h"
 #include <thread>
 #include <chrono>
 
@@ -22,18 +23,19 @@ int main() {
 
     HostController hostController(&hostPlayer, &secondaryPlayer);
 
-    hostPlayer.deployMultipleRandomlyPositionedMines();
-    secondaryPlayer.deployMultipleRandomlyPositionedMines();
-
-    hostPlayer.deployWarshipsAutomatically();
+//    hostPlayer.deployWarshipsAutomatically();
     secondaryPlayer.deployWarshipsAutomatically();
 
     // Render the ship deployment UI with a sample of the board, this will be no-op if all ships are deployed.
-     hostPlayer.renderPlayerUserInterface();
-     hostPlayer.showShipDeploymentInterface();
+    hostPlayer.renderPlayerUserInterface();
+    hostPlayer.showShipDeploymentInterface();
 
     // We call this afterwards, as this augments the computer board onto the player board
     hostPlayer.setPlayingAgainstComputer();
+
+    // These calls should happen AFTER all ships have been deployed
+    hostPlayer.deployMultipleRandomlyPositionedMines();
+    secondaryPlayer.deployMultipleRandomlyPositionedMines();
 
     while (true){
         if (gameFlowController.hasUserRequestedToRestart()){
