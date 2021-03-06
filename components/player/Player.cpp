@@ -113,6 +113,7 @@ void Player::handleMineDetonationLogic(const attemptHitResponse& response) {
 
         for (auto&& nodeEntry : adjacentNodeEntries){
             attemptPlacementResponse mineExplosionResponse = opposingPlayer->getGameGrid()->attemptPlacement(nodeEntry.letter, nodeEntry.yCoordinate, DESTROYED, VERTICAL);
+            battleshipHitGrid.markSuccessfulWarheadStrike(mineExplosionResponse.singleExistingNode.x, mineExplosionResponse.singleExistingNode.y);
 
             if (hitMine(mineExplosionResponse.singleExistingNode.node)){
                 // Recursively call this method to deal with scenarios where a mine explosion affects other mines.
@@ -132,11 +133,8 @@ void Player::handleMineDetonationLogic(const attemptHitResponse& response) {
             for (auto &&ship : opposingPlayer->playerShips){
                 if (ship.doesCoordinateIntersectShip(mineExplosionResponse.singleExistingNode.x,
                                                      mineExplosionResponse.singleExistingNode.y)){
-                    if (ship.hasTakenHitFromCoordinate(coordinateLetter)){
-                        std::cout << "Ignored hit a: " << ship.getName() << std::endl;
-                    } else {
+                    if (!ship.hasTakenHitFromCoordinate(coordinateLetter)){
                         ship.setTakenHitFromCoordinate(coordinateLetter);
-                        std::cout << "Hit a: " << ship.getName() << std::endl;
                         ship.setLives(ship.getLives() - 1);
                     }
                 }
@@ -411,9 +409,13 @@ void Player::renderWarheadStrikeInterface() {
         // Update the board with the hit
         renderPlayerUserInterface();
         if (response.didHitTarget){
-            displayInformation("Successful warhead strike - hit a " + Ship(response.hitNode.node).getName() + "\n", 0);
+            displayInformation(
+                    "Successful warhead strike - hit a \033[1;31m" + Ship(response.hitNode.node).getName()
+                    + "\033[1;33m at: \033[1;31m" + convertIncrementingIntegerToAlpha(response.hitNode.x + 1) + std::to_string(response.hitNode.y + 1) + "\033[0m\n", 0);
         } else {
-            displayInformation("Unsuccessful warhead strike - did not hit anything\n", 0);
+            displayInformation("Unsuccessful warhead strike at \033[1;31m"
+                + convertIncrementingIntegerToAlpha(response.hitNode.x + 1) + std::to_string(response.hitNode.y + 1)
+                + "\033[1;33m - did not hit anything\n", 0);
         }
     } else {
         displayError(response.message + ": ", 1);
@@ -460,4 +462,13 @@ bool Player::hasPlayerLostAllShips() {
 
 GameFlowController * Player::getGameFlowController() const {
     return gameFlowController;
+}
+
+void Player::deployMultipleRandomlyPositionedMines() {
+    for (int i = 0; i < 5; i++){
+        int randomXCoordinate = randomBetween19937(0, GameGrid::WIDTH);
+        int randomYCoordinate = randomBetween19937(0, GameGrid::HEIGHT);
+
+        deployMine(randomXCoordinate, randomYCoordinate);
+    }
 }

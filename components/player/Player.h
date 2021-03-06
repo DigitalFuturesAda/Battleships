@@ -71,6 +71,8 @@ public:
 
     attemptPlacementResponse deployMine(int x, int y);
 
+    void deployMultipleRandomlyPositionedMines();
+
     std::string playerName = "Player";
 
     bool isComputer = false;

@@ -22,41 +22,9 @@ int main() {
 
     HostController hostController(&hostPlayer, &secondaryPlayer);
 
-    hostPlayer.deployShip(0, "A", 5, HORIZONTAL);
+    hostPlayer.deployMultipleRandomlyPositionedMines();
+    secondaryPlayer.deployMultipleRandomlyPositionedMines();
 
-    hostPlayer.deployWarshipsAutomatically();
-    hostPlayer.deployMine(0, 0);
-    hostPlayer.deployMine(1, 1);
-    hostPlayer.deployMine(2, 2);
-    hostPlayer.deployMine(3, 3);
-    hostPlayer.deployMine(4, 4);
-    hostPlayer.deployMine(5, 5);
-    hostPlayer.deployMine(6, 6);
-    hostPlayer.deployMine(7, 7);
-    hostPlayer.deployMine(8, 8);
-    hostPlayer.deployMine(9, 9);
-
-    hostPlayer.deployMine(9, 0);
-    hostPlayer.deployMine(8, 1);
-    hostPlayer.deployMine(7, 2);
-    hostPlayer.deployMine(6, 3);
-    hostPlayer.deployMine(5, 4);
-    hostPlayer.deployMine(4, 5);
-    hostPlayer.deployMine(3, 6);
-    hostPlayer.deployMine(2, 7);
-    hostPlayer.deployMine(1, 8);
-    hostPlayer.deployMine(0, 9);
-    secondaryPlayer.executeWarheadStrike("A", 0);
-
-
-//    hostPlayer.deployMine(0, 3);
-//    hostPlayer.deployMine(2, 4);
-//    secondaryPlayer.executeWarheadStrike("A", 4);
-//    secondaryPlayer.executeWarheadStrike("C", 5);
-
-    hostPlayer.renderPlayerUserInterface();
-
-    /*
     hostPlayer.deployWarshipsAutomatically();
     secondaryPlayer.deployWarshipsAutomatically();
 
@@ -84,5 +52,4 @@ int main() {
             secondaryPlayer.deployWarheadStrikeAutomatically();
         };
     }
-    */
 }

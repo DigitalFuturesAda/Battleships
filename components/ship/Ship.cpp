@@ -20,11 +20,12 @@ std::string Ship::getName() {
     switch (type) {
         case EMPTY:
         case DESTROYED:
-        case MINE:
         case VALID_HIT:
         case INVALID_HIT:
         case UNKNOWN:
             throw std::runtime_error("Ship#getName called with an invalid Invalid ship type");
+        case MINE:
+            return "Mine";
         case CARRIER:
         case CARRIER_MINE:
             return "Carrier";
