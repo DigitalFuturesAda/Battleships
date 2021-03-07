@@ -83,6 +83,9 @@ public:
     bool isComputer = false;
 
     std::map<std::string, bool> registeredMineDetonationAtRegion = {};
+
+    bool isComputerPlayingAgainstComputer();
+
 private:
     Player *opposingPlayer{};
 

@@ -618,3 +618,7 @@ void Player::deployMultipleRandomlyPositionedMines() {
         }
     }
 }
+
+bool Player::isComputerPlayingAgainstComputer() {
+    return isComputer && opposingPlayer->isComputer;
+}
