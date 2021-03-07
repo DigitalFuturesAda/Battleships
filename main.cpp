@@ -56,6 +56,7 @@ int main() {
                 // TODO(slyo): Potentially handle whether the user is playing the Salvo gamemode within the strike UI.
                 hostPlayer.renderSalvoWarheadStrikeInterface();
             } else {
+                // TODO(slyo): Allow the user to leave a blank or "AUTO" input to fire automatically - for both this and salvo.
                 hostPlayer.renderWarheadStrikeInterface();
             }
 
