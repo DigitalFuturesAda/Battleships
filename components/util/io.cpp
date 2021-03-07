@@ -12,6 +12,7 @@ std::string getInput() {
 }
 
 std::string getStringWithPrompt(const std::string& prompt) {
+    std::cout << "\033[1;33m" << "[INPUT]: " << "\033[0m";
     std::cout << prompt;
     return getInput();
 }
@@ -73,8 +74,8 @@ void displayBlankInputDialog() {
     std::string input = getStringWithPrompt("Press enter to continue... ");
 }
 
-void displayContinueGameConfirmationDialog(GameFlowController *gameFlowController) {
-    std::string input = getStringWithPrompt("Press enter to continue \033[1;33m[Q to quit or R to reset]:\033[0m ");
+void displayContinueGameConfirmationDialogWithPrompt(GameFlowController *gameFlowController, const std::string& prompt) {
+    std::string input = getStringWithPrompt(prompt);
 
     if (input.empty()){
         return;
@@ -87,6 +88,10 @@ void displayContinueGameConfirmationDialog(GameFlowController *gameFlowControlle
         displayInformation("Quitting program. Thanks for using!\n", 1);
         exit (EXIT_SUCCESS);
     }
+}
+
+void displayContinueGameConfirmationDialog(GameFlowController *gameFlowController) {
+    displayContinueGameConfirmationDialogWithPrompt(gameFlowController, "Press enter to continue \033[1;33m[Q to quit or R to reset]:\033[0m ");
 }
 
 void clearBuffer() {

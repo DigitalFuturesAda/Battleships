@@ -209,6 +209,12 @@ std::vector<std::string> Player::getShipInformation(){
 }
 
 void Player::showShipDeploymentInterface() {
+    if (getNumberOfOperationalShips() == getPlayerShips()->size()){
+        return;
+    }
+
+    renderPlayerUserInterface();
+
     int c = 0;
     for (auto &&ship : playerShips){
         if (!ship.isDeployed()){
@@ -216,19 +222,28 @@ void Player::showShipDeploymentInterface() {
         }
         c++;
     }
+
+    displayContinueGameConfirmationDialogWithPrompt(gameFlowController, "You have placed all your ships. Press enter to continue \033[1;33m[Q to quit or R to reset]:\033[0m ");
 }
 
 bool Player::deployShipInterface(int shipVertexPosition){
     attemptPlacementResponse response;
     Ship ship = playerShips.at(shipVertexPosition);
+    bool hasDisplayedTip = false;
 
     while (!response.success){
+        if (!hasDisplayedTip){
+            displayInformation("[TIP]: Leave the input blank to automatically place your "
+                               + ship.getName() + " or type AUTO to automatically place the rest of your ships\n");
+            hasDisplayedTip = true;
+        }
+
         regexMatch coordinateInput = getRegexInputWithPromptAsRegex(
                 "Enter where you want to move your " + ship.getName() + " (eg. A1 or H8): ",
                 std::regex("([A-a-Z-z](?:[A-a-B-b])?)([1-9](?:[1-10])?)"));
 
         std::string orientation = getRegexInputWithPromptAsString(
-                "Enter ship orientation (vertical/horizontal): ",
+                "Enter ship orientation (vertical/horizontal/v/h): ",
                 std::regex("(\\b[Vv][Ee][Rr][Tt][Ii][Cc][Aa][Ll]|[Hh][Oo][Rr][Ii][Zz][Oo][Nn][Tt][Aa][Ll]|[Vv]\\b|[Hh]\\b)"));
 
         int yCoordinate = stoi(coordinateInput.matches[1]);

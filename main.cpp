@@ -26,11 +26,10 @@ int main() {
 
     HostController hostController(&hostPlayer, &secondaryPlayer);
 
-    hostPlayer.deployWarshipsAutomatically();
+//    hostPlayer.deployWarshipsAutomatically();
     secondaryPlayer.deployWarshipsAutomatically();
 
     // Render the ship deployment UI with a sample of the board, this will be no-op if all ships are deployed.
-    hostPlayer.renderPlayerUserInterface();
     hostPlayer.showShipDeploymentInterface();
 
     // We call this afterwards, as this augments the computer board onto the player board

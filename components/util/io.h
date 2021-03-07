@@ -35,6 +35,8 @@ regexMatch getRegexMatchWithString(const std::string& string, const std::regex& 
 
 void displayBlankInputDialog();
 
+void displayContinueGameConfirmationDialogWithPrompt(GameFlowController *gameFlowController, const std::string& prompt);
+
 void displayContinueGameConfirmationDialog(GameFlowController *gameFlowController);
 
 void clearBuffer();
