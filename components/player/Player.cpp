@@ -346,7 +346,7 @@ void Player::renderPlayerUserInterface() {
     std::cout << std::endl;
 }
 
-void Player::renderCachedComputerWarheadDeploymentResponse(const attemptHitResponse& cachedHitResponse, bool isAutomaticAndRepeatedWarheadStrike, int repeatedWarheadStrikeAttempt) const {
+void Player::renderCachedComputerWarheadDeploymentResponse(const attemptHitResponse& cachedHitResponse, bool isAutomaticAndRepeatedWarheadStrike, int repeatedWarheadStrikeAttempt) {
     if (cachedHitResponse.validAttempt && isComputer){
         if (cachedHitResponse.didHitTarget){
             displayInformation((isAutomaticAndRepeatedWarheadStrike ? "\033[1;31mStrike " + std::to_string(repeatedWarheadStrikeAttempt) + " - " : "\033[1;31m")
@@ -361,7 +361,7 @@ void Player::renderCachedComputerWarheadDeploymentResponse(const attemptHitRespo
         }
     }
 
-    if (!isAutomaticAndRepeatedWarheadStrike){
+    if (!isAutomaticAndRepeatedWarheadStrike && shouldShowContinueGameConfirmationDialog()){
         displayContinueGameConfirmationDialog(getGameFlowController());
     }
 }
@@ -511,7 +511,9 @@ void Player::renderSalvoWarheadStrikeInterface(bool isRepeatingInputSequence, in
         counter++;
     }
 
-    displayContinueGameConfirmationDialog(getGameFlowController());
+    if (shouldShowContinueGameConfirmationDialog()){
+        displayContinueGameConfirmationDialog(getGameFlowController());
+    }
 
     if (shipsThatHaveFiredValidWarheadStrikes != getNumberOfOperationalShips() && numberOfOperationalShips != 0){
         renderPlayerUserInterface();
@@ -544,7 +546,9 @@ void Player::renderWarheadStrikeInterface() {
         return renderWarheadStrikeInterface();
     }
 
-    displayContinueGameConfirmationDialog(getGameFlowController());
+    if (shouldShowContinueGameConfirmationDialog()) {
+        displayContinueGameConfirmationDialog(getGameFlowController());
+    }
 }
 
 attemptHitResponse Player::deployWarheadStrikeAutomatically(int attempts, bool isAutomaticAndRepeatedWarheadStrike) {
@@ -596,7 +600,9 @@ void Player::deployWarheadStrikesAutomatically() {
         counter ++;
     }
 
-    displayContinueGameConfirmationDialog(getGameFlowController());
+    if (shouldShowContinueGameConfirmationDialog()) {
+        displayContinueGameConfirmationDialog(getGameFlowController());
+    }
 }
 
 bool Player::hasPlayerLostAllShips() {
@@ -621,4 +627,9 @@ void Player::deployMultipleRandomlyPositionedMines() {
 
 bool Player::isComputerPlayingAgainstComputer() {
     return isComputer && opposingPlayer->isComputer;
+}
+
+bool Player::shouldShowContinueGameConfirmationDialog() {
+    return (!isComputer && opposingPlayer->isComputer) || (isComputer && !opposingPlayer->isComputer) ||
+        (isComputerPlayingAgainstComputer() && SHOULD_SHOW_CONTINUE_GAME_CONFIRMATION_DIALOG_DURING_AUTOMATION);
 }

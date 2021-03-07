@@ -27,6 +27,12 @@ public:
 
     static const int MAX_WARHEAD_STRIKES_ATTEMPTS = 10000;
     static const int MAX_SHIP_DEPLOYMENT_ATTEMPTS = 10000;
+
+    /**
+     * Controls whether the confirmation dialog ("Press enter to continue") should be shown when it's only computer
+     * versus computer.
+     */
+    static const bool SHOULD_SHOW_CONTINUE_GAME_CONFIRMATION_DIALOG_DURING_AUTOMATION = false;
     
     explicit Player(std::string playerName, GameFlowController& gameFlowController);
 
@@ -52,7 +58,7 @@ public:
 
     tabulate::Table getPlayerShipStatisticsBoard();
 
-    void renderCachedComputerWarheadDeploymentResponse(const attemptHitResponse& cachedHitResponse, bool isAutomaticAndRepeatedWarheadStrike = false, int repeatedWarheadStrikeAttempt = 0) const;
+    void renderCachedComputerWarheadDeploymentResponse(const attemptHitResponse& cachedHitResponse, bool isAutomaticAndRepeatedWarheadStrike = false, int repeatedWarheadStrikeAttempt = 0);
 
     void setPlayingAgainstComputer();
 
@@ -85,6 +91,8 @@ public:
     std::map<std::string, bool> registeredMineDetonationAtRegion = {};
 
     bool isComputerPlayingAgainstComputer();
+
+    bool shouldShowContinueGameConfirmationDialog();
 
 private:
     Player *opposingPlayer{};
