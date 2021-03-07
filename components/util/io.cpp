@@ -27,9 +27,7 @@ std::string getRegexInputWithPromptAsString(const std::string& prompt, const std
     return input;
 }
 
-regexMatch getRegexInputWithPromptAsRegex(const std::string& prompt, const std::regex& regex) {
-    std::string string = getRegexInputWithPromptAsString(prompt, regex);
-
+regexMatch getRegexMatchWithString(const std::string& string, const std::regex& regex){
     std::smatch match;
     regexMatch result;
     std::regex_search(string, match, regex);
@@ -45,6 +43,12 @@ regexMatch getRegexInputWithPromptAsRegex(const std::string& prompt, const std::
     }
 
     return result;
+}
+
+regexMatch getRegexInputWithPromptAsRegex(const std::string& prompt, const std::regex& regex) {
+    std::string string = getRegexInputWithPromptAsString(prompt, regex);
+
+    return getRegexMatchWithString(string, regex);
 }
 
 void displayError(const std::string error, int pruneMessagesAmount){

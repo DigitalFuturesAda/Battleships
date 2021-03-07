@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 #include <map>
+#include <regex>
 #include "../ship/Ship.h"
 #include "../grid/HitGrid.h"
 #include "../../lib/tabulate.hpp"
@@ -26,7 +27,7 @@ public:
 
     static const int MAX_WARHEAD_STRIKES_ATTEMPTS = 10000;
     static const int MAX_SHIP_DEPLOYMENT_ATTEMPTS = 10000;
-
+    
     explicit Player(std::string playerName, GameFlowController& gameFlowController);
 
     void setOpposingPlayer(Player *player);
@@ -51,13 +52,15 @@ public:
 
     tabulate::Table getPlayerShipStatisticsBoard();
 
-    void renderCachedComputerWarheadDeploymentResponse(const attemptHitResponse& cachedHitResponse) const;
+    void renderCachedComputerWarheadDeploymentResponse(const attemptHitResponse& cachedHitResponse, bool isAutomaticAndRepeatedWarheadStrike = false, int repeatedWarheadStrikeAttempt = 0) const;
 
     void setPlayingAgainstComputer();
 
     bool deployWarshipAutomatically(int shipVertexPosition, int attempts = 0);
 
-    attemptHitResponse deployWarheadStrikeAutomatically(int attempts = 0);
+    attemptHitResponse deployWarheadStrikeAutomatically(int attempts = 0, bool isAutomaticAndRepeatedWarheadStrike = false);
+
+    void deployWarheadStrikesAutomatically();
 
     void renderWarheadStrikeInterface();
 
@@ -72,6 +75,8 @@ public:
     attemptPlacementResponse deployMine(int x, int y);
 
     void deployMultipleRandomlyPositionedMines();
+
+    void renderSalvoWarheadStrikeInterface(bool isRepeatingInputSequence = false, int shipsThatHaveFiredValidWarheadStrikes = 0);
 
     std::string playerName = "Player";
 
@@ -91,6 +96,8 @@ private:
     bool deployShipInterface(int shipVertexPosition);
 
     bool alsoRenderComputerBoard = false;
+
+    int getNumberOfOperationalShips();
 };
 
 #endif //BATTLESHIPS_PLAYER_H

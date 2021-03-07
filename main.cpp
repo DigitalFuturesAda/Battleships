@@ -11,7 +11,10 @@
 #include <chrono>
 
 int main() {
-//    srand( time( nullptr ) );
+    srand( time( nullptr ) );
+
+    // TODO(slyo): Refactor this so that it inherits from a configuration class.
+    constexpr bool IS_PLAYING_SALVO = true;
 
     GameFlowController gameFlowController;
 
@@ -23,7 +26,7 @@ int main() {
 
     HostController hostController(&hostPlayer, &secondaryPlayer);
 
-//    hostPlayer.deployWarshipsAutomatically();
+    hostPlayer.deployWarshipsAutomatically();
     secondaryPlayer.deployWarshipsAutomatically();
 
     // Render the ship deployment UI with a sample of the board, this will be no-op if all ships are deployed.
@@ -49,9 +52,19 @@ int main() {
             break;
         } else {
             hostPlayer.renderPlayerUserInterface();
-            hostPlayer.renderWarheadStrikeInterface();
 
-            secondaryPlayer.deployWarheadStrikeAutomatically();
+            if (IS_PLAYING_SALVO){
+                // TODO(slyo): Potentially handle whether the user is playing the Salvo gamemode within the strike UI.
+                hostPlayer.renderSalvoWarheadStrikeInterface();
+            } else {
+                hostPlayer.renderWarheadStrikeInterface();
+            }
+
+            if (IS_PLAYING_SALVO){
+                secondaryPlayer.deployWarheadStrikesAutomatically();
+            } else {
+                secondaryPlayer.deployWarheadStrikeAutomatically();
+            }
         };
     }
 }

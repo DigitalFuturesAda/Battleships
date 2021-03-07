@@ -160,11 +160,6 @@ attemptPlacementResponse GameGrid::attemptPlacement(int x, int y, GridNodes node
     int entityConstraints = getEntityConstraints(node);
     std::vector<shipCoordinatePosition> shipCoordinatePositions;
 
-    std::cout << "Comparing: "
-        << y << " > " << HEIGHT << " || "
-        << x << " > " << WIDTH
-        << std::endl;
-
     // Ensure x,y coords are within the confines of the grid.
     if (y > HEIGHT || x >= WIDTH){
         return attemptPlacementResponse(false, "xy coordinates not within the confines of the grid");

@@ -185,6 +185,17 @@ HitGrid *Player::getHitGrid() {
     return &battleshipHitGrid;
 }
 
+int Player::getNumberOfOperationalShips(){
+    int operationalShips = 0;
+    for (auto &&ship : playerShips){
+        if (ship.isDeployed() && !ship.isSunk()){
+            operationalShips++;
+        }
+    }
+
+    return operationalShips;
+}
+
 std::vector<std::string> Player::getShipInformation(){
     std::ostringstream stringStream[3];
 
@@ -320,16 +331,24 @@ void Player::renderPlayerUserInterface() {
     std::cout << std::endl;
 }
 
-void Player::renderCachedComputerWarheadDeploymentResponse(const attemptHitResponse& cachedHitResponse) const {
+void Player::renderCachedComputerWarheadDeploymentResponse(const attemptHitResponse& cachedHitResponse, bool isAutomaticAndRepeatedWarheadStrike, int repeatedWarheadStrikeAttempt) const {
     if (cachedHitResponse.validAttempt && isComputer){
         if (cachedHitResponse.didHitTarget){
-            displayInformation("\033[1;31m" + playerName + "'s attempt - \033[1;33mSuccessful warhead strike - hit a " + Ship(cachedHitResponse.hitNode.node).getName() + "\n", 0);
+            displayInformation((isAutomaticAndRepeatedWarheadStrike ? "\033[1;31mStrike " + std::to_string(repeatedWarheadStrikeAttempt) + " - " : "\033[1;31m")
+                + playerName + "'s attempt - \033[1;33mSuccessful warhead strike - hit a "
+                + "\033[1;31m" + Ship(cachedHitResponse.hitNode.node).getName() + "\033[1;33m "
+                + "at \033[1;31m" + convertIncrementingIntegerToAlpha(cachedHitResponse.hitNode.x + 1) + std::to_string(cachedHitResponse.hitNode.y + 1)
+                + "\n", 0);
         } else {
-            displayInformation("\033[1;31m" + playerName + "'s attempt - \033[1;33mUnsuccessful warhead strike - did not hit anything\n", 0);
+            displayInformation(
+                    (isAutomaticAndRepeatedWarheadStrike ? "\033[1;31mStrike " + std::to_string(repeatedWarheadStrikeAttempt) + " - " : "\033[1;31m")
+                    + playerName + "'s attempt - \033[1;33mUnsuccessful warhead strike - did not hit anything\n", 0);
         }
     }
 
-    displayContinueGameConfirmationDialog(getGameFlowController());
+    if (!isAutomaticAndRepeatedWarheadStrike){
+        displayContinueGameConfirmationDialog(getGameFlowController());
+    }
 }
 
 void Player::setPlayingAgainstComputer() {
@@ -399,10 +418,96 @@ void Player::deployWarshipsAutomatically() {
     }
 }
 
+void Player::renderSalvoWarheadStrikeInterface(bool isRepeatingInputSequence, int shipsThatHaveFiredValidWarheadStrikes) {
+    std::string multipleCoordinatesNotationInput;
+    int numberOfOperationalShips = getNumberOfOperationalShips() - shipsThatHaveFiredValidWarheadStrikes;
+
+    if (isRepeatingInputSequence){
+        multipleCoordinatesNotationInput = getStringWithPrompt(
+                "Enter an equal number of coordinates to fire upon (eg. A1 C2 F3): ");
+    } else {
+        multipleCoordinatesNotationInput = getStringWithPrompt(
+                "You have " + std::to_string(numberOfOperationalShips)
+                + " remaining warhead strike" + (numberOfOperationalShips > 1 ? "s" : "")
+                + ", enter an equal number of coordinates to fire upon (eg. A1 C2 F3): ");
+    }
+
+    std::vector<std::string> coordinateNotationInputVector = splitAtCharacterIntoVector(multipleCoordinatesNotationInput, ' ');
+    std::vector<std::pair<std::string, int>> letterToIntCoordinateNotation {};
+    std::vector<std::pair<std::string, attemptHitResponse>> coordinateNotationToHitResponses {};
+
+
+    if (coordinateNotationInputVector.size() != numberOfOperationalShips){
+        displayError(
+                "You have not entered an equal number of coordinates to operational ships - "
+                + std::to_string(numberOfOperationalShips)
+                + " remaining warhead strike" + (numberOfOperationalShips > 1 ? "s" : "") + "\n",
+                isRepeatingInputSequence ? 2 : 1);
+        return renderSalvoWarheadStrikeInterface(true, shipsThatHaveFiredValidWarheadStrikes);
+    }
+
+    for (auto&& notation: coordinateNotationInputVector){
+        if (!regex_match(notation, BATTLESHIP_INPUT_NOTATION)){
+            displayError("Your input: " + notation + " is invalid. Please enter again\n", isRepeatingInputSequence ? 2 : 1);
+            return renderSalvoWarheadStrikeInterface(false, shipsThatHaveFiredValidWarheadStrikes);
+        }
+
+        regexMatch matchedNotation = getRegexMatchWithString(notation, BATTLESHIP_INPUT_NOTATION);
+
+        letterToIntCoordinateNotation.emplace_back(std::pair<std::string, int>{
+                matchedNotation.matches[0],
+                stoi(matchedNotation.matches[1])
+        });
+    }
+
+    for (const std::pair<std::string, int>& notation: letterToIntCoordinateNotation){
+        coordinateNotationToHitResponses.emplace_back(std::pair<std::string, attemptHitResponse>{
+                convertToUpperCase(notation.first) + std::to_string(notation.second),
+                executeWarheadStrike(convertToUpperCase(notation.first), notation.second)
+        });
+    }
+
+    int counter = 1;
+
+    renderPlayerUserInterface();
+    for (const auto& coordinateNotationToHitResponse: coordinateNotationToHitResponses){
+        if (coordinateNotationToHitResponse.second.validAttempt){
+            shipsThatHaveFiredValidWarheadStrikes ++;
+            if (coordinateNotationToHitResponse.second.didHitTarget){
+                displayInformation(
+                        "\033[1;31mStrike " + std::to_string(counter) + ":\033[1;33m "
+                        + "Successful warhead strike - hit a \033[1;31m" + Ship(coordinateNotationToHitResponse.second.hitNode.node).getName()
+                        + "\033[1;33m at: \033[1;31m" + coordinateNotationToHitResponse.first + "\033[0m\n", 0);
+            } else {
+                displayInformation(
+                        "\033[1;31mStrike " + std::to_string(counter) + ":\033[1;33m "
+                        + "Unsuccessful warhead strike at \033[1;31m"
+                        + coordinateNotationToHitResponse.first
+                        + "\033[1;33m - did not hit anything\n", 0);
+            }
+        } else {
+            displayInformation(
+                    "\033[1;31mStrike " + std::to_string(counter) + ": "
+                    + "Invalid \033[1;33mwarhead strike at \033[1;31m"
+                    + coordinateNotationToHitResponse.first +
+                    + "\033[1;33m - " + coordinateNotationToHitResponse.second.message + "\n", 0);
+        }
+
+        counter++;
+    }
+
+    displayContinueGameConfirmationDialog(getGameFlowController());
+
+    if (shipsThatHaveFiredValidWarheadStrikes != getNumberOfOperationalShips() && numberOfOperationalShips != 0){
+        renderPlayerUserInterface();
+        return renderSalvoWarheadStrikeInterface(false, shipsThatHaveFiredValidWarheadStrikes);
+    }
+}
+
 void Player::renderWarheadStrikeInterface() {
     regexMatch coordinateInput = getRegexInputWithPromptAsRegex(
             "Enter a coordinate to deploy your warhead strike (eg. A1 or H8): ",
-            std::regex("([A-a-Z-z](?:[A-a-B-b])?)([1-9](?:[1-10])?)"));
+            BATTLESHIP_INPUT_NOTATION);
 
     int yCoordinate = stoi(coordinateInput.matches[1]);
     attemptHitResponse response = executeWarheadStrike(convertToUpperCase(coordinateInput.matches[0]), yCoordinate);
@@ -427,7 +532,7 @@ void Player::renderWarheadStrikeInterface() {
     displayContinueGameConfirmationDialog(getGameFlowController());
 }
 
-attemptHitResponse Player::deployWarheadStrikeAutomatically(int attempts) {
+attemptHitResponse Player::deployWarheadStrikeAutomatically(int attempts, bool isAutomaticAndRepeatedWarheadStrike) {
     // TODO(slyo): Verify all ships not destroyed. Maybe for the purposes of this game we can assume the computer has
     //  rudimentary knowledge of the approx bounds of players ships location as to decrease trial and error.
 
@@ -451,11 +556,32 @@ attemptHitResponse Player::deployWarheadStrikeAutomatically(int attempts) {
     }
 
     if (isComputer){
-        opposingPlayer->renderPlayerUserInterface();
-        renderCachedComputerWarheadDeploymentResponse(hitResponse);
+        if (!isAutomaticAndRepeatedWarheadStrike){
+            opposingPlayer->renderPlayerUserInterface();
+            renderCachedComputerWarheadDeploymentResponse(hitResponse);
+        }
     }
 
     return hitResponse;
+}
+
+void Player::deployWarheadStrikesAutomatically() {
+    std::vector<attemptHitResponse> warheadStrikeRequests {};
+    for (int i = 0; i < getNumberOfOperationalShips(); i++){
+        warheadStrikeRequests.emplace_back(deployWarheadStrikeAutomatically(0, true));
+    }
+
+    if (isComputer){
+        opposingPlayer->renderPlayerUserInterface();
+    }
+
+    int counter = 1;
+    for (auto&& hitResponse : warheadStrikeRequests){
+        renderCachedComputerWarheadDeploymentResponse(hitResponse, true, counter);
+        counter ++;
+    }
+
+    displayContinueGameConfirmationDialog(getGameFlowController());
 }
 
 bool Player::hasPlayerLostAllShips() {
@@ -468,9 +594,12 @@ GameFlowController * Player::getGameFlowController() const {
 
 void Player::deployMultipleRandomlyPositionedMines() {
     for (int i = 0; i < 5; i++){
-        int randomXCoordinate = randomBetween19937(0, GameGrid::WIDTH);
-        int randomYCoordinate = randomBetween19937(0, GameGrid::HEIGHT);
+        attemptPlacementResponse mineDeploymentResponse;
 
-        deployMine(randomXCoordinate, randomYCoordinate);
+        while (!mineDeploymentResponse.success){
+            int randomXCoordinate = randomBetween19937(0, GameGrid::WIDTH);
+            int randomYCoordinate = randomBetween19937(0, GameGrid::HEIGHT);
+            mineDeploymentResponse = deployMine(randomXCoordinate, randomYCoordinate);
+        }
     }
 }

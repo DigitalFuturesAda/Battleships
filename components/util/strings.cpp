@@ -3,7 +3,9 @@
 //
 
 #include "strings.h"
-#include <iostream>
+#include <string>
+
+std::regex BATTLESHIP_INPUT_NOTATION = std::regex("([A-a-Z-z](?:[A-a-B-b])?)([1-9](?:[1-10])?)");
 
 /**
  * Converts a counter to it's numerical unicode equivalent.
@@ -68,3 +70,19 @@ std::string replaceStringOccurrencesFromVector(std::string inputString, const st
 
     return stringCache;
 };
+
+/**
+ * Splits a string at it's given token.
+ *
+ * @author wcochran - https://stackoverflow.com/a/60782724/14937517
+ */
+std::vector<std::string> splitAtCharacterIntoVector(const std::string& input, char token){
+    std::vector<std::string> strings;
+    size_t start;
+    size_t end = 0;
+    while ((start = input.find_first_not_of(token, end)) != std::string::npos) {
+        end = input.find(token, start);
+        strings.push_back(input.substr(start, end - start));
+    }
+    return strings;
+}

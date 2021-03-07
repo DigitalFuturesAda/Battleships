@@ -31,6 +31,8 @@ void displayError(const std::string error, int pruneMessagesAmount = 0);
 
 void displayInformation(const std::string information, int pruneMessagesAmount = 0);
 
+regexMatch getRegexMatchWithString(const std::string& string, const std::regex& regex);
+
 void displayBlankInputDialog();
 
 void displayContinueGameConfirmationDialog(GameFlowController *gameFlowController);
