@@ -607,7 +607,7 @@ void Player::deployWarheadStrikesAutomatically() {
         renderCachedComputerWarheadDeploymentResponse(hitResponse, true, counter);
         counter ++;
     }
-    
+
     if (shouldShowContinueGameConfirmationDialog()) {
         displayContinueGameConfirmationDialog(getGameFlowController());
     }
