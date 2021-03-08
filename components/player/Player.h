@@ -94,6 +94,8 @@ public:
 
     bool shouldShowContinueGameConfirmationDialog();
 
+    int numberOfAttempts = 0;
+
 private:
     Player *opposingPlayer{};
 

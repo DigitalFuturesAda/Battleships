@@ -162,8 +162,12 @@ attemptHitResponse Player::executeWarheadStrike(std::string letter, int y) {
             battleshipHitGrid.markSuccessfulWarheadStrike(response.hitNode.x, response.hitNode.y);
             opposingPlayer->getGameGrid()->attemptPlacement(letter, y, DESTROYED, VERTICAL);
             for (auto &&ship : opposingPlayer->playerShips){
-                 if (ship.doesCoordinateIntersectShip(response.hitNode.x, response.hitNode.y)){
-                     ship.setLives(ship.getLives() - 1);
+                 std::string coordinateNotation = convertIncrementingIntegerToAlpha(response.hitNode.x + 1)
+                                                  + std::to_string(response.hitNode.y + 1);
+                 if (ship.doesCoordinateIntersectShip(response.hitNode.x, response.hitNode.y) && !ship.hasTakenHitFromCoordinate(coordinateNotation)){
+                     ship
+                        .setLives(ship.getLives() - 1)
+                        .setTakenHitFromCoordinate(coordinateNotation);
                  }
             }
         } else {
@@ -554,6 +558,9 @@ void Player::renderWarheadStrikeInterface() {
 attemptHitResponse Player::deployWarheadStrikeAutomatically(int attempts, bool isAutomaticAndRepeatedWarheadStrike) {
     // TODO(slyo): Verify all ships not destroyed. Maybe for the purposes of this game we can assume the computer has
     //  rudimentary knowledge of the approx bounds of players ships location as to decrease trial and error.
+    //  Potentially once n% of the board has been destroyed, we randomly guess from a vector of coordinates which have
+    //  not been fired upon. Taking this further we could actually store a cache of coords which have not been destroyed
+    //  which removes the retry logic entirely.
 
     int gridHeight = GameGrid::HEIGHT;
     int gridWidth = GameGrid::WIDTH;
@@ -581,6 +588,7 @@ attemptHitResponse Player::deployWarheadStrikeAutomatically(int attempts, bool i
         }
     }
 
+//    numberOfAttempts ++;
     return hitResponse;
 }
 
@@ -599,10 +607,10 @@ void Player::deployWarheadStrikesAutomatically() {
         renderCachedComputerWarheadDeploymentResponse(hitResponse, true, counter);
         counter ++;
     }
-
     if (shouldShowContinueGameConfirmationDialog()) {
         displayContinueGameConfirmationDialog(getGameFlowController());
     }
+    numberOfAttempts ++;
 }
 
 bool Player::hasPlayerLostAllShips() {

@@ -84,17 +84,17 @@ int Ship::getMaxLives() const {
 }
 
 Ship Ship::setLives(int lives_) {
-//    if (lives < 1){
-//        lives = 0;
-//        return *this;
-//    }
+    if (lives < 1){
+        lives = 0;
+        return *this;
+    }
 
     lives = lives_;
     return *this;
 }
 
 bool Ship::isSunk() const {
-    return lives == 0;
+    return lives <= 0;
 }
 
 Ship Ship::setShipCoordinatePositions(std::vector<shipCoordinatePosition> coordinatePositions) {

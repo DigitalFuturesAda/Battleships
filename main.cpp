@@ -51,12 +51,10 @@ int main() {
             hostController.renderWinConditionInterface();
             break;
         } else {
-            hostPlayer.renderPlayerUserInterface();
+//            hostPlayer.renderPlayerUserInterface();
 
             hostPlayer.deployWarheadStrikeAutomatically();
             secondaryPlayer.deployWarheadStrikeAutomatically();
         };
-
-        std::this_thread::sleep_for( std::chrono::milliseconds (250) );
     }
 }
