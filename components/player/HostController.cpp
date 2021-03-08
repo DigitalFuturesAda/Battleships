@@ -26,7 +26,7 @@ void HostController::renderWinConditionInterface() {
         std::cout << "In " << playerOneHost->numberOfAttempts << " attempts!" << std::endl;
     }
 
-    // Required for collecting a baseline
+    // Required for collecting statistics
     std::ofstream winningPlayerStatisticsFile;
     winningPlayerStatisticsFile.open ("winningPlayerStatisticsFile.csv", std::ios_base::app);
     winningPlayerStatisticsFile << winningPlayer << "\n";

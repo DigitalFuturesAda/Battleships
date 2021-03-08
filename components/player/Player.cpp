@@ -588,7 +588,7 @@ attemptHitResponse Player::deployWarheadStrikeAutomatically(int attempts, bool i
         }
     }
 
-//    numberOfAttempts ++;
+    numberOfAttempts ++;
     return hitResponse;
 }
 
@@ -607,9 +607,11 @@ void Player::deployWarheadStrikesAutomatically() {
         renderCachedComputerWarheadDeploymentResponse(hitResponse, true, counter);
         counter ++;
     }
+    
     if (shouldShowContinueGameConfirmationDialog()) {
         displayContinueGameConfirmationDialog(getGameFlowController());
     }
+
     numberOfAttempts ++;
 }
 
