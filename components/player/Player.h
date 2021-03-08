@@ -33,6 +33,11 @@ public:
      * versus computer.
      */
     static const bool SHOULD_SHOW_CONTINUE_GAME_CONFIRMATION_DIALOG_DURING_AUTOMATION = false;
+
+    /**
+     * Controls whether any log statements should be output.
+     */
+    static const bool SHOULD_SHOW_LOG_STATEMENTS_DURING_AUTOMATION = false;
     
     explicit Player(std::string playerName, GameFlowController& gameFlowController);
 
@@ -111,6 +116,8 @@ private:
     bool alsoRenderComputerBoard = false;
 
     int getNumberOfOperationalShips();
+
+    bool shouldRenderLogStatements();
 };
 
 #endif //BATTLESHIPS_PLAYER_H

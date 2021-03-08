@@ -53,8 +53,8 @@ int main() {
         } else {
 //            hostPlayer.renderPlayerUserInterface();
 
-            hostPlayer.deployWarheadStrikeAutomatically();
-            secondaryPlayer.deployWarheadStrikeAutomatically();
+            hostPlayer.deployWarheadStrikesAutomatically();
+            secondaryPlayer.deployWarheadStrikesAutomatically();
         };
     }
 }

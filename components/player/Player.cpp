@@ -344,14 +344,16 @@ void Player::renderStatisticsBoard() {
 void Player::renderPlayerUserInterface() {
     clearConsole();
 
-    renderPlayerGrid();
-    renderStatisticsBoard();
+    if (shouldRenderLogStatements()){
+        renderPlayerGrid();
+        renderStatisticsBoard();
 
-    std::cout << std::endl;
+        std::cout << std::endl;
+    }
 }
 
 void Player::renderCachedComputerWarheadDeploymentResponse(const attemptHitResponse& cachedHitResponse, bool isAutomaticAndRepeatedWarheadStrike, int repeatedWarheadStrikeAttempt) {
-    if (cachedHitResponse.validAttempt && isComputer){
+    if (cachedHitResponse.validAttempt && isComputer && shouldRenderLogStatements()){
         if (cachedHitResponse.didHitTarget){
             displayInformation((isAutomaticAndRepeatedWarheadStrike ? "\033[1;31mStrike " + std::to_string(repeatedWarheadStrikeAttempt) + " - " : "\033[1;31m")
                 + playerName + "'s attempt - \033[1;33mSuccessful warhead strike - hit a "
@@ -492,24 +494,28 @@ void Player::renderSalvoWarheadStrikeInterface(bool isRepeatingInputSequence, in
     for (const auto& coordinateNotationToHitResponse: coordinateNotationToHitResponses){
         if (coordinateNotationToHitResponse.second.validAttempt){
             shipsThatHaveFiredValidWarheadStrikes ++;
-            if (coordinateNotationToHitResponse.second.didHitTarget){
+            if (coordinateNotationToHitResponse.second.didHitTarget && shouldRenderLogStatements()){
                 displayInformation(
                         "\033[1;31mStrike " + std::to_string(counter) + ":\033[1;33m "
                         + "Successful warhead strike - hit a \033[1;31m" + Ship(coordinateNotationToHitResponse.second.hitNode.node).getName()
                         + "\033[1;33m at: \033[1;31m" + coordinateNotationToHitResponse.first + "\033[0m\n", 0);
             } else {
-                displayInformation(
-                        "\033[1;31mStrike " + std::to_string(counter) + ":\033[1;33m "
-                        + "Unsuccessful warhead strike at \033[1;31m"
-                        + coordinateNotationToHitResponse.first
-                        + "\033[1;33m - did not hit anything\n", 0);
+                if (shouldRenderLogStatements()){
+                    displayInformation(
+                            "\033[1;31mStrike " + std::to_string(counter) + ":\033[1;33m "
+                            + "Unsuccessful warhead strike at \033[1;31m"
+                            + coordinateNotationToHitResponse.first
+                            + "\033[1;33m - did not hit anything\n", 0);
+                }
             }
         } else {
-            displayInformation(
-                    "\033[1;31mStrike " + std::to_string(counter) + ": "
-                    + "Invalid \033[1;33mwarhead strike at \033[1;31m"
-                    + coordinateNotationToHitResponse.first +
-                    + "\033[1;33m - " + coordinateNotationToHitResponse.second.message + "\n", 0);
+            if (shouldRenderLogStatements()) {
+                displayInformation(
+                        "\033[1;31mStrike " + std::to_string(counter) + ": "
+                        + "Invalid \033[1;33mwarhead strike at \033[1;31m"
+                        + coordinateNotationToHitResponse.first +
+                        +"\033[1;33m - " + coordinateNotationToHitResponse.second.message + "\n", 0);
+            }
         }
 
         counter++;
@@ -533,7 +539,7 @@ void Player::renderWarheadStrikeInterface() {
     int yCoordinate = stoi(coordinateInput.matches[1]);
     attemptHitResponse response = executeWarheadStrike(convertToUpperCase(coordinateInput.matches[0]), yCoordinate);
 
-    if (response.validAttempt){
+    if (response.validAttempt && shouldRenderLogStatements()){
         // Update the board with the hit
         renderPlayerUserInterface();
         if (response.didHitTarget){
@@ -546,7 +552,9 @@ void Player::renderWarheadStrikeInterface() {
                 + "\033[1;33m - did not hit anything\n", 0);
         }
     } else {
-        displayError(response.message + ": ", 1);
+        if (shouldRenderLogStatements()) {
+            displayError(response.message + ": ", 1);
+        }
         return renderWarheadStrikeInterface();
     }
 
@@ -588,7 +596,6 @@ attemptHitResponse Player::deployWarheadStrikeAutomatically(int attempts, bool i
         }
     }
 
-    numberOfAttempts ++;
     return hitResponse;
 }
 
@@ -642,4 +649,9 @@ bool Player::isComputerPlayingAgainstComputer() {
 bool Player::shouldShowContinueGameConfirmationDialog() {
     return (!isComputer && opposingPlayer->isComputer) || (isComputer && !opposingPlayer->isComputer) ||
         (isComputerPlayingAgainstComputer() && SHOULD_SHOW_CONTINUE_GAME_CONFIRMATION_DIALOG_DURING_AUTOMATION);
+}
+
+bool Player::shouldRenderLogStatements() {
+    return (!isComputer && opposingPlayer->isComputer) || (isComputer && !opposingPlayer->isComputer) ||
+           (isComputerPlayingAgainstComputer() && SHOULD_SHOW_LOG_STATEMENTS_DURING_AUTOMATION);
 }
