@@ -12,3 +12,6 @@ of guesses - only valid guesses have been recorded in the graphs below.
 #### 10x10 board - computer simulation - 25000 games
 
 ![Number of guesses in a simulation of 25000 games on a 10x10 board](./readme-assets/10x10/random-algo-normdist.svg)
+
+#### 10x10 board - computer simulation - 25000 salvo games
+![Number of guesses in a simulation of 25000 salvo games on a 10x10 board](./readme-assets/10x10/random-algo-salvo-normdist.svg)

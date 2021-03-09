@@ -15,7 +15,7 @@ std::string GameGrid::renderGrid() {
 
     std::ostringstream stringStream;
 
-    stringStream << "X";
+    stringStream << "△";
 
     stringStream << std::string(horizontalPadding, ' ');
     for (int i = 1; i <= WIDTH; i ++){
