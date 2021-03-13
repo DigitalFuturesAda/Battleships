@@ -248,9 +248,10 @@ bool Player::deployShipInterface(int shipVertexPosition){
             hasDisplayedTip = true;
         }
 
+        // TODO(slyo): Finish off this implementation.
         regexMatch coordinateInput = getRegexInputWithPromptAsRegex(
                 "Enter where you want to move your " + ship.getName() + " (eg. A1 or H8): ",
-                std::regex("([A-a-Z-z](?:[A-a-B-b])?)([1-9](?:[1-10])?)"));
+                std::regex("([A-a-Z-z](?:[A-a-B-b])?)([1-9](?:[1-10])?)|!?(AUTO)|^\\s*$"));
 
         std::string orientation = getRegexInputWithPromptAsString(
                 "Enter ship orientation (vertical/horizontal/v/h): ",
@@ -449,6 +450,8 @@ void Player::renderSalvoWarheadStrikeInterface(bool isRepeatingInputSequence, in
     std::string multipleCoordinatesNotationInput;
     int numberOfOperationalShips = getNumberOfOperationalShips() - shipsThatHaveFiredValidWarheadStrikes;
 
+    displayInformation("[TIP]: Leave the input blank or type AUTO to automatically fire all your warheads\n");
+
     if (isRepeatingInputSequence){
         multipleCoordinatesNotationInput = getStringWithPrompt(
                 "Enter an equal number of coordinates to fire upon (eg. A1 C2 F3): ");
@@ -459,43 +462,52 @@ void Player::renderSalvoWarheadStrikeInterface(bool isRepeatingInputSequence, in
                 + ", enter an equal number of coordinates to fire upon (eg. A1 C2 F3): ");
     }
 
-    std::vector<std::string> coordinateNotationInputVector = splitAtCharacterIntoVector(multipleCoordinatesNotationInput, ' ');
+    std::vector<std::string> coordinateNotationInputVector;
     std::vector<std::pair<std::string, int>> letterToIntCoordinateNotation {};
     std::vector<std::pair<std::string, attemptHitResponse>> coordinateNotationToHitResponses {};
 
+    if (multipleCoordinatesNotationInput.empty() || convertToUpperCase(multipleCoordinatesNotationInput) == "AUTO") {
+        for (int i = 0; i < numberOfOperationalShips; i++){
+            attemptHitResponse response = deployWarheadStrikeAutomatically();
+            coordinateNotationToHitResponses.emplace_back(std::pair<std::string, attemptHitResponse>(
+                    convertIncrementingIntegerToAlpha(response.hitNode.x + 1) + std::to_string(response.hitNode.y + 1),
+                    response));
+        }
+    } else {
+        coordinateNotationInputVector = splitAtCharacterIntoVector(multipleCoordinatesNotationInput, ' ');
 
-    if (coordinateNotationInputVector.size() != numberOfOperationalShips){
-        displayError(
-                "You have not entered an equal number of coordinates to operational ships - "
-                + std::to_string(numberOfOperationalShips)
-                + " remaining warhead strike" + (numberOfOperationalShips > 1 ? "s" : "") + "\n",
-                isRepeatingInputSequence ? 2 : 1);
-        return renderSalvoWarheadStrikeInterface(true, shipsThatHaveFiredValidWarheadStrikes);
-    }
-
-    for (auto&& notation: coordinateNotationInputVector){
-        if (!regex_match(notation, BATTLESHIP_INPUT_NOTATION)){
-            displayError("Your input: " + notation + " is invalid. Please enter again\n", isRepeatingInputSequence ? 2 : 1);
-            return renderSalvoWarheadStrikeInterface(false, shipsThatHaveFiredValidWarheadStrikes);
+        if (coordinateNotationInputVector.size() != numberOfOperationalShips){
+            displayError(
+                    "You have not entered an equal number of coordinates to operational ships - "
+                    + std::to_string(numberOfOperationalShips)
+                    + " remaining warhead strike" + (numberOfOperationalShips > 1 ? "s" : "") + "\n",
+                    isRepeatingInputSequence ? 2 : 1);
+            return renderSalvoWarheadStrikeInterface(true, shipsThatHaveFiredValidWarheadStrikes);
         }
 
-        regexMatch matchedNotation = getRegexMatchWithString(notation, BATTLESHIP_INPUT_NOTATION);
+        for (auto&& notation: coordinateNotationInputVector){
+            if (!regex_match(notation, BATTLESHIP_INPUT_NOTATION)){
+                displayError("Your input: " + notation + " is invalid. Please enter again\n", isRepeatingInputSequence ? 2 : 1);
+                return renderSalvoWarheadStrikeInterface(false, shipsThatHaveFiredValidWarheadStrikes);
+            }
 
-        letterToIntCoordinateNotation.emplace_back(std::pair<std::string, int>{
-                matchedNotation.matches[0],
-                stoi(matchedNotation.matches[1])
-        });
-    }
+            regexMatch matchedNotation = getRegexMatchWithString(notation, BATTLESHIP_INPUT_NOTATION);
 
-    for (const std::pair<std::string, int>& notation: letterToIntCoordinateNotation){
-        coordinateNotationToHitResponses.emplace_back(std::pair<std::string, attemptHitResponse>{
-                convertToUpperCase(notation.first) + std::to_string(notation.second),
-                executeWarheadStrike(convertToUpperCase(notation.first), notation.second)
-        });
+            letterToIntCoordinateNotation.emplace_back(std::pair<std::string, int>{
+                    matchedNotation.matches[0],
+                    stoi(matchedNotation.matches[1])
+            });
+        }
+
+        for (const std::pair<std::string, int>& notation: letterToIntCoordinateNotation){
+            coordinateNotationToHitResponses.emplace_back(std::pair<std::string, attemptHitResponse>{
+                    convertToUpperCase(notation.first) + std::to_string(notation.second),
+                    executeWarheadStrike(convertToUpperCase(notation.first), notation.second)
+            });
+        }
     }
 
     int counter = 1;
-
     renderPlayerUserInterface();
     for (const auto& coordinateNotationToHitResponse: coordinateNotationToHitResponses){
         if (coordinateNotationToHitResponse.second.validAttempt){
@@ -538,16 +550,29 @@ void Player::renderSalvoWarheadStrikeInterface(bool isRepeatingInputSequence, in
 }
 
 void Player::renderWarheadStrikeInterface() {
+    displayInformation("[TIP]: Leave the input blank or type AUTO to automatically fire your warheads\n");
+
     regexMatch coordinateInput = getRegexInputWithPromptAsRegex(
             "Enter a coordinate to deploy your warhead strike (eg. A1 or H8): ",
             BATTLESHIP_INPUT_NOTATION);
+    attemptHitResponse response;
+    bool automaticHitResponse = false;
 
-    int yCoordinate = stoi(coordinateInput.matches[1]);
-    attemptHitResponse response = executeWarheadStrike(convertToUpperCase(coordinateInput.matches[0]), yCoordinate);
+    if (coordinateInput.match.empty() || convertToUpperCase(coordinateInput.match) == "AUTO"){
+        response = deployWarheadStrikeAutomatically(0, false);
+        automaticHitResponse = true;
+    } else {
+        int yCoordinate = stoi(coordinateInput.matches[1]);
+        response = executeWarheadStrike(convertToUpperCase(coordinateInput.matches[0]), yCoordinate);
+    }
 
     if (response.validAttempt && shouldRenderLogStatements()){
         // Update the board with the hit
         renderPlayerUserInterface();
+        if (automaticHitResponse){
+            // The usage of displayError is used because this changes the colour to differentiate between displayInformation
+            displayError("Automatic warhead strike - ");
+        }
         if (response.didHitTarget){
             displayInformation(
                     "Successful warhead strike - hit a \033[1;31m" + Ship(response.hitNode.node).getName()
@@ -575,9 +600,6 @@ attemptHitResponse Player::deployWarheadStrikeAutomatically(int attempts, bool i
     //  Potentially once n% of the board has been destroyed, we randomly guess from a vector of coordinates which have
     //  not been fired upon. Taking this further we could actually store a cache of coords which have not been destroyed
     //  which removes the retry logic entirely.
-
-    int gridHeight = GameGrid::HEIGHT;
-    int gridWidth = GameGrid::WIDTH;
 
     attemptHitResponse hitResponse;
 

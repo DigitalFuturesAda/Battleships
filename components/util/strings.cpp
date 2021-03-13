@@ -5,7 +5,7 @@
 #include "strings.h"
 #include <string>
 
-std::regex BATTLESHIP_INPUT_NOTATION = std::regex("([A-a-Z-z](?:[A-a-B-b])?)([1-9](?:[1-10])?)");
+std::regex BATTLESHIP_INPUT_NOTATION = std::regex("([A-a-Z-z](?:[A-a-B-b])?)([1-9](?:[1-10])?)|!?([A-a][U-u][T-u][O-o])|^\\s*$");
 
 /**
  * Converts a counter to it's numerical unicode equivalent.

@@ -34,7 +34,7 @@ int main() {
 
     // We call this afterwards, as this augments the computer board onto the player board
     hostPlayer.setPlayingAgainstComputer();
-    secondaryPlayer.setPlayingAgainstComputer();
+//    secondaryPlayer.setPlayingAgainstComputer();
 
     // These calls should happen AFTER all ships have been deployed
     hostPlayer.deployMultipleRandomlyPositionedMines();
@@ -52,9 +52,9 @@ int main() {
             break;
         } else {
             hostPlayer.renderPlayerUserInterface();
-//            hostPlayer.renderWarheadStrikeInterface();
+            hostPlayer.renderSalvoWarheadStrikeInterface();
 
-            hostPlayer.deployWarheadStrikesAutomatically();
+//            hostPlayer.deployWarheadStrikesAutomatically();
             secondaryPlayer.deployWarheadStrikesAutomatically();
         };
     }
