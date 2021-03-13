@@ -51,7 +51,8 @@ int main() {
             hostController.renderWinConditionInterface();
             break;
         } else {
-//            hostPlayer.renderPlayerUserInterface();
+            hostPlayer.renderPlayerUserInterface();
+//            hostPlayer.renderWarheadStrikeInterface();
 
             hostPlayer.deployWarheadStrikesAutomatically();
             secondaryPlayer.deployWarheadStrikesAutomatically();

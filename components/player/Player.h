@@ -22,6 +22,15 @@ struct adjacentNodeEntry {
     adjacentNodeEntry() = default;
 };
 
+struct nodeEntryCoordinate {
+    int x {};
+    int y {};
+
+    nodeEntryCoordinate(int x, int y) : x(x), y(y) {}
+
+    nodeEntryCoordinate() = default;
+};
+
 class Player {
 public:
 
@@ -37,7 +46,7 @@ public:
     /**
      * Controls whether any log statements should be output.
      */
-    static const bool SHOULD_SHOW_LOG_STATEMENTS_DURING_AUTOMATION = false;
+    static const bool SHOULD_SHOW_LOG_STATEMENTS_DURING_AUTOMATION = true;
     
     explicit Player(std::string playerName, GameFlowController& gameFlowController);
 
@@ -118,6 +127,8 @@ private:
     int getNumberOfOperationalShips();
 
     bool shouldRenderLogStatements();
+
+    std::vector<nodeEntryCoordinate> potentialNodes;
 };
 
 #endif //BATTLESHIPS_PLAYER_H

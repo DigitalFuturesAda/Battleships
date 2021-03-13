@@ -22,6 +22,12 @@ Player::Player(std::string playerName, GameFlowController &gameFlowController) {
     };
     this->playerName = std::move(playerName);
     this->gameFlowController = &gameFlowController;
+
+    for (int i = 0; i <= GameGrid::WIDTH; i++){
+        for (int v = 0; v <= GameGrid::HEIGHT; v++){
+            potentialNodes.emplace_back(i, v);
+        }
+    }
 }
 
 attemptPlacementResponse Player::deployShip(int position, const std::string& letterIndex, int y, Orientation orientation) {
@@ -572,14 +578,15 @@ attemptHitResponse Player::deployWarheadStrikeAutomatically(int attempts, bool i
 
     int gridHeight = GameGrid::HEIGHT;
     int gridWidth = GameGrid::WIDTH;
+
     attemptHitResponse hitResponse;
 
     while (!hitResponse.validAttempt){
-        int randomXCoordinate = randomBetween19937(0, gridWidth);
-        int randomYCoordinate = randomBetween19937(0, gridHeight);
+        int randomIndex = randomBetween19937(0, potentialNodes.size());
+        nodeEntryCoordinate randomNode = potentialNodes[randomIndex];
 
-        std::string letter = convertToUpperCase(convertIncrementingIntegerToAlpha(randomXCoordinate));
-        hitResponse = executeWarheadStrike(letter, randomYCoordinate);
+        std::string letter = convertToUpperCase(convertIncrementingIntegerToAlpha(randomNode.x));
+        hitResponse = executeWarheadStrike(letter, randomNode.y);
 
         if (attempts == MAX_WARHEAD_STRIKES_ATTEMPTS){
             displayError("Max strikes attempted reached, please increase the board size", 0);
