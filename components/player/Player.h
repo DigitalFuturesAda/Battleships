@@ -129,6 +129,10 @@ private:
     bool shouldRenderLogStatements();
 
     std::vector<nodeEntryCoordinate> potentialNodes;
+
+    void pushNodeAsAlphaIntoVector(int x, int y, std::vector<adjacentNodeEntry> *adjacentNodeEntries);
+
+    std::vector<adjacentNodeEntry> getAdjacentNodes(int x, int y);
 };
 
 #endif //BATTLESHIPS_PLAYER_H

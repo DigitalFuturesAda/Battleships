@@ -4,6 +4,7 @@
 
 #include "GameGrid.h"
 #include "../util/strings.h"
+#include "../config/ConfigSingleton.h"
 #include <iostream>
 #include <utility>
 #include <absl/strings/str_format.h>
@@ -11,14 +12,14 @@
 
 std::string GameGrid::renderGrid() {
     int verticalCounter = 1;
-    int horizontalPadding = std::to_string(HEIGHT).length();
+    int horizontalPadding = std::to_string(getGridHeight()).length();
 
     std::ostringstream stringStream;
 
     stringStream << "X";
 
     stringStream << std::string(horizontalPadding, ' ');
-    for (int i = 1; i <= WIDTH; i ++){
+    for (int i = 1; i <= getGridWidth(); i ++){
         std::string horizontalText = " " + convertIncrementingIntegerToAlpha(i) + " ";
         stringStream << horizontalText;
     }
@@ -39,7 +40,7 @@ std::string GameGrid::renderGrid() {
 }
 
 int GameGrid::getObservableGridWidth() {
-    return (WIDTH * 3) + 5;
+    return (getGridWidth() * 3) + 5;
 }
 
 std::string GameGrid::formatNode(GridNodes node) {
@@ -161,7 +162,7 @@ attemptPlacementResponse GameGrid::attemptPlacement(int x, int y, GridNodes node
     std::vector<shipCoordinatePosition> shipCoordinatePositions;
 
     // Ensure x,y coords are within the confines of the grid.
-    if (y >= HEIGHT || x >= WIDTH || y < 0 || x < 0){
+    if (y >= getGridHeight() || x >= getGridWidth() || y < 0 || x < 0){
         return attemptPlacementResponse(false, "xy coordinates not within the confines of the grid");
     }
 
@@ -173,7 +174,7 @@ attemptPlacementResponse GameGrid::attemptPlacement(int x, int y, GridNodes node
     }
 
     if (orientation == VERTICAL){
-        if (y + entityConstraints > HEIGHT){
+        if (y + entityConstraints > getGridHeight()){
             return attemptPlacementResponse(false, "Entity height exceeds grid dimensions");
         }
 
@@ -196,7 +197,7 @@ attemptPlacementResponse GameGrid::attemptPlacement(int x, int y, GridNodes node
                     convertIncrementingIntegerToAlpha(x + 1), i + 1);
         }
     } else {
-        if (x + entityConstraints > WIDTH){
+        if (x + entityConstraints > getGridWidth()){
             return attemptPlacementResponse(false, "Entity width exceeds grid dimensions");
         }
 
@@ -237,7 +238,7 @@ attemptPlacementResponse GameGrid::checkIfNodeExists(std::string letter, int num
     // Arrays start at 0
     int y = number - 1;
 
-    if (y > HEIGHT - 1|| x > WIDTH){
+    if (y > getGridHeight() - 1|| x > getGridWidth()){
         return attemptPlacementResponse(false, "xy coordinates not within the confines of the grid");
     }
 
@@ -260,12 +261,23 @@ attemptHitResponse GameGrid::receiveWarheadStrike(std::string letter, int number
     return attemptHitResponse(false, hitResponse.message);
 }
 
-
 GameGrid::GameGrid() {
-    for (int i = 0; i < HEIGHT; i++){
-        battleshipGameGrid.push_back(std::vector<GridNodes>(WIDTH));
-        for (int x = 0; x < WIDTH; x++){
+    configBoardDimensions dimensions = ConfigSingleton::getInstance()->getValidator().getBoardDimensions();
+    gridHeight = dimensions.height;
+    gridWidth = dimensions.width;
+
+    for (int i = 0; i < gridHeight; i++){
+        battleshipGameGrid.push_back(std::vector<GridNodes>(gridWidth));
+        for (int x = 0; x < gridWidth; x++){
             battleshipGameGrid[i][x] = EMPTY;
         }
     }
+}
+
+int GameGrid::getGridHeight() const {
+    return gridHeight;
+}
+
+int GameGrid::getGridWidth() const {
+    return gridWidth;
 };

@@ -108,11 +108,8 @@ class GameGrid {
 public:
     GameGrid();
 
-    static const int HEIGHT = 10;
-    static const int WIDTH = 10;
-
     std::string renderGrid();
-    static int getObservableGridWidth();
+    int getObservableGridWidth();
     static int getEntityConstraints(GridNodes placeableNodes);
 
     attemptPlacementResponse attemptPlacement(int x, int y, GridNodes node, Orientation orientation);
@@ -121,13 +118,17 @@ public:
 
     attemptHitResponse receiveWarheadStrike(std::string letter, int number);
 
-//    GridNodes battleshipGameGrid[HEIGHT][WIDTH] = {};
-
     std::vector<std::vector<GridNodes>> battleshipGameGrid = {};
+
+    [[nodiscard]] int getGridHeight() const;
+
+    [[nodiscard]] int getGridWidth() const;
 
 private:
     static std::string formatNode(GridNodes node);
 
+    int gridHeight;
+    int gridWidth;
 };
 
 

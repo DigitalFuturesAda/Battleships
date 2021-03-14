@@ -13,8 +13,11 @@
 #include <thread>
 #include <chrono>
 
-int main2() {
+int main() {
     srand( time( nullptr ) );
+
+    ConfigValidator configValidator("config.ini");
+    ConfigSingleton::getInstance()->setValidator(configValidator);
 
     GameFlowController gameFlowController;
 
@@ -58,10 +61,4 @@ int main2() {
             secondaryPlayer.deployWarheadStrikesAutomatically();
         };
     }
-}
-
-int main() {
-    ConfigValidator configValidator("config.ini");
-    ConfigSingleton* configSingleton = ConfigSingleton::getInstance();
-    configSingleton->setValidator(configValidator);
 }

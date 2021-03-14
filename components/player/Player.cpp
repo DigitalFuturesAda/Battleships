@@ -23,8 +23,8 @@ Player::Player(std::string playerName, GameFlowController &gameFlowController) {
     this->playerName = std::move(playerName);
     this->gameFlowController = &gameFlowController;
 
-    for (int i = 0; i <= GameGrid::WIDTH; i++){
-        for (int v = 0; v <= GameGrid::HEIGHT; v++){
+    for (int i = 0; i <= getGameGrid()->getGridWidth(); i++){
+        for (int v = 0; v <= getGameGrid()->getGridHeight(); v++){
             potentialNodes.emplace_back(i, v);
         }
     }
@@ -87,12 +87,12 @@ bool hitMine(GridNodes hitNode){
     }
 }
 
-void pushNodeAsAlphaIntoVector(int x, int y, std::vector<adjacentNodeEntry> *adjacentNodeEntries){
-    if (x < 1 || y < 1 || y > GameGrid::HEIGHT || x > GameGrid::WIDTH) return;
+void Player::pushNodeAsAlphaIntoVector(int x, int y, std::vector<adjacentNodeEntry> *adjacentNodeEntries){
+    if (x < 1 || y < 1 || y > getGameGrid()->getGridHeight() || x > getGameGrid()->getGridWidth()) return;
     adjacentNodeEntries->push_back(adjacentNodeEntry(convertIncrementingIntegerToAlpha(x), y));
 }
 
-std::vector<adjacentNodeEntry> getAdjacentNodes(int x, int y){
+std::vector<adjacentNodeEntry> Player::getAdjacentNodes(int x, int y){
     int currentNodeY = y + 1;
     int currentNodeX = x + 1;
     std::vector<adjacentNodeEntry> adjacentNodeEntries = {};
@@ -290,8 +290,8 @@ void Player::renderPlayerGrid() {
 
     playerBattleshipGameTable.add_row({playerName + "'s Game board", playerName + "'s Hit board"});
 
-    playerBattleshipGameTable.column(0).format().width(GameGrid::getObservableGridWidth());
-    playerBattleshipGameTable.column(1).format().width(GameGrid::getObservableGridWidth());
+    playerBattleshipGameTable.column(0).format().width(getGameGrid()->getObservableGridWidth());
+    playerBattleshipGameTable.column(1).format().width(getGameGrid()->getObservableGridWidth());
 
     playerBattleshipGameTable.add_row({getGameGrid()->renderGrid(), getHitGrid()->renderGrid()});
 
@@ -407,8 +407,8 @@ bool Player::deployWarshipAutomatically(int shipVertexPosition, int attempts) {
     Orientation randomOrientation = randomBool() ? VERTICAL : HORIZONTAL;
 
     int length = ship.getMaxLives();
-    int gridHeight = GameGrid::HEIGHT;
-    int gridWidth = GameGrid::WIDTH;
+    int gridHeight = getGameGrid()->getGridHeight();
+    int gridWidth = getGameGrid()->getGridWidth();
 
     attemptPlacementResponse response;
 
@@ -675,8 +675,8 @@ void Player::deployMultipleRandomlyPositionedMines() {
         attemptPlacementResponse mineDeploymentResponse;
 
         while (!mineDeploymentResponse.success){
-            int randomXCoordinate = randomBetween19937(0, GameGrid::WIDTH);
-            int randomYCoordinate = randomBetween19937(0, GameGrid::HEIGHT);
+            int randomXCoordinate = randomBetween19937(0, getGameGrid()->getGridWidth());
+            int randomYCoordinate = randomBetween19937(0, getGameGrid()->getGridHeight());
             mineDeploymentResponse = deployMine(randomXCoordinate, randomYCoordinate);
         }
     }
