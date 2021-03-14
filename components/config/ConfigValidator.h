@@ -29,6 +29,8 @@ class ConfigValidator {
 public:
     std::string configFilePath;
 
+    ConfigValidator() = default;
+
     explicit ConfigValidator(const std::string &configFilePath);
 
     configBoardDimensions getBoardDimensions();

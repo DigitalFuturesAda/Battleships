@@ -9,6 +9,7 @@
 #include "components/util/rand.h"
 #include "components/config/ConfigFileParser.h"
 #include "components/config/ConfigValidator.h"
+#include "components/config/ConfigSingleton.h"
 #include <thread>
 #include <chrono>
 
@@ -17,8 +18,8 @@ int main2() {
 
     GameFlowController gameFlowController;
 
-    Player hostPlayer("Jarvis", gameFlowController);
-    Player secondaryPlayer("Ultron", gameFlowController);
+    Player hostPlayer("Suraj", gameFlowController);
+    Player secondaryPlayer("Computer", gameFlowController);
 
     secondaryPlayer.setOpposingPlayer(&hostPlayer);
     hostPlayer.setOpposingPlayer(&secondaryPlayer);
@@ -33,7 +34,7 @@ int main2() {
 
     // We call this afterwards, as this augments the computer board onto the player board
     hostPlayer.setPlayingAgainstComputer();
-    secondaryPlayer.setPlayingAgainstComputer();
+//    secondaryPlayer.setPlayingAgainstComputer();
 
     // These calls should happen AFTER all ships have been deployed
     hostPlayer.deployMultipleRandomlyPositionedMines();
@@ -51,7 +52,7 @@ int main2() {
             break;
         } else {
             hostPlayer.renderPlayerUserInterface();
-//            hostPlayer.renderSalvoWarheadStrikeInterface();
+            hostPlayer.renderSalvoWarheadStrikeInterface();
 
             hostPlayer.deployWarheadStrikesAutomatically();
             secondaryPlayer.deployWarheadStrikesAutomatically();
@@ -61,8 +62,6 @@ int main2() {
 
 int main() {
     ConfigValidator configValidator("config.ini");
-    configValidator.getBoardDimensions();
-    configValidator.getShipInventory();
-
-    std::cout<<std::endl;
+    ConfigSingleton* configSingleton = ConfigSingleton::getInstance();
+    configSingleton->setValidator(configValidator);
 }

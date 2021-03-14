@@ -4,7 +4,6 @@
 
 #include "ConfigValidator.h"
 #include "../util/io.h"
-#include <iostream>
 #include <regex>
 
 ConfigValidator::ConfigValidator(const std::string &configFilePath) : configFilePath(configFilePath) {
@@ -44,6 +43,8 @@ configBoardDimensions ConfigValidator::getBoardDimensions() {
 }
 
 std::vector<configShipInventory> ConfigValidator::getShipInventory() {
+    // TODO(slyo): Implement caching
+
     std::vector<std::string> shipInventory = configFileParser.getProperties("Ship");
     std::vector<configShipInventory> shipInventoryComputed = {};
 
@@ -58,6 +59,8 @@ std::vector<configShipInventory> ConfigValidator::getShipInventory() {
 }
 
 configShipInventory ConfigValidator::matchShipInventory(const std::string& shipNotation){
+    // TODO(slyo): Implement caching
+
     std::regex shipNotationRegex = std::regex("(Carrier|Battleship|Destroyer|Submarine|Patrol Boat),\\s?(\\d+),\\s?(\\d+)");
 
     if (!regex_match(shipNotation, shipNotationRegex)){
