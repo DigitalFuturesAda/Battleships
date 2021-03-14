@@ -54,7 +54,7 @@ int main() {
             hostPlayer.renderPlayerUserInterface();
             hostPlayer.renderSalvoWarheadStrikeInterface();
 
-            hostPlayer.deployWarheadStrikesAutomatically();
+//            hostPlayer.deployWarheadStrikesAutomatically();
             secondaryPlayer.deployWarheadStrikesAutomatically();
         };
     }

@@ -457,6 +457,7 @@ void Player::deployWarshipsAutomatically() {
 
 void Player::renderSalvoWarheadStrikeInterface(bool isRepeatingInputSequence, int shipsThatHaveFiredValidWarheadStrikes) {
     std::string multipleCoordinatesNotationInput;
+    bool hasInitiatedAutomaticWarheadStrike = false;
     int numberOfOperationalShips = getNumberOfOperationalShips() - shipsThatHaveFiredValidWarheadStrikes;
 
     displayInformation("[TIP]: Leave the input blank or type AUTO to automatically fire all your warheads\n");
@@ -482,6 +483,7 @@ void Player::renderSalvoWarheadStrikeInterface(bool isRepeatingInputSequence, in
                     convertIncrementingIntegerToAlpha(response.hitNode.x + 1) + std::to_string(response.hitNode.y + 1),
                     response));
         }
+        hasInitiatedAutomaticWarheadStrike = true;
     } else {
         coordinateNotationInputVector = splitAtCharacterIntoVector(multipleCoordinatesNotationInput, ' ');
 
@@ -490,13 +492,13 @@ void Player::renderSalvoWarheadStrikeInterface(bool isRepeatingInputSequence, in
                     "You have not entered an equal number of coordinates to operational ships - "
                     + std::to_string(numberOfOperationalShips)
                     + " remaining warhead strike" + (numberOfOperationalShips > 1 ? "s" : "") + "\n",
-                    isRepeatingInputSequence ? 2 : 1);
+                    isRepeatingInputSequence ? 3 : 2);
             return renderSalvoWarheadStrikeInterface(true, shipsThatHaveFiredValidWarheadStrikes);
         }
 
         for (auto&& notation: coordinateNotationInputVector){
             if (!regex_match(notation, BATTLESHIP_INPUT_NOTATION)){
-                displayError("Your input: " + notation + " is invalid. Please enter again\n", isRepeatingInputSequence ? 2 : 1);
+                displayError("Your input: " + notation + " is invalid. Please enter again\n", isRepeatingInputSequence ? 3 : 2);
                 return renderSalvoWarheadStrikeInterface(false, shipsThatHaveFiredValidWarheadStrikes);
             }
 
@@ -548,7 +550,7 @@ void Player::renderSalvoWarheadStrikeInterface(bool isRepeatingInputSequence, in
         counter++;
     }
 
-    if (shouldShowContinueGameConfirmationDialog()){
+    if (shouldShowContinueGameConfirmationDialog() && !hasInitiatedAutomaticWarheadStrike && counter != 1){
         displayContinueGameConfirmationDialog(getGameFlowController());
     }
 
