@@ -7,14 +7,12 @@
 #include "components/player/HostController.h"
 #include "components/player/GameFlowController.h"
 #include "components/util/rand.h"
+#include "components/config/ConfigFileParser.h"
 #include <thread>
 #include <chrono>
 
-int main() {
+int main2() {
     srand( time( nullptr ) );
-
-    // TODO(slyo): Refactor this so that it inherits from a configuration class.
-    constexpr bool IS_PLAYING_SALVO = false;
 
     GameFlowController gameFlowController;
 
@@ -34,7 +32,7 @@ int main() {
 
     // We call this afterwards, as this augments the computer board onto the player board
     hostPlayer.setPlayingAgainstComputer();
-//    secondaryPlayer.setPlayingAgainstComputer();
+    secondaryPlayer.setPlayingAgainstComputer();
 
     // These calls should happen AFTER all ships have been deployed
     hostPlayer.deployMultipleRandomlyPositionedMines();
@@ -52,10 +50,24 @@ int main() {
             break;
         } else {
             hostPlayer.renderPlayerUserInterface();
-            hostPlayer.renderSalvoWarheadStrikeInterface();
+//            hostPlayer.renderSalvoWarheadStrikeInterface();
 
-//            hostPlayer.deployWarheadStrikesAutomatically();
+            hostPlayer.deployWarheadStrikesAutomatically();
             secondaryPlayer.deployWarheadStrikesAutomatically();
         };
     }
+}
+
+int main() {
+    ConfigFileParser fileParser("config.ini");
+    fileParser.parseFile();
+
+    std::map<std::string, std::vector<std::string>> properties = fileParser.getAssociativeProperties();
+    std::cout << properties.at("Board").at(0) << std::endl;
+
+    std::cout << properties.at("Ship").at(0) << std::endl;
+    std::cout << properties.at("Ship").at(1) << std::endl;
+    std::cout << properties.at("Ship").at(2) << std::endl;
+    std::cout << properties.at("Ship").at(3) << std::endl;
+
 }
