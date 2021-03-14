@@ -161,7 +161,7 @@ attemptPlacementResponse GameGrid::attemptPlacement(int x, int y, GridNodes node
     std::vector<shipCoordinatePosition> shipCoordinatePositions;
 
     // Ensure x,y coords are within the confines of the grid.
-    if (y > HEIGHT || x >= WIDTH){
+    if (y >= HEIGHT || x >= WIDTH || y < 0 || x < 0){
         return attemptPlacementResponse(false, "xy coordinates not within the confines of the grid");
     }
 
@@ -262,7 +262,10 @@ attemptHitResponse GameGrid::receiveWarheadStrike(std::string letter, int number
 
 
 GameGrid::GameGrid() {
-    for ( auto & v : battleshipGameGrid )
-        for ( auto & e : v )
-            e = EMPTY;
+    for (int i = 0; i < HEIGHT; i++){
+        battleshipGameGrid.push_back(std::vector<GridNodes>(WIDTH));
+        for (int x = 0; x < WIDTH; x++){
+            battleshipGameGrid[i][x] = EMPTY;
+        }
+    }
 };

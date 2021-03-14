@@ -12,6 +12,5 @@ add_executable(battleships
         lib/tabulate.hpp
         components/grid/GameGrid.cpp components/grid/GameGrid.h components/util/strings.cpp components/util/strings.h components/player/Player.cpp components/player/Player.h components/ship/Ship.cpp components/ship/Ship.h components/grid/HitGrid.cpp components/grid/HitGrid.h components/util/io.cpp components/util/io.h components/util/rand.cpp components/util/rand.h components/player/HostController.cpp components/player/HostController.h components/player/GameFlowController.cpp components/player/GameFlowController.h)
 
-target_link_libraries(battleships
-        absl::base absl::strings absl::str_format)
+target_link_libraries(battleships absl::str_format)
 set_target_properties(battleships PROPERTIES CXX_STANDARD 17)

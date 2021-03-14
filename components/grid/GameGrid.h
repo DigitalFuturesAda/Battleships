@@ -121,7 +121,9 @@ public:
 
     attemptHitResponse receiveWarheadStrike(std::string letter, int number);
 
-    GridNodes battleshipGameGrid[HEIGHT][WIDTH] = {};
+//    GridNodes battleshipGameGrid[HEIGHT][WIDTH] = {};
+
+    std::vector<std::vector<GridNodes>> battleshipGameGrid = {};
 
 private:
     static std::string formatNode(GridNodes node);

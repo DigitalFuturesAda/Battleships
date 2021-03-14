@@ -26,7 +26,7 @@ int main() {
 
     HostController hostController(&hostPlayer, &secondaryPlayer);
 
-//    hostPlayer.deployWarshipsAutomatically();
+    hostPlayer.deployWarshipsAutomatically();
     secondaryPlayer.deployWarshipsAutomatically();
 
     // Render the ship deployment UI with a sample of the board, this will be no-op if all ships are deployed.
@@ -54,7 +54,7 @@ int main() {
             hostPlayer.renderPlayerUserInterface();
             hostPlayer.renderSalvoWarheadStrikeInterface();
 
-//            hostPlayer.deployWarheadStrikesAutomatically();
+            hostPlayer.deployWarheadStrikesAutomatically();
             secondaryPlayer.deployWarheadStrikesAutomatically();
         };
     }
