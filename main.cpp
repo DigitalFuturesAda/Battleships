@@ -8,6 +8,7 @@
 #include "components/player/GameFlowController.h"
 #include "components/util/rand.h"
 #include "components/config/ConfigFileParser.h"
+#include "components/config/ConfigValidator.h"
 #include <thread>
 #include <chrono>
 
@@ -59,15 +60,9 @@ int main2() {
 }
 
 int main() {
-    ConfigFileParser fileParser("config.ini");
-    fileParser.parseFile();
+    ConfigValidator configValidator("config.ini");
+    configValidator.getBoardDimensions();
+    configValidator.getShipInventory();
 
-    std::map<std::string, std::vector<std::string>> properties = fileParser.getAssociativeProperties();
-    std::cout << properties.at("Board").at(0) << std::endl;
-
-    std::cout << properties.at("Ship").at(0) << std::endl;
-    std::cout << properties.at("Ship").at(1) << std::endl;
-    std::cout << properties.at("Ship").at(2) << std::endl;
-    std::cout << properties.at("Ship").at(3) << std::endl;
-
+    std::cout<<std::endl;
 }

@@ -14,11 +14,15 @@ class ConfigFileParser {
 public:
     std::string configFilePath;
 
+    ConfigFileParser() = default;
+
     explicit ConfigFileParser(std::string configFilePath);
 
     ConfigFileParser parseFile();
 
-    std::map<std::string, std::vector<std::string>> getAssociativeProperties();
+    std::vector<std::string> getProperties(const std::string& property);
+
+    std::string getProperty(const std::string& property);
 
 private:
     std::map<std::string, std::vector<std::string>> associativePropertiesMap = {};

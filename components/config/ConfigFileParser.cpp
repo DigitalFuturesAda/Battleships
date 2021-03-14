@@ -7,10 +7,11 @@
 
 #include <utility>
 #include <fstream>
-#include <sstream>
 #include <iostream>
 #include <absl/strings/ascii.h>
 #include <map>
+
+ConfigFileParser::ConfigFileParser(std::string configFilePath) : configFilePath(std::move(configFilePath)) {}
 
 ConfigFileParser ConfigFileParser::parseFile() {
     std::regex iniNotation = std::regex("([^\\s]+)[ ]?=\\s?(.*[^=])");
@@ -46,7 +47,7 @@ ConfigFileParser ConfigFileParser::parseFile() {
 
         if (associativePropertiesMap.find(property) == associativePropertiesMap.end()){
             associativePropertiesMap.insert(std::pair<std::string, std::vector<std::string>>{
-                property, {value}
+                property, { value }
             });
         } else {
             associativePropertiesMap.at(property).emplace_back(value);
@@ -57,8 +58,17 @@ ConfigFileParser ConfigFileParser::parseFile() {
     return *this;
 }
 
-std::map<std::string, std::vector<std::string>> ConfigFileParser::getAssociativeProperties() {
-    return associativePropertiesMap;
+std::vector<std::string> ConfigFileParser::getProperties(const std::string& property) {
+    if (associativePropertiesMap.find(property) != associativePropertiesMap.end()){
+        return associativePropertiesMap.at(property);
+    }
+    throw std::runtime_error("The property '" + property + "' does not exist");
 }
 
-ConfigFileParser::ConfigFileParser(std::string configFilePath) : configFilePath(std::move(configFilePath)) {}
+std::string ConfigFileParser::getProperty(const std::string &property) {
+    std::vector<std::string> properties = getProperties(property);
+    if (properties.size() == 1){
+        return properties.at(0);
+    }
+    throw std::runtime_error("Cannot invoke #getProperty for '" + property + "' as there are multiple properties - use #getProperties instead.");
+}
