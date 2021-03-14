@@ -248,19 +248,28 @@ bool Player::deployShipInterface(int shipVertexPosition){
             hasDisplayedTip = true;
         }
 
-        // TODO(slyo): Finish off this implementation.
         regexMatch coordinateInput = getRegexInputWithPromptAsRegex(
                 "Enter where you want to move your " + ship.getName() + " (eg. A1 or H8): ",
-                std::regex("([A-a-Z-z](?:[A-a-B-b])?)([1-9](?:[1-10])?)|!?(AUTO)|^\\s*$"));
+                std::regex("([A-a-Z-z](?:[A-a-B-b])?)([1-9](?:[1-10])?)|!?([A-z][U-u][T-t][O-o])|^\\s*$"));
 
-        std::string orientation = getRegexInputWithPromptAsString(
-                "Enter ship orientation (vertical/horizontal/v/h): ",
-                std::regex("(\\b[Vv][Ee][Rr][Tt][Ii][Cc][Aa][Ll]|[Hh][Oo][Rr][Ii][Zz][Oo][Nn][Tt][Aa][Ll]|[Vv]\\b|[Hh]\\b)"));
+        if (coordinateInput.match.empty()){
+            deployWarshipAutomatically(shipVertexPosition);
+            renderPlayerUserInterface();
+            return true;
+        } else if (convertToUpperCase(coordinateInput.match) == "AUTO") {
+            deployWarshipsAutomatically();
+            renderPlayerUserInterface();
+            return true;
+        } else {
+            std::string orientation = getRegexInputWithPromptAsString(
+                    "Enter ship orientation (vertical/horizontal/v/h): ",
+                    std::regex("(\\b[Vv][Ee][Rr][Tt][Ii][Cc][Aa][Ll]|[Hh][Oo][Rr][Ii][Zz][Oo][Nn][Tt][Aa][Ll]|[Vv]\\b|[Hh]\\b)"));
 
-        int yCoordinate = stoi(coordinateInput.matches[1]);
+            int yCoordinate = stoi(coordinateInput.matches[1]);
 
-        response = deployShip(shipVertexPosition, convertToUpperCase(coordinateInput.matches[0]),
-                yCoordinate, convertToUpperCase(orientation).at(0) == 'V' ? VERTICAL : HORIZONTAL);
+            response = deployShip(shipVertexPosition, convertToUpperCase(coordinateInput.matches[0]),
+                                  yCoordinate, convertToUpperCase(orientation).at(0) == 'V' ? VERTICAL : HORIZONTAL);
+        }
 
         if (!response.success){
             displayError("Failed to deploy ship - " + response.message + "\n", 2);
@@ -681,6 +690,8 @@ bool Player::shouldShowContinueGameConfirmationDialog() {
 }
 
 bool Player::shouldRenderLogStatements() {
-    return (!isComputer && opposingPlayer->isComputer) || (isComputer && !opposingPlayer->isComputer) ||
-           (isComputerPlayingAgainstComputer() && SHOULD_SHOW_LOG_STATEMENTS_DURING_AUTOMATION);
+    return (!isComputer && !opposingPlayer->isComputer)
+    || (!isComputer && opposingPlayer->isComputer)
+    || (isComputer && !opposingPlayer->isComputer)
+    || (isComputerPlayingAgainstComputer() && SHOULD_SHOW_LOG_STATEMENTS_DURING_AUTOMATION);
 }
