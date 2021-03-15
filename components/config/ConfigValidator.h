@@ -10,9 +10,10 @@
 #include "ConfigFileParser.h"
 
 struct configBoardDimensions {
-    int width = 0;
-    int height = 0;
+    int width = -1;
+    int height = -1;
 
+    configBoardDimensions(){};
     configBoardDimensions(int width, int height) : width(width), height(height) {}
 };
 
@@ -34,10 +35,7 @@ public:
     explicit ConfigValidator(const std::string &configFilePath);
 
     configBoardDimensions getBoardDimensions();
-
     std::vector<configShipInventory> getShipInventory();
-
-    configShipInventory matchShipInventory(const std::string& shipNotation);
 
     std::map<std::string, int> getShipHealthMap();
 
@@ -45,6 +43,15 @@ private:
     ConfigFileParser configFileParser;
 
     std::map<std::string, int> shipNameToHealth = {};
+
+    configBoardDimensions configBoardDimensionsCache;
+    std::vector<configShipInventory> shipInventoryCache = {};
+
+    configBoardDimensions computeAndCacheBoardDimensions();
+    std::vector<configShipInventory> computeAndCacheShipInventory();
+
+    // Utility method
+    configShipInventory matchShipInventory(const std::string& shipNotation);
 };
 
 

@@ -9,9 +9,26 @@
 ConfigValidator::ConfigValidator(const std::string &configFilePath) : configFilePath(configFilePath) {
     configFileParser = ConfigFileParser(configFilePath);
     configFileParser.parseFile();
+
+    configBoardDimensionsCache = computeAndCacheBoardDimensions();
+    // Computing the ship inventory must happen AFTER computing the board dimensions
+    shipInventoryCache = computeAndCacheShipInventory();
 }
 
 configBoardDimensions ConfigValidator::getBoardDimensions() {
+    return configBoardDimensionsCache;
+}
+
+std::vector<configShipInventory> ConfigValidator::getShipInventory() {
+    return shipInventoryCache;
+}
+
+std::map<std::string, int> ConfigValidator::getShipHealthMap() {
+    return shipNameToHealth;
+}
+
+// Computers
+configBoardDimensions ConfigValidator::computeAndCacheBoardDimensions() {
     std::regex boardNotation = std::regex("([0-9]{1,2})x([0-9]{1,2})");
     std::string boardDimensions = configFileParser.getProperty("Board");
 
@@ -28,7 +45,7 @@ configBoardDimensions ConfigValidator::getBoardDimensions() {
                 + "Diff - matched: '" + match.match + "' - input: '" + boardDimensions + "'");
         exit(EXIT_FAILURE);
     }
-    
+
     int width;
     int height;
 
@@ -39,14 +56,21 @@ configBoardDimensions ConfigValidator::getBoardDimensions() {
         throw std::runtime_error("Failed to convert the board dimensions to integers");
     }
 
+    if (width < 5 || width > 80 || height < 5 || height > 80){
+        displayError("The width or height of the board exceeds 80 or is less than 5");
+        exit(EXIT_FAILURE);
+    }
+
     return configBoardDimensions(width, height);
 }
 
-std::vector<configShipInventory> ConfigValidator::getShipInventory() {
-    // TODO(slyo): Implement caching
-
+std::vector<configShipInventory> ConfigValidator::computeAndCacheShipInventory() {
     std::vector<std::string> shipInventory = configFileParser.getProperties("Ship");
     std::vector<configShipInventory> shipInventoryComputed = {};
+
+    if (getBoardDimensions().height == -1 || getBoardDimensions().width == -1){
+        throw std::runtime_error("Computing the ship inventory must happen AFTER computing the board dimensions");
+    }
 
     for (auto&& shipNotation : shipInventory){
         configShipInventory shipData = matchShipInventory(shipNotation);
@@ -58,9 +82,8 @@ std::vector<configShipInventory> ConfigValidator::getShipInventory() {
     return shipInventoryComputed;
 }
 
+// Utility - helper method
 configShipInventory ConfigValidator::matchShipInventory(const std::string& shipNotation){
-    // TODO(slyo): Implement caching
-
     std::regex shipNotationRegex = std::regex("(Carrier|Battleship|Destroyer|Submarine|Patrol Boat),\\s?(\\d+),\\s?(\\d+)");
 
     if (!regex_match(shipNotation, shipNotationRegex)){
@@ -84,6 +107,12 @@ configShipInventory ConfigValidator::matchShipInventory(const std::string& shipN
     if (shipHealth == 0){
         displayError("The ship health of the: " + shipName + " can not be 0");
         exit(EXIT_FAILURE);
+    } else if (shipHealth > getBoardDimensions().width || shipHealth > getBoardDimensions().height){
+        displayError(
+                "The length of the: " + shipName
+                + " (" + match.matches.at(1) + ")"
+                + " exceeds the grid length or height");
+        exit(EXIT_FAILURE);
     }
 
     if (shipNameToHealth.find(shipName) == shipNameToHealth.end()){
@@ -94,8 +123,4 @@ configShipInventory ConfigValidator::matchShipInventory(const std::string& shipN
     }
 
     return configShipInventory(shipName, shipHealth, amountOfShips);
-}
-
-std::map<std::string, int> ConfigValidator::getShipHealthMap() {
-    return shipNameToHealth;
 }

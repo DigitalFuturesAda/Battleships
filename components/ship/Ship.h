@@ -21,6 +21,8 @@ public:
     Ship(GridNodes type, bool deployed);
     explicit Ship(GridNodes type);
 
+    static std::string getShipName(GridNodes type);
+
     std::string getName();
     [[nodiscard]] GridNodes getShipType() const;
     [[nodiscard]] int getLives() const;

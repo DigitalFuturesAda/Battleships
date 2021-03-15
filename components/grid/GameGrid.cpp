@@ -5,6 +5,7 @@
 #include "GameGrid.h"
 #include "../util/strings.h"
 #include "../config/ConfigSingleton.h"
+#include "../ship/Ship.h"
 #include <iostream>
 #include <utility>
 #include <absl/strings/str_format.h>
@@ -94,14 +95,11 @@ int GameGrid::getEntityConstraints(GridNodes placeableNodes){ // NOLINT(misc-no-
             return 1;
 
         case CARRIER:
-            return 5;
         case BATTLESHIP:
-            return 4;
         case DESTROYER:
         case SUBMARINE:
-            return 3;
         case PATROL:
-            return 2;
+            return ConfigSingleton::getInstance()->getValidator().getShipHealthMap().at(Ship::getShipName(placeableNodes));
 
         case CARRIER_MINE:
             return getEntityConstraints(CARRIER);

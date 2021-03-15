@@ -16,7 +16,7 @@ Ship::Ship(GridNodes type) : type(type) {
     this->lives = maxLives;
 }
 
-std::string Ship::getName() {
+std::string Ship::getShipName(GridNodes type) {
     switch (type) {
         case EMPTY:
         case DESTROYED:
@@ -26,6 +26,7 @@ std::string Ship::getName() {
             throw std::runtime_error("Ship#getName called with an invalid Invalid ship type");
         case MINE:
             return "Mine";
+        // These MUST remain consistent between the ini configuration file
         case CARRIER:
         case CARRIER_MINE:
             return "Carrier";
@@ -42,6 +43,10 @@ std::string Ship::getName() {
         case PATROL_MINE:
             return "Patrol Boat";
     }
+}
+
+std::string Ship::getName() {
+    return Ship::getShipName(type);
 }
 
 GridNodes Ship::getShipType() const {
