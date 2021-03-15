@@ -110,6 +110,8 @@ public:
 
     int numberOfAttempts = 0;
 
+    bool hasDeployedShip = false;
+
 private:
     Player *opposingPlayer{};
 

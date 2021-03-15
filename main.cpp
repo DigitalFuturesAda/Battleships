@@ -6,8 +6,6 @@
 #include "components/util/io.h"
 #include "components/player/HostController.h"
 #include "components/player/GameFlowController.h"
-#include "components/util/rand.h"
-#include "components/config/ConfigFileParser.h"
 #include "components/config/ConfigValidator.h"
 #include "components/config/ConfigSingleton.h"
 #include <thread>
@@ -21,23 +19,24 @@ int main() {
 
     GameFlowController gameFlowController;
 
-    Player hostPlayer("Suraj", gameFlowController);
-    Player secondaryPlayer("Computer", gameFlowController);
+    Player hostPlayer("Player1", gameFlowController);
+    Player secondaryPlayer("Player2", gameFlowController);
 
     secondaryPlayer.setOpposingPlayer(&hostPlayer);
     hostPlayer.setOpposingPlayer(&secondaryPlayer);
 
     HostController hostController(&hostPlayer, &secondaryPlayer);
 
-    hostPlayer.deployWarshipsAutomatically();
-    secondaryPlayer.deployWarshipsAutomatically();
+    // hostPlayer.deployWarshipsAutomatically();
+    // secondaryPlayer.deployWarshipsAutomatically();
 
     // Render the ship deployment UI with a sample of the board, this will be no-op if all ships are deployed.
     hostPlayer.showShipDeploymentInterface();
+    secondaryPlayer.showShipDeploymentInterface();
 
     // We call this afterwards, as this augments the computer board onto the player board
-    hostPlayer.setPlayingAgainstComputer();
-//    secondaryPlayer.setPlayingAgainstComputer();
+    // hostPlayer.setPlayingAgainstComputer();
+    // secondaryPlayer.setPlayingAgainstComputer();
 
     // These calls should happen AFTER all ships have been deployed
     hostPlayer.deployMultipleRandomlyPositionedMines();
@@ -55,10 +54,12 @@ int main() {
             break;
         } else {
             hostPlayer.renderPlayerUserInterface();
-            hostPlayer.renderSalvoWarheadStrikeInterface();
+            hostPlayer.renderWarheadStrikeInterface();
 
-            hostPlayer.deployWarheadStrikesAutomatically();
-            secondaryPlayer.deployWarheadStrikesAutomatically();
+            secondaryPlayer.renderPlayerUserInterface();
+            secondaryPlayer.renderWarheadStrikeInterface();
+//            hostPlayer.deployWarheadStrikesAutomatically();
+//            secondaryPlayer.deployWarheadStrikesAutomatically();
         };
     }
 }

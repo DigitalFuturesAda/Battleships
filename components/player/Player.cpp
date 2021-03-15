@@ -233,7 +233,24 @@ void Player::showShipDeploymentInterface() {
         c++;
     }
 
-    displayContinueGameConfirmationDialogWithPrompt(gameFlowController, "You have placed all your ships. Press enter to continue \033[1;33m[Q to quit or R to reset]:\033[0m ");
+    hasDeployedShip = true;
+
+    if (shouldShowContinueGameConfirmationDialog()) {
+        displayContinueGameConfirmationDialogWithPrompt(gameFlowController, "You have placed all your ships. Press enter to continue \033[1;33m[Q to quit or R to reset]:\033[0m ");
+
+        // If we are playing against another human
+        clearConsole();
+        if (!opposingPlayer->isComputer && !opposingPlayer->hasDeployedShip){
+            getStringWithPrompt(
+                    "Please now pass the device to the player: \033[1;31m" + opposingPlayer->playerName
+                    + "\033[0m - and then press \033[1;33mENTER\033[0m to start deploying their ships");
+        } else {
+            getStringWithPrompt(
+                    "Please now pass the device to the player: \033[1;31m" + opposingPlayer->playerName
+                    + "\033[0m - and then press \033[1;33mENTER\033[0m to start their turn");
+        }
+        clearConsole();
+    }
 }
 
 bool Player::deployShipInterface(int shipVertexPosition){
@@ -602,6 +619,15 @@ void Player::renderWarheadStrikeInterface() {
 
     if (shouldShowContinueGameConfirmationDialog()) {
         displayContinueGameConfirmationDialog(getGameFlowController());
+
+        // If we are playing against another human
+        if (!opposingPlayer->isComputer){
+            clearConsole();
+            getStringWithPrompt(
+                    "Please now pass the device to the player: \033[1;31m" + opposingPlayer->playerName
+                    + "\033[0m - and then press \033[1;33mENTER\033[0m to start the next turn");
+            clearConsole();
+        }
     }
 }
 
@@ -687,8 +713,9 @@ bool Player::isComputerPlayingAgainstComputer() {
 }
 
 bool Player::shouldShowContinueGameConfirmationDialog() {
-    return (!isComputer && opposingPlayer->isComputer) || (isComputer && !opposingPlayer->isComputer) ||
-        (isComputerPlayingAgainstComputer() && SHOULD_SHOW_CONTINUE_GAME_CONFIRMATION_DIALOG_DURING_AUTOMATION);
+    return (!isComputer && !opposingPlayer->isComputer)
+    || (!isComputer && opposingPlayer->isComputer) || (isComputer && !opposingPlayer->isComputer)
+    || (isComputerPlayingAgainstComputer() && SHOULD_SHOW_CONTINUE_GAME_CONFIRMATION_DIALOG_DURING_AUTOMATION);
 }
 
 bool Player::shouldRenderLogStatements() {
