@@ -11,15 +11,11 @@
 #include "../util/strings.h"
 #include "../util/io.h"
 #include "../util/rand.h"
+#include "../config/ConfigSingleton.h"
 
 Player::Player(std::string playerName, GameFlowController &gameFlowController) {
-    this->playerShips = {
-            Ship(CARRIER, false),
-            Ship(BATTLESHIP, false),
-            Ship(DESTROYER, false),
-            Ship(SUBMARINE, false),
-            Ship(PATROL, false),
-    };
+    initiatePlayerShipsVector();
+
     this->playerName = std::move(playerName);
     this->gameFlowController = &gameFlowController;
 
@@ -28,6 +24,12 @@ Player::Player(std::string playerName, GameFlowController &gameFlowController) {
             potentialNodes.emplace_back(i, v);
         }
     }
+}
+
+void Player::initiatePlayerShipsVector(){
+    for (auto&& shipData : ConfigSingleton::getInstance()->getValidator().getShipInventory())
+        for (int i = 0; i < shipData.amountOfShips; i++)
+            playerShips.emplace_back(Ship::shipNameToGridNode(shipData.shipType), false);
 }
 
 attemptPlacementResponse Player::deployShip(int position, const std::string& letterIndex, int y, Orientation orientation) {

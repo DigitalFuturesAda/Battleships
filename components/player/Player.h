@@ -112,6 +112,8 @@ public:
 
     bool hasDeployedShip = false;
 
+    bool shouldRenderLogStatements();
+
 private:
     Player *opposingPlayer{};
 
@@ -120,7 +122,7 @@ private:
     GameGrid battleshipGameGrid;
     HitGrid battleshipHitGrid;
 
-    std::vector<Ship> playerShips{};
+    std::vector<Ship> playerShips = {};
 
     bool deployShipInterface(int shipVertexPosition);
 
@@ -128,11 +130,11 @@ private:
 
     int getNumberOfOperationalShips();
 
-    bool shouldRenderLogStatements();
-
     std::vector<nodeEntryCoordinate> potentialNodes;
 
     void pushNodeAsAlphaIntoVector(int x, int y, std::vector<adjacentNodeEntry> *adjacentNodeEntries);
+
+    void initiatePlayerShipsVector();
 
     std::vector<adjacentNodeEntry> getAdjacentNodes(int x, int y);
 };

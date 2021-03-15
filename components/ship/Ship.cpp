@@ -16,6 +16,22 @@ Ship::Ship(GridNodes type) : type(type) {
     this->lives = maxLives;
 }
 
+GridNodes Ship::shipNameToGridNode(const std::string& shipName){
+    if (shipName == "Carrier"){
+        return CARRIER;
+    } else if (shipName == "Battleship"){
+        return BATTLESHIP;
+    } else if (shipName == "Destroyer"){
+        return DESTROYER;
+    } else if (shipName == "Submarine"){
+        return SUBMARINE;
+    } else if (shipName == "Patrol Boat"){
+        return PATROL;
+    }
+
+    throw std::runtime_error("Unrecognised ship - " + shipName);
+}
+
 std::string Ship::getShipName(GridNodes type) {
     switch (type) {
         case EMPTY:

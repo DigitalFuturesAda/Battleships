@@ -23,6 +23,8 @@ public:
 
     static std::string getShipName(GridNodes type);
 
+    static GridNodes shipNameToGridNode(const std::string& shipName);
+
     std::string getName();
     [[nodiscard]] GridNodes getShipType() const;
     [[nodiscard]] int getLives() const;
