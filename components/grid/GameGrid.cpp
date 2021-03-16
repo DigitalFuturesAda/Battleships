@@ -17,11 +17,35 @@ std::string GameGrid::renderGrid() {
 
     std::ostringstream stringStream;
 
-    stringStream << "X";
+    if (getGridWidth() > 26){
+        stringStream << "*";
+        stringStream << std::string(horizontalPadding, ' ');
+        for (int i = 1; i <= getGridWidth(); i ++){
+            std::string horizontalText;
 
+            if (i < 27){
+                horizontalText = "   ";
+            } else {
+                horizontalText = " " + std::string(1, convertIncrementingIntegerToAlpha(i).at(0)) + " ";
+            }
+
+            stringStream << horizontalText;
+        }
+
+        stringStream << std::endl;
+    }
+
+    stringStream << "~";
     stringStream << std::string(horizontalPadding, ' ');
     for (int i = 1; i <= getGridWidth(); i ++){
-        std::string horizontalText = " " + convertIncrementingIntegerToAlpha(i) + " ";
+        std::string horizontalText;
+
+        if (i > 26){
+            horizontalText = " " + std::string(1, convertIncrementingIntegerToAlpha(i).at(1)) + " ";
+        } else {
+            horizontalText = " " + convertIncrementingIntegerToAlpha(i) + " ";
+        }
+
         stringStream << horizontalText;
     }
 
