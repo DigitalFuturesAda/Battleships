@@ -8,19 +8,24 @@
 #include "components/player/GameFlowController.h"
 #include "components/config/ConfigValidator.h"
 #include "components/config/ConfigSingleton.h"
+#include "components/menu/MenuHelper.h"
 #include <thread>
 #include <chrono>
 
 int main() {
     srand( time( nullptr ) );
 
+    GameFlowController gameFlowController;
+    MenuHelper menuHelper;
+
     ConfigValidator configValidator("config.ini");
     ConfigSingleton::getInstance()->setValidator(configValidator);
 
-    GameFlowController gameFlowController;
+    menuHelper.renderMenu();
+    MenuGameConfiguration gameConfiguration = menuHelper.getGameConfiguration();
 
-    Player hostPlayer("Player1", gameFlowController);
-    Player secondaryPlayer("Player2", gameFlowController);
+    Player hostPlayer(gameConfiguration.playerOneType == PLAYER ? "Player1" : "Computer", gameFlowController);
+    Player secondaryPlayer(gameConfiguration.playerTwoType == PLAYER ? "Player2" : "Computer2", gameFlowController);
 
     secondaryPlayer.setOpposingPlayer(&hostPlayer);
     hostPlayer.setOpposingPlayer(&secondaryPlayer);
@@ -39,10 +44,14 @@ int main() {
     // secondaryPlayer.setPlayingAgainstComputer();
 
     // These calls should happen AFTER all ships have been deployed
-    hostPlayer.deployMultipleRandomlyPositionedMines();
-    secondaryPlayer.deployMultipleRandomlyPositionedMines();
+    if (gameConfiguration.hiddenMinesGameMode){
+        hostPlayer.deployMultipleRandomlyPositionedMines();
+        secondaryPlayer.deployMultipleRandomlyPositionedMines();
+    }
 
-    while (true){
+    bool notfalse = true;
+
+    while (notfalse){
         if (gameFlowController.hasUserRequestedToRestart()){
             clearConsole();
             displayInformation("Resetting board. Stand by...\n", 1);
@@ -53,8 +62,16 @@ int main() {
             hostController.renderWinConditionInterface();
             break;
         } else {
-            hostPlayer.renderPlayerUserInterface();
-            hostPlayer.renderWarheadStrikeInterface();
+            if (gameConfiguration.playerOneType == COMPUTER){
+                hostPlayer.renderPlayerUserInterface();
+                if (gameConfiguration.salvoGameMode){
+                    hostPlayer.renderSalvoWarheadStrikeInterface();
+                } else {
+                    hostPlayer.renderWarheadStrikeInterface();
+                }
+            } else {
+                hostPlayer.deployWarheadStrikeAutomatically();
+            }
 
             secondaryPlayer.renderPlayerUserInterface();
             secondaryPlayer.renderWarheadStrikeInterface();
