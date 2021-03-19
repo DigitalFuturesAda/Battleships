@@ -60,7 +60,7 @@ void MenuHelper::renderMenu() {
     regexMatch numberInput = getRegexInputWithPromptAsRegex("Select one of the options: ",
                                                             std::regex("^([1-" + std::to_string(gameConfiguration.size()) + "])"));
 
-    gameConfigurationCache = gameConfiguration.at(stoi(numberInput.match)).second;
+    gameConfigurationCache = gameConfiguration.at(stoi(numberInput.match) - 1).second;
 }
 
 MenuGameConfiguration MenuHelper::getGameConfiguration() {

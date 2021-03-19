@@ -13,11 +13,21 @@ class HostController {
     Player *playerTwo{};
 
 public:
-    HostController(Player *playerOneHost, Player *playerTwo) : playerOneHost(playerOneHost), playerTwo(playerTwo) {}
+    HostController(Player *playerOneHost, Player *playerTwo) : playerOneHost(playerOneHost), playerTwo(playerTwo) {
+        playerOneHost->setOpposingPlayer(playerTwo);
+        playerTwo->setOpposingPlayer(playerOneHost);
+    }
 
     void renderWinConditionInterface();
 
     bool hasEitherPlayerLost();
+
+    void switchCurrentPlayer();
+
+    bool isPlayerOneTurn();
+
+private:
+    bool isPlayerOneTurnBool = true;
 };
 
 

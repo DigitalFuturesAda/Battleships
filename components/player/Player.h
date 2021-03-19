@@ -13,6 +13,7 @@
 #include "../grid/HitGrid.h"
 #include "../../lib/tabulate.hpp"
 #include "GameFlowController.h"
+#include "../menu/MenuHelper.h"
 
 struct adjacentNodeEntry {
     std::string letter{};
@@ -46,7 +47,7 @@ public:
     /**
      * Controls whether any log statements should be output.
      */
-    static const bool SHOULD_SHOW_LOG_STATEMENTS_DURING_AUTOMATION = false;
+    static const bool SHOULD_SHOW_LOG_STATEMENTS_DURING_AUTOMATION = true;
     
     explicit Player(std::string playerName, GameFlowController& gameFlowController);
 
@@ -73,8 +74,6 @@ public:
     tabulate::Table getPlayerShipStatisticsBoard();
 
     void renderCachedComputerWarheadDeploymentResponse(const attemptHitResponse& cachedHitResponse, bool isAutomaticAndRepeatedWarheadStrike = false, int repeatedWarheadStrikeAttempt = 0);
-
-    void setPlayingAgainstComputer();
 
     bool deployWarshipAutomatically(int shipVertexPosition, int attempts = 0);
 
@@ -114,8 +113,16 @@ public:
 
     bool shouldRenderLogStatements();
 
+    void setPlayingAgainstComputer();
+
+    void setPlayerType(PlayerType type);
+
+    PlayerType getPlayerType();
+
 private:
     Player *opposingPlayer{};
+
+    PlayerType playerType;
 
     GameFlowController *gameFlowController;
 

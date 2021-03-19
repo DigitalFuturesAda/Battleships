@@ -242,14 +242,16 @@ void Player::showShipDeploymentInterface() {
 
         // If we are playing against another human
         clearConsole();
-        if (!opposingPlayer->isComputer && !opposingPlayer->hasDeployedShip){
-            getStringWithPrompt(
-                    "Please now pass the device to the player: \033[1;31m" + opposingPlayer->playerName
-                    + "\033[0m - and then press \033[1;33mENTER\033[0m to start deploying their ships");
-        } else {
-            getStringWithPrompt(
-                    "Please now pass the device to the player: \033[1;31m" + opposingPlayer->playerName
-                    + "\033[0m - and then press \033[1;33mENTER\033[0m to start their turn");
+        if (!opposingPlayer->isComputer){
+            if (!opposingPlayer->hasDeployedShip){
+                getStringWithPrompt(
+                        "Please now pass the device to the player: \033[1;31m" + opposingPlayer->playerName
+                        + "\033[0m - and then press \033[1;33mENTER\033[0m to start deploying their ships");
+            } else {
+                getStringWithPrompt(
+                        "Please now pass the device to the player: \033[1;31m" + opposingPlayer->playerName
+                        + "\033[0m - and then press \033[1;33mENTER\033[0m to start their turn");
+            }
         }
         clearConsole();
     }
@@ -269,7 +271,7 @@ bool Player::deployShipInterface(int shipVertexPosition){
 
         regexMatch coordinateInput = getRegexInputWithPromptAsRegex(
                 "Enter where you want to move your " + ship.getName() + " (eg. A1 or H8): ",
-                std::regex("([A-a-Z-z](?:[A-a-B-b])?)([1-9](?:[1-10])?)|!?([A-z][U-u][T-t][O-o])|^\\s*$"));
+                std::regex("([A-a-Z-z](?:[A-a-B-b])?)([1-9](?:[1-10])?)|!?([Aa][Uu][Tt][Oo])|^\\s*$"));
 
         if (coordinateInput.match.empty()){
             deployWarshipAutomatically(shipVertexPosition);
@@ -407,10 +409,6 @@ void Player::renderCachedComputerWarheadDeploymentResponse(const attemptHitRespo
     }
 }
 
-void Player::setPlayingAgainstComputer() {
-    opposingPlayer->isComputer = true;
-    alsoRenderComputerBoard = true;
-}
 
 bool Player::deployWarshipAutomatically(int shipVertexPosition, int attempts) {
     Ship ship = playerShips.at(shipVertexPosition);
@@ -725,4 +723,20 @@ bool Player::shouldRenderLogStatements() {
     || (!isComputer && opposingPlayer->isComputer)
     || (isComputer && !opposingPlayer->isComputer)
     || (isComputerPlayingAgainstComputer() && SHOULD_SHOW_LOG_STATEMENTS_DURING_AUTOMATION);
+}
+
+void Player::setPlayerType(PlayerType type) {
+    playerType = type;
+    if (type == COMPUTER){
+        isComputer = true;
+    }
+}
+
+void Player::setPlayingAgainstComputer() {
+    opposingPlayer->isComputer = true;
+    alsoRenderComputerBoard = true;
+}
+
+PlayerType Player::getPlayerType() {
+    return playerType;
 }

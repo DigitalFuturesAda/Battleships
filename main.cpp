@@ -24,24 +24,35 @@ int main() {
     menuHelper.renderMenu();
     MenuGameConfiguration gameConfiguration = menuHelper.getGameConfiguration();
 
-    Player hostPlayer(gameConfiguration.playerOneType == PLAYER ? "Player1" : "Computer", gameFlowController);
+    if (gameConfiguration.requestToQuit){
+        displayInformation("Exiting!", 0);
+        exit(EXIT_SUCCESS);
+    }
+
+    Player hostPlayer(gameConfiguration.playerOneType == PLAYER ? "Player1" : "Computer1", gameFlowController);
     Player secondaryPlayer(gameConfiguration.playerTwoType == PLAYER ? "Player2" : "Computer2", gameFlowController);
 
-    secondaryPlayer.setOpposingPlayer(&hostPlayer);
-    hostPlayer.setOpposingPlayer(&secondaryPlayer);
+    hostPlayer.setPlayerType(gameConfiguration.playerOneType);
+    secondaryPlayer.setPlayerType(gameConfiguration.playerTwoType);
 
     HostController hostController(&hostPlayer, &secondaryPlayer);
 
-    // hostPlayer.deployWarshipsAutomatically();
-    // secondaryPlayer.deployWarshipsAutomatically();
+    if (gameConfiguration.playerOneType == COMPUTER){
+        hostPlayer.deployWarshipsAutomatically();
+    } else {
+        // Render the ship deployment UI with a sample of the board, this will be no-op if all ships are deployed.
+        hostPlayer.showShipDeploymentInterface();
+    }
 
-    // Render the ship deployment UI with a sample of the board, this will be no-op if all ships are deployed.
-    hostPlayer.showShipDeploymentInterface();
-    secondaryPlayer.showShipDeploymentInterface();
+    if (gameConfiguration.playerTwoType == COMPUTER){
+        secondaryPlayer.deployWarshipsAutomatically();
+    } else {
+        secondaryPlayer.showShipDeploymentInterface();
+    }
 
     // We call this afterwards, as this augments the computer board onto the player board
-    // hostPlayer.setPlayingAgainstComputer();
-    // secondaryPlayer.setPlayingAgainstComputer();
+    if (gameConfiguration.playerOneType == COMPUTER) secondaryPlayer.setPlayingAgainstComputer();
+    if (gameConfiguration.playerTwoType == COMPUTER) hostPlayer.setPlayingAgainstComputer();
 
     // These calls should happen AFTER all ships have been deployed
     if (gameConfiguration.hiddenMinesGameMode){
@@ -49,34 +60,35 @@ int main() {
         secondaryPlayer.deployMultipleRandomlyPositionedMines();
     }
 
-    bool notfalse = true;
-
-    while (notfalse){
+    while (true){
         if (gameFlowController.hasUserRequestedToRestart()){
             clearConsole();
             displayInformation("Resetting board. Stand by...\n", 1);
             break;
-        }
+        };
 
         if (hostController.hasEitherPlayerLost()){
             hostController.renderWinConditionInterface();
             break;
         } else {
-            if (gameConfiguration.playerOneType == COMPUTER){
-                hostPlayer.renderPlayerUserInterface();
+            Player *currentPlayer = hostController.isPlayerOneTurn() ? &hostPlayer : &secondaryPlayer;
+
+            if (currentPlayer->getPlayerType() == PLAYER){
+                currentPlayer->renderPlayerUserInterface();
                 if (gameConfiguration.salvoGameMode){
-                    hostPlayer.renderSalvoWarheadStrikeInterface();
+                    currentPlayer->renderSalvoWarheadStrikeInterface();
                 } else {
-                    hostPlayer.renderWarheadStrikeInterface();
+                    currentPlayer->renderWarheadStrikeInterface();
                 }
             } else {
-                hostPlayer.deployWarheadStrikeAutomatically();
+                if (gameConfiguration.salvoGameMode){
+                    currentPlayer->deployWarheadStrikesAutomatically();
+                } else {
+                    currentPlayer->deployWarheadStrikeAutomatically();
+                }
             }
 
-            secondaryPlayer.renderPlayerUserInterface();
-            secondaryPlayer.renderWarheadStrikeInterface();
-//            hostPlayer.deployWarheadStrikesAutomatically();
-//            secondaryPlayer.deployWarheadStrikesAutomatically();
+            hostController.switchCurrentPlayer();
         };
     }
 }
