@@ -11,6 +11,7 @@
 #include "components/menu/MenuHelper.h"
 #include <thread>
 #include <chrono>
+#include "absl/flags/flag.h"
 
 int main2() {
     srand( time( nullptr ) );
@@ -91,9 +92,11 @@ int main2() {
             hostController.switchCurrentPlayer();
         };
     }
+
+    return EXIT_SUCCESS;
 }
 
-int main() {
+int debugMode() {
     srand( time( nullptr ) );
 
     GameFlowController gameFlowController;
