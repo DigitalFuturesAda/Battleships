@@ -52,10 +52,14 @@ public:
 
     bool hasTakenHitFromCoordinate(const std::string& coordinateNotation);
 
+    int getId();
+
 private:
     std::vector<shipCoordinatePosition> shipCoordinatePositions;
 
     std::vector<std::string> takenHitsFromCoordinate = {};
+
+    int id;
 };
 
 

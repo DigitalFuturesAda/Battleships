@@ -9,6 +9,8 @@
 #include <vector>
 #include <map>
 #include <regex>
+#include <queue>
+#include <deque>
 #include "../ship/Ship.h"
 #include "../grid/HitGrid.h"
 #include "../../lib/tabulate.hpp"
@@ -32,6 +34,62 @@ struct nodeEntryCoordinate {
     nodeEntryCoordinate() = default;
 };
 
+enum HuntMode {
+    HUNT,
+    DESTROY
+};
+
+enum HitNode {
+    HIT_NODE_MINE,
+    HIT_NODE_SHIP,
+    HIT_NODE_UNKNOWN
+};
+
+enum ShipHuntCoordinateMetadataNodePosition {
+    ABOVE = 1,
+    BELOW = 2,
+    LEFT = 3,
+    RIGHT= 4,
+
+    PRE = 5,
+    POST = 6,
+
+    NODE_POSITION_UNKNOWN = -1
+};
+
+struct ShipHuntCoordinateMetadata {
+    ShipHuntCoordinateMetadataNodePosition nodePosition = NODE_POSITION_UNKNOWN;
+    adjacentNodeEntry nodeEntry;
+
+    ShipHuntCoordinateMetadata(ShipHuntCoordinateMetadataNodePosition nodePosition, adjacentNodeEntry nodeEntry)
+            : nodePosition(nodePosition), nodeEntry(std::move(nodeEntry)) {}
+};
+
+enum ShipHuntOrientation {
+    SHIP_HUNT_VERTICAL,
+    SHIP_HUNT_HORIZONTAL,
+
+    SHIP_HUNT_ORIENTATION_UNKNOWN
+};
+
+struct ShipHunt {
+    std::vector<shipCoordinatePosition> shipCoordinates;
+    std::deque<ShipHuntCoordinateMetadata> potentialCoordinatesQueue;
+
+    ShipHuntOrientation shipOrientation = SHIP_HUNT_ORIENTATION_UNKNOWN;
+
+    std::vector<std::string> ignoredCoordinates;
+
+    int maxHealth = 0;
+    int currentHealth = 0;
+
+    ShipHunt() = default;
+
+    ShipHunt(std::vector<shipCoordinatePosition> shipCoordinates,
+             std::deque<ShipHuntCoordinateMetadata> potentialCoordinatesQueue) : shipCoordinates(std::move(shipCoordinates)),
+                                                                        potentialCoordinatesQueue(std::move(potentialCoordinatesQueue)) {}
+};
+
 class Player {
 public:
 
@@ -47,7 +105,7 @@ public:
     /**
      * Controls whether any log statements should be output.
      */
-    static const bool SHOULD_SHOW_LOG_STATEMENTS_DURING_AUTOMATION = true;
+    static const bool SHOULD_SHOW_LOG_STATEMENTS_DURING_AUTOMATION = false;
     
     explicit Player(std::string playerName, GameFlowController& gameFlowController);
 
@@ -79,6 +137,12 @@ public:
 
     attemptHitResponse deployWarheadStrikeAutomatically(int attempts = 0, bool isAutomaticAndRepeatedWarheadStrike = false);
 
+    attemptHitResponse executeAutomaticEnhancedAlgorithmWarheadStrike();
+
+    attemptHitResponse executeHuntModeWarheadStrikeEnhancedAlgorithm(const std::string& letter, int y);
+
+    attemptHitResponse executeDestroyModeWarheadStrikeEnhancedAlgorithm();
+
     void deployWarheadStrikesAutomatically();
 
     void renderWarheadStrikeInterface();
@@ -94,6 +158,8 @@ public:
     attemptPlacementResponse deployMine(int x, int y);
 
     void deployMultipleRandomlyPositionedMines();
+
+    Ship getIntersectingShip(int x, int y);
 
     void renderSalvoWarheadStrikeInterface(bool isRepeatingInputSequence = false, int shipsThatHaveFiredValidWarheadStrikes = 0);
 
@@ -141,9 +207,19 @@ private:
 
     void pushNodeAsAlphaIntoVector(int x, int y, std::vector<adjacentNodeEntry> *adjacentNodeEntries);
 
+    void pushNodeAsAlphaIntoQueue(int x, int y, ShipHuntCoordinateMetadataNodePosition position, std::deque<ShipHuntCoordinateMetadata> *adjacentNodeEntries);
+
+    bool isOutOfBounds(int x, int y);
+
     void initiatePlayerShipsVector();
 
     std::vector<adjacentNodeEntry> getAdjacentNodes(int x, int y);
+
+    HuntMode targetMode = HUNT;
+
+    std::map<int, ShipHunt> shipHuntCache = {};
+
+    std::queue<int> shipHuntIdQueue = {};
 };
 
 #endif //BATTLESHIPS_PLAYER_H

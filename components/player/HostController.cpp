@@ -30,12 +30,12 @@ void HostController::renderWinConditionInterface() {
     }
 
     // Required for collecting statistics
-    std::string fileName = "analysis-assets/10x10/random-algo-salvo.csv";
+    std::string fileName = "analysis-assets/10x10/random-algo-no-mines.csv";
     std::ofstream winningPlayerStatisticsFile;
     winningPlayerStatisticsFile.open (fileName, std::ios_base::app);
     winningPlayerStatisticsFile << winningPlayer << "\n";
     winningPlayerStatisticsFile.close();
-//    std::cout << "Wrote " << winningPlayer << " to " << fileName << std::endl;
+    std::cout << "Wrote " << winningPlayer << " to " << fileName << std::endl;
 }
 
 void HostController::switchCurrentPlayer() {

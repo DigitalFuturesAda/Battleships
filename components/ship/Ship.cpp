@@ -3,17 +3,20 @@
 //
 
 #include "Ship.h"
+#include "../util/rand.h"
 
 #include <utility>
 
 Ship::Ship(GridNodes type, bool deployed) : type(type), deployed(deployed) {
     this->maxLives = GameGrid::getEntityConstraints(type);
     this->lives = maxLives;
+    this->id = randomBetween19937(INT_MIN, INT_MAX);
 }
 
 Ship::Ship(GridNodes type) : type(type) {
     this->maxLives = GameGrid::getEntityConstraints(type);
     this->lives = maxLives;
+    this->id = randomBetween19937(INT_MIN, INT_MAX);
 }
 
 GridNodes Ship::shipNameToGridNode(const std::string& shipName){
@@ -148,4 +151,8 @@ bool Ship::hasTakenHitFromCoordinate(const std::string &coordinateNotation) {
         if (notation == coordinateNotation) return true;
     }
     return false;
+}
+
+int Ship::getId() {
+    return id;
 }

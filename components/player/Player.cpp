@@ -6,6 +6,7 @@
 #include <iostream>
 #include <set>
 #include <utility>
+#include <algorithm>
 #include <absl/strings/ascii.h>
 #include "../../components/grid/GameGrid.h"
 #include "../util/strings.h"
@@ -66,31 +67,36 @@ void Player::setOpposingPlayer(Player *player) {
     this->opposingPlayer = player;
 }
 
-bool hitMine(GridNodes hitNode){
+HitNode hitNode(GridNodes hitNode){
     switch (hitNode){
         case EMPTY:
         case UNKNOWN:
         case DESTROYED:
         case VALID_HIT:
         case INVALID_HIT:
+            return HIT_NODE_UNKNOWN;
         case CARRIER:
         case BATTLESHIP:
         case DESTROYER:
         case SUBMARINE:
         case PATROL:
-            return false;
+            return HIT_NODE_SHIP;
         case MINE:
         case CARRIER_MINE:
         case BATTLESHIP_MINE:
         case DESTROYER_MINE:
         case SUBMARINE_MINE:
         case PATROL_MINE:
-            return true;
+            return HIT_NODE_MINE;
     }
 }
 
+bool Player::isOutOfBounds(int x, int y){
+    return (x < 1 || y < 1 || y > getGameGrid()->getGridHeight() || x > getGameGrid()->getGridWidth());
+}
+
 void Player::pushNodeAsAlphaIntoVector(int x, int y, std::vector<adjacentNodeEntry> *adjacentNodeEntries){
-    if (x < 1 || y < 1 || y > getGameGrid()->getGridHeight() || x > getGameGrid()->getGridWidth()) return;
+    if (isOutOfBounds(x,y)) return;
     adjacentNodeEntries->push_back(adjacentNodeEntry(convertIncrementingIntegerToAlpha(x), y));
 }
 
@@ -115,7 +121,7 @@ std::vector<adjacentNodeEntry> Player::getAdjacentNodes(int x, int y){
 }
 
 void Player::handleMineDetonationLogic(const attemptHitResponse& response) {
-    if (hitMine(response.hitNode.node)){
+    if (hitNode(response.hitNode.node) == HIT_NODE_MINE){
         // The hit grid should update to show a mine has been hit.
         std::vector<adjacentNodeEntry> adjacentNodeEntries = getAdjacentNodes(response.hitNode.x, response.hitNode.y);
 
@@ -125,7 +131,7 @@ void Player::handleMineDetonationLogic(const attemptHitResponse& response) {
             attemptPlacementResponse mineExplosionResponse = opposingPlayer->getGameGrid()->attemptPlacement(nodeEntry.letter, nodeEntry.yCoordinate, DESTROYED, VERTICAL);
             battleshipHitGrid.markSuccessfulWarheadStrike(mineExplosionResponse.singleExistingNode.x, mineExplosionResponse.singleExistingNode.y);
 
-            if (hitMine(mineExplosionResponse.singleExistingNode.node)){
+            if (hitNode(mineExplosionResponse.singleExistingNode.node) == HIT_NODE_MINE){
                 // Recursively call this method to deal with scenarios where a mine explosion affects other mines.
                 handleMineDetonationLogic(attemptHitResponse(
                         true,
@@ -164,7 +170,7 @@ attemptHitResponse Player::executeWarheadStrike(std::string letter, int y) {
     attemptHitResponse response = opposingPlayer->battleshipGameGrid.receiveWarheadStrike(letter, y);
 
     if (response.validAttempt){
-        if (hitMine(response.hitNode.node)){
+        if (hitNode(response.hitNode.node) == HIT_NODE_MINE){
             handleMineDetonationLogic(response);
         } else if (response.didHitTarget){
             battleshipHitGrid.markSuccessfulWarheadStrike(response.hitNode.x, response.hitNode.y);
@@ -631,13 +637,231 @@ void Player::renderWarheadStrikeInterface() {
     }
 }
 
-attemptHitResponse Player::deployWarheadStrikeAutomatically(int attempts, bool isAutomaticAndRepeatedWarheadStrike) {
-    // TODO(slyo): Verify all ships not destroyed. Maybe for the purposes of this game we can assume the computer has
-    //  rudimentary knowledge of the approx bounds of players ships location as to decrease trial and error.
-    //  Potentially once n% of the board has been destroyed, we randomly guess from a vector of coordinates which have
-    //  not been fired upon. Taking this further we could actually store a cache of coords which have not been destroyed
-    //  which removes the retry logic entirely.
+void Player::pushNodeAsAlphaIntoQueue(int x, int y, ShipHuntCoordinateMetadataNodePosition position, std::deque<ShipHuntCoordinateMetadata> *adjacentNodeEntries){
+    if (isOutOfBounds(x,y)) return;
+    adjacentNodeEntries->push_back(ShipHuntCoordinateMetadata(position, adjacentNodeEntry(convertIncrementingIntegerToAlpha(x), y)));
+}
 
+Ship Player::getIntersectingShip(int x, int y){
+    std::string coordinateLetter = convertIncrementingIntegerToAlpha(x + 1) + std::to_string(y + 1);
+    for (auto &&ship : opposingPlayer->playerShips){
+        if (ship.doesCoordinateIntersectShip(x, y) && !ship.hasTakenHitFromCoordinate(coordinateLetter)){
+            return ship;
+        }
+    }
+
+    throw std::runtime_error("No ship intersects these coordinates");
+}
+
+attemptHitResponse Player::executeAutomaticEnhancedAlgorithmWarheadStrike(){
+    numberOfAttempts ++;
+    if (targetMode == HUNT){
+        attemptHitResponse hitResponse;
+
+        while (!hitResponse.validAttempt){
+            int randomIndex = randomBetween19937(0, potentialNodes.size());
+            nodeEntryCoordinate randomNode = potentialNodes[randomIndex];
+
+            std::string letter = convertToUpperCase(convertIncrementingIntegerToAlpha(randomNode.x));
+
+            hitResponse = executeHuntModeWarheadStrikeEnhancedAlgorithm(letter, randomNode.y);
+        }
+
+        return hitResponse;
+    } else {
+        return executeDestroyModeWarheadStrikeEnhancedAlgorithm();
+    }
+}
+
+attemptHitResponse Player::executeHuntModeWarheadStrikeEnhancedAlgorithm(const std::string& letter, int y){
+    if (targetMode != HUNT){
+        // Potentially just delegate to the automatic enhanced algorithm warhead strike function here?
+        throw std::runtime_error("The target mode must be set to HUNT if firing with coordinates");
+    }
+
+    attemptHitResponse hitRequest = executeWarheadStrike(letter, y);
+
+    if (!hitRequest.validAttempt){
+        return hitRequest;
+    }
+
+    if (hitNode(hitRequest.hitNode.node) == HIT_NODE_SHIP){
+        // We've hit a ship, work out which of the opposing player's ship we've hit
+        Ship ship = getIntersectingShip(hitRequest.hitNode.x, hitRequest.hitNode.y);
+        int shipId = ship.getId();
+
+        shipCoordinatePosition coordinatePosition = shipCoordinatePosition(
+                hitRequest.hitNode.x, hitRequest.hitNode.y,
+                convertIncrementingIntegerToAlpha(hitRequest.hitNode.x + 1),
+                hitRequest.hitNode.y + 1);
+
+        // So we can lock onto the ship matching the ID, we push it into a queue and will train all futures warhead
+        // strikes on this particular ship
+        shipHuntIdQueue.push(shipId);
+
+        if (shipHuntCache.find(shipId) == shipHuntCache.end()){
+            shipHuntCache.insert({ shipId, ShipHunt({ coordinatePosition }, {}) });
+            shipHuntCache.at(shipId).maxHealth = ship.getMaxLives();
+            shipHuntCache.at(shipId).currentHealth = ship.getLives();
+            shipHuntCache.at(shipId).ignoredCoordinates.push_back(letter + std::to_string(y));
+        } else {
+            shipHuntCache.at(shipId).shipCoordinates.emplace_back(coordinatePosition);
+        }
+
+        targetMode = DESTROY;
+    }
+
+    return hitRequest;
+}
+
+attemptHitResponse Player::executeDestroyModeWarheadStrikeEnhancedAlgorithm(){
+    if (targetMode != DESTROY){
+        // Potentially just delegate to the manual enhanced algorithm warhead strike function here?
+        throw std::runtime_error("The target mode must be set to DESTROY if calling #executeDestroyModeWarheadStrikeEnhancedAlgorithm");
+    }
+
+    if (shipHuntIdQueue.empty()){
+        targetMode = HUNT;
+        // TODO(slyo): There are no pending ships in the queue, switch back to the HUNT mode
+        return executeAutomaticEnhancedAlgorithmWarheadStrike();
+    }
+
+    int currentShipId = shipHuntIdQueue.front();
+
+    if (shipHuntCache.at(currentShipId).currentHealth <= 0){
+        shipHuntIdQueue.pop();
+        return executeDestroyModeWarheadStrikeEnhancedAlgorithm();
+    }
+
+    std::vector<shipCoordinatePosition> knownCoordinates = shipHuntCache.at(currentShipId).shipCoordinates;
+
+    if (shipHuntCache.at(currentShipId).potentialCoordinatesQueue.empty()){
+        // We don't know whether the ship is vertical or horizontal. We will work this out by training missiles: above,
+        // below, left and right of the node we have hit and then performing a heuristic to work out whether the ship is
+        // vertical or horizontal.
+
+        int currentNodeX = knownCoordinates.at(0).x + 1;
+        int currentNodeY = knownCoordinates.at(0).y + 1;
+
+        pushNodeAsAlphaIntoQueue(currentNodeX, currentNodeY - 1, ABOVE, &shipHuntCache.at(currentShipId).potentialCoordinatesQueue); // Above
+        pushNodeAsAlphaIntoQueue(currentNodeX, currentNodeY + 1, BELOW, &shipHuntCache.at(currentShipId).potentialCoordinatesQueue); // Below
+
+        pushNodeAsAlphaIntoQueue(currentNodeX - 1, currentNodeY, LEFT, &shipHuntCache.at(currentShipId).potentialCoordinatesQueue); // Left
+        pushNodeAsAlphaIntoQueue(currentNodeX + 1, currentNodeY, RIGHT, &shipHuntCache.at(currentShipId).potentialCoordinatesQueue); // Right
+
+        // We've select a coordinate which represents above, below, left and right and pushed these into our queue
+        // we can now recursively call this method again which will incrementally work through the queue
+        return executeDestroyModeWarheadStrikeEnhancedAlgorithm();
+    }
+
+    // Get the first coordinate in our cache of potential coordinates and store it
+    std::deque<ShipHuntCoordinateMetadata> *queue = &shipHuntCache.at(currentShipId).potentialCoordinatesQueue;
+    ShipHuntCoordinateMetadata firstCoordinate = queue->front();
+
+    // Fire at the potential coordinate and remove it from the queue
+    attemptHitResponse hitResponse = executeWarheadStrike(firstCoordinate.nodeEntry.letter, firstCoordinate.nodeEntry.yCoordinate);
+    queue->pop_front();
+
+    if (!hitResponse.validAttempt){
+        return executeDestroyModeWarheadStrikeEnhancedAlgorithm();
+    }
+
+    if (hitNode(hitResponse.hitNode.node) != HIT_NODE_SHIP){
+        std::string coordinateLetter = firstCoordinate.nodeEntry.letter + std::to_string(firstCoordinate.nodeEntry.yCoordinate);
+        shipHuntCache.at(currentShipId).ignoredCoordinates.push_back(coordinateLetter);
+        return hitResponse;
+    }
+
+    Ship ship = getIntersectingShip(hitResponse.hitNode.x, hitResponse.hitNode.y);
+
+    if (ship.getId() != currentShipId){
+        // We've hit another ship...lets add that to our map because now we'll be able to target another ship afterwards
+        shipCoordinatePosition coordinatePosition = shipCoordinatePosition(
+                hitResponse.hitNode.x, hitResponse.hitNode.y,
+                convertIncrementingIntegerToAlpha(hitResponse.hitNode.x + 1),
+                hitResponse.hitNode.y + 1);
+
+        shipHuntIdQueue.push(ship.getId());
+        shipHuntCache.insert({ ship.getId(), ShipHunt({ coordinatePosition }, {}) });
+
+        // We've already popped the offending (and incorrect) coordinate from our queue, hopefully we'll
+        // hit the ship we're attempting to hit the next time...
+        return hitResponse;
+    }
+
+    shipHuntCache.at(currentShipId).currentHealth = ship.getLives();
+
+    if (shipHuntCache.at(currentShipId).shipOrientation == SHIP_HUNT_ORIENTATION_UNKNOWN){
+        shipHuntCache.at(currentShipId).potentialCoordinatesQueue.clear();
+
+        auto ignoredCoordinates = shipHuntCache.at(currentShipId).ignoredCoordinates;
+
+        // Great! We've hit the same ship, lets set the orientation
+        // We don't yet know the orientation of the ship, so lets set it
+        if (firstCoordinate.nodePosition == ABOVE || firstCoordinate.nodePosition == BELOW){
+            shipHuntCache.at(currentShipId).shipOrientation = SHIP_HUNT_VERTICAL;
+
+            for (int i = hitResponse.hitNode.y; i > hitResponse.hitNode.y - ship.getMaxLives(); i--){
+                int coordinateX = hitResponse.hitNode.x + 1;
+                int coordinateY = i;
+
+                if (!isOutOfBounds(coordinateX, coordinateY)
+                    && hitResponse.hitNode.y + 1 != coordinateY){
+                    std::string coordinateLetter = convertIncrementingIntegerToAlpha(coordinateX) + std::to_string(coordinateY);
+
+                    if (std::find(ignoredCoordinates.begin(), ignoredCoordinates.end(), coordinateLetter) == ignoredCoordinates.end()){
+                        pushNodeAsAlphaIntoQueue(coordinateX, coordinateY, PRE, &shipHuntCache.at(currentShipId).potentialCoordinatesQueue);
+                    }
+                }
+            }
+            for (int i = hitResponse.hitNode.y + 1; i <= hitResponse.hitNode.y + ship.getMaxLives(); i++){
+                int coordinateX = hitResponse.hitNode.x + 1;
+                int coordinateY = i + 1;
+
+                if (!isOutOfBounds(coordinateX, coordinateY)) {
+                    std::string coordinateLetter = convertIncrementingIntegerToAlpha(coordinateX) + std::to_string(coordinateY);
+
+                    if (std::find(ignoredCoordinates.begin(), ignoredCoordinates.end(), coordinateLetter) == ignoredCoordinates.end()){
+                        pushNodeAsAlphaIntoQueue(coordinateX, coordinateY, POST, &shipHuntCache.at(currentShipId).potentialCoordinatesQueue);
+                    }
+                }
+            }
+        } else {
+            shipHuntCache.at(currentShipId).shipOrientation = SHIP_HUNT_HORIZONTAL;
+
+            for (int i = hitResponse.hitNode.x; i > hitResponse.hitNode.x - ship.getMaxLives(); i--){
+                int coordinateX = i;
+                int coordinateY = hitResponse.hitNode.y + 1;
+
+                if (!isOutOfBounds(coordinateX, coordinateY)
+                    && hitResponse.hitNode.x + 1 != coordinateX){
+                    std::string coordinateLetter = convertIncrementingIntegerToAlpha(coordinateX) + std::to_string(coordinateY);
+
+                    if (std::find(ignoredCoordinates.begin(), ignoredCoordinates.end(), coordinateLetter) == ignoredCoordinates.end()){
+                        pushNodeAsAlphaIntoQueue(coordinateX, coordinateY, PRE, &shipHuntCache.at(currentShipId).potentialCoordinatesQueue);
+                    }
+                }
+            }
+
+            for (int i = 1; i < ship.getMaxLives() + 1; i++){
+                int coordinateX = hitResponse.hitNode.x + 1 + i;
+                int coordinateY = hitResponse.hitNode.y + 1;
+
+                if (!isOutOfBounds(coordinateX, coordinateY)) {
+                    std::string coordinateLetter = convertIncrementingIntegerToAlpha(coordinateX) + std::to_string(coordinateY);
+
+                    if (std::find(ignoredCoordinates.begin(), ignoredCoordinates.end(), coordinateLetter) == ignoredCoordinates.end()){
+                        pushNodeAsAlphaIntoQueue(coordinateX, coordinateY, POST, &shipHuntCache.at(currentShipId).potentialCoordinatesQueue);
+                    }
+                }
+            }
+        }
+    }
+
+    return hitResponse;
+}
+
+attemptHitResponse Player::deployWarheadStrikeAutomatically(int attempts, bool isAutomaticAndRepeatedWarheadStrike) {
     attemptHitResponse hitResponse;
 
     while (!hitResponse.validAttempt){
@@ -662,6 +886,7 @@ attemptHitResponse Player::deployWarheadStrikeAutomatically(int attempts, bool i
         }
     }
 
+    numberOfAttempts ++;
     return hitResponse;
 }
 

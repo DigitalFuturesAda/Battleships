@@ -12,7 +12,7 @@
 #include <thread>
 #include <chrono>
 
-int main() {
+int main2() {
     srand( time( nullptr ) );
 
     GameFlowController gameFlowController;
@@ -92,3 +92,43 @@ int main() {
         };
     }
 }
+
+int main() {
+    srand( time( nullptr ) );
+
+    GameFlowController gameFlowController;
+
+    ConfigValidator configValidator("config.ini");
+    ConfigSingleton::getInstance()->setValidator(configValidator);
+
+    Player hostPlayer("Suraj", gameFlowController);
+    Player secondaryPlayer("Computer", gameFlowController);
+    HostController hostController(&hostPlayer, &secondaryPlayer);
+
+    hostPlayer.setPlayerType(COMPUTER);
+    secondaryPlayer.setPlayerType(COMPUTER);
+
+    hostPlayer.deployWarshipsAutomatically();
+    secondaryPlayer.deployWarshipsAutomatically();
+
+    hostPlayer.setPlayingAgainstComputer();
+    secondaryPlayer.setPlayingAgainstComputer();
+
+    while (true){
+        if (gameFlowController.hasUserRequestedToRestart()){
+            clearConsole();
+            displayInformation("Resetting board. Stand by...\n", 1);
+            break;
+        };
+
+        if (hostController.hasEitherPlayerLost()){
+            hostController.renderWinConditionInterface();
+            break;
+        } else {
+//            Player *currentPlayer = hostController.isPlayerOneTurn() ? &hostPlayer : &secondaryPlayer;
+            hostPlayer.deployWarheadStrikeAutomatically();
+            secondaryPlayer.deployWarheadStrikeAutomatically();
+//            hostController.switchCurrentPlayer();
+        };
+    }
+};
