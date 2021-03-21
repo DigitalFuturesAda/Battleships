@@ -14,31 +14,31 @@ void MenuHelper::renderMenu() {
     std::vector<std::pair<std::string, MenuGameConfiguration>> gameConfiguration = {
             {
                 "Player vs Computer",
-                MenuGameConfiguration(PLAYER, COMPUTER, false, false)
+                MenuGameConfiguration(/* playerOneType = */ PLAYER, /* playerTwoType = */ COMPUTER, /* salvoGameMode = */ false, /* hiddenMinesGameMode = */ false)
             },
             {
                 "Player vs Player",
-                MenuGameConfiguration(PLAYER, PLAYER, false, false)
+                MenuGameConfiguration(/* playerOneType = */ PLAYER, /* playerTwoType = */ PLAYER, /* salvoGameMode = */ false, /* hiddenMinesGameMode = */ false)
             },
             {
                 "Player vs Computer Salvo game mode",
-                MenuGameConfiguration(PLAYER, COMPUTER, true, false)
+                MenuGameConfiguration(/* playerOneType = */ PLAYER, /* playerTwoType = */ COMPUTER, /* salvoGameMode = */ true, /* hiddenMinesGameMode = */ false)
             },
             {
                 "Player vs Player Salvo game mode",
-                MenuGameConfiguration(PLAYER, PLAYER, true, false)
+                MenuGameConfiguration(/* playerOneType = */ PLAYER, /* playerTwoType = */ PLAYER, /* salvoGameMode = */ true, /* hiddenMinesGameMode = */ false)
             },
             {
                 "Player vs Computer Hidden Mines game mode",
-                MenuGameConfiguration(PLAYER, COMPUTER, false, true)
+                MenuGameConfiguration(/* playerOneType = */ PLAYER, /* playerTwoType = */ COMPUTER, /* salvoGameMode = */ false, /* hiddenMinesGameMode = */ true)
             },
             {
                 "Player vs Player Hidden Mines game mode",
-                MenuGameConfiguration(PLAYER, PLAYER, false, true)
+                MenuGameConfiguration(/* playerOneType = */ PLAYER, /* playerTwoType = */ PLAYER, /* salvoGameMode = */ false, /* hiddenMinesGameMode = */ true)
             },
             {
                 "Computer vs Computer simulation Hidden Mines game mode",
-                MenuGameConfiguration(COMPUTER, COMPUTER, false, true)
+                MenuGameConfiguration(/* playerOneType = */ COMPUTER, /* playerTwoType = */ COMPUTER, /* salvoGameMode = */ false, /* hiddenMinesGameMode = */ true)
             },
             {
                 "Quit", MenuGameConfiguration::ofEmpty()

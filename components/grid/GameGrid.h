@@ -109,7 +109,7 @@ public:
     GameGrid();
 
     std::string renderGrid();
-    int getObservableGridWidth();
+    int getObservableGridWidth() const;
     static int getEntityConstraints(GridNodes placeableNodes);
 
     attemptPlacementResponse attemptPlacement(int x, int y, GridNodes node, Orientation orientation);

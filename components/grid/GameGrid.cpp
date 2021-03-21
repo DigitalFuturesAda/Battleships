@@ -64,7 +64,7 @@ std::string GameGrid::renderGrid() {
     return stringStream.str();
 }
 
-int GameGrid::getObservableGridWidth() {
+int GameGrid::getObservableGridWidth() const {
     return (getGridWidth() * 3) + 5;
 }
 

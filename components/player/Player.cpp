@@ -743,11 +743,11 @@ attemptHitResponse Player::executeDestroyModeWarheadStrikeEnhancedAlgorithm(){
         int currentNodeX = knownCoordinates.at(0).x + 1;
         int currentNodeY = knownCoordinates.at(0).y + 1;
 
-        pushNodeAsAlphaIntoQueue(currentNodeX, currentNodeY - 1, ABOVE, &shipHuntCache.at(currentShipId).potentialCoordinatesQueue); // Above
-        pushNodeAsAlphaIntoQueue(currentNodeX, currentNodeY + 1, BELOW, &shipHuntCache.at(currentShipId).potentialCoordinatesQueue); // Below
+        pushNodeAsAlphaIntoQueue(currentNodeX, currentNodeY - 1, ABOVE, &shipHuntCache.at(currentShipId).potentialCoordinatesQueue);
+        pushNodeAsAlphaIntoQueue(currentNodeX, currentNodeY + 1, BELOW, &shipHuntCache.at(currentShipId).potentialCoordinatesQueue);
 
-        pushNodeAsAlphaIntoQueue(currentNodeX - 1, currentNodeY, LEFT, &shipHuntCache.at(currentShipId).potentialCoordinatesQueue); // Left
-        pushNodeAsAlphaIntoQueue(currentNodeX + 1, currentNodeY, RIGHT, &shipHuntCache.at(currentShipId).potentialCoordinatesQueue); // Right
+        pushNodeAsAlphaIntoQueue(currentNodeX - 1, currentNodeY, LEFT, &shipHuntCache.at(currentShipId).potentialCoordinatesQueue);
+        pushNodeAsAlphaIntoQueue(currentNodeX + 1, currentNodeY, RIGHT, &shipHuntCache.at(currentShipId).potentialCoordinatesQueue);
 
         // We've select a coordinate which represents above, below, left and right and pushed these into our queue
         // we can now recursively call this method again which will incrementally work through the queue

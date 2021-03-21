@@ -13,7 +13,7 @@
 #include <chrono>
 
 int main() {
-    srand( time( nullptr ) );
+    srand( time( NULL ) );
 
     GameFlowController gameFlowController;
     MenuHelper menuHelper;

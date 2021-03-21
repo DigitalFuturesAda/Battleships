@@ -14,7 +14,7 @@ bool HostController::hasEitherPlayerLost() {
 void HostController::renderWinConditionInterface() {
     clearConsole();
 
-    std::string winningPlayer = std::to_string(playerOneHost->numberOfAttempts);
+    std::string winningPlayer = std::to_string(std::min(playerOneHost->numberOfAttempts, playerTwo->numberOfAttempts));
 
     if (playerOneHost->shouldRenderLogStatements()){
         if (playerOneHost->hasPlayerLostAllShips() && playerTwo->hasPlayerLostAllShips()){

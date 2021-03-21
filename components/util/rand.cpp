@@ -23,7 +23,6 @@ int randomBetween(int min, int max){
         x = rand();
     } while (x >= RAND_MAX - remainder);
 
-//    std::cout << "Generating random between: " << min << " -> " << max << " : " << min + x % n << std::endl;
     return min + x % n;
 }
 
