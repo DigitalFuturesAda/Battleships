@@ -772,7 +772,14 @@ ConfigValidator ConfigSingleton::getValidator() {
 }
 ```
 
-### Reflection on key design challenges (extended)
+## Evaluation
+### Advanced Programming Techniques - TODO
+#### UI/UX
+#### Defensive Programming
+#### Method visibility
+#### Class architecture
+
+### Demonstration of innovation
 There were multiple challenging problem spaces whilst developing this game, some more of these have been detailed below.
 
 #### Ensuring random values
@@ -1028,3 +1035,72 @@ while (!hitResponse.validAttempt){
     attempts ++;
 }
 ```
+
+#### Enhanced targeting algorithm
+As part of the distinction criteria, I had to implement an enhanced algorithm for shooting ships. This algorithm was
+split into multiple modes and parts.
+
+Explanation of the algorithm
+- Initially the algorithm would be set to `HUNT` mode, during this stage the computer would just shoot randomly
+- If the random shot shoots a ship then the shipId will be appended to a queue and the targetingMode will switch to `DESTROY`
+- The 4 surrounding nodes will then be added to a queue of potential nodes, these nodes will be labeled as `ABOVE`, `BELOW`
+  `LEFT` and `RIGHT`. At each prior turn the computer will work through these nodes and fire at it.
+    - If a ship is hit, the ID is compared to the ID of the ship at the front of the queue, if it's the same ID then we then
+      have enough information to work out the orientation of the ship, for example if the next ship GridNode was above or below
+      we know the ship is vertical, otherwise it's horizontal.
+    - If another ship is hit then we add that to the back of our queue, we now have another ship which we can lock on to afterwards.
+- Now that we know the orientation, the potentialNodes queue is cleared and we now populate it with the number of ship lives
+  before and after the ship, the computer will then work through them, shooting at each node until the ship has been destroyed
+- The program then recursively retries this logic until the queue of boats is empty, then the targeting mode is switched back to
+  `HUNT`.
+
+##### Research into a more advanced algorithm
+To help me determine how to create an enhanced warhead deployment algorithm, I read some papers written by other engineers
+who had tackled the problem. I found this article - https://www.datagenetics.com/blog/december32011/ - online which gave
+me food for thought, however I decided not to implement a probability density matrix as that amount of complexity would
+be out of scope for this assignment due to time constraints. Instead I walked through a game of battleships and observed
+how a human hunts for ships and wrote down the different stages (detailed above). I then came up with a rough plan in my
+note book (below) and implemented this.
+
+**My notes:**
+![Enhanced algorithm](readme-assets/images/enhanced_algorithm.png)
+
+##### Analysis of the enhanced algorithm
+To validate that the enhanced algorithm is more efficient than the random algorithm, I can a sample of 25k games and
+plotted their distribution using their normal distribution, see the findings attached below.
+
+The blue line represents the normal distribution, and the *y* axis the amount of attempts.
+
+**Normal distribution of 25k games using the random algorithm**
+As detailed below, the computer regularly maxed out at 100 attempts before winning with the mean being ~92.
+![random algorithm](readme-assets/10x10/revised/25000-games-random-algo-revised.svg)
+
+**Normal distribution of 25k games using the enhanced algorithm**
+A peculiar bug caused roughly 10 rounds to be recorded as >100 attempts, as not to tamper with the results they have been
+left in the final chart. Using the enhanced algorithm the mean number of attempts is ~66, roughly a 28% decrease in rounds.
+![enhanced algorithm](readme-assets/10x10/revised/25000-games-enhanced-algo-revised.svg)
+
+**Comparison between the the random and enhanced algorithm**
+![comparison diagram](readme-assets/10x10/revised/25000-games-comparison.svg)
+
+As is clear from the graphs, the enhanced algorithm performs substantially better than the random algorithm in terms of
+number of rounds before either player won in a number of simulations.
+
+### Reflective Review
+#### Summary
+Generally I am happy with the codebase for this assignment, there are definitely area's that I would like to improve,
+for instance I would like to have defined an abstract class which would hold a `GenericGrid` interface with some shared
+functionality such as placing items on the grid, and then extend that to construct a `GameGrid` and a `HitGrid`. There
+was also quite a bit of cross dependencies between the different classes, this never caused any issues as the generic
+structs were defined in Player which then propagated down, however this could potentially have made refactoring rather
+difficult. I'm also particularly happy with the style of the game, the appealing use of colour and the general UX - such
+as the informative tips and the validation system I've built which prunes previous messages.
+
+#### What I'd like to improve
+Whilst I did a good job of manually testing my code, I think it would have been faster if I had written unit tests.
+One major issue with the codebase is the lack of tests, nothing can come close to unit tests which would be the first thing
+I'd add if I had more time. By writing unit tests I've had peace of mind that the various different components work
+and function properly in isolation. By writing tests, this would also help keep the code as self documenting, another person
+could look at a test and instantly know how to setup a board and place ships on it programmatically. 
+Had I written unit tests, I also could have implemented fuzzing to automatically test every method and input with extreme,
+erroneous, normal and boundary data.
