@@ -42,6 +42,6 @@ void HostController::switchCurrentPlayer() {
     isPlayerOneTurnBool = !isPlayerOneTurnBool;
 }
 
-bool HostController::isPlayerOneTurn() {
-    return isPlayerOneTurnBool;
+Player &HostController::getPlayer() {
+    return isPlayerOneTurnBool ? *playerOneHost : *playerTwo;
 }

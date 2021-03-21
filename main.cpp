@@ -11,9 +11,8 @@
 #include "components/menu/MenuHelper.h"
 #include <thread>
 #include <chrono>
-#include "absl/flags/flag.h"
 
-int main2() {
+int main() {
     srand( time( nullptr ) );
 
     GameFlowController gameFlowController;
@@ -38,17 +37,12 @@ int main2() {
 
     HostController hostController(&hostPlayer, &secondaryPlayer);
 
-    if (gameConfiguration.playerOneType == COMPUTER){
-        hostPlayer.deployWarshipsAutomatically();
-    } else {
-        // Render the ship deployment UI with a sample of the board, this will be no-op if all ships are deployed.
-        hostPlayer.showShipDeploymentInterface();
-    }
-
-    if (gameConfiguration.playerTwoType == COMPUTER){
-        secondaryPlayer.deployWarshipsAutomatically();
-    } else {
-        secondaryPlayer.showShipDeploymentInterface();
+    for (Player player : {hostPlayer, secondaryPlayer}){
+        if (player.isComputer){
+            player.deployWarshipsAutomatically();
+        } else {
+            player.showShipDeploymentInterface();
+        }
     }
 
     // We call this afterwards, as this augments the computer board onto the player board
@@ -62,36 +56,37 @@ int main2() {
     }
 
     while (true){
-        if (gameFlowController.hasUserRequestedToRestart()){
-            clearConsole();
-            displayInformation("Resetting board. Stand by...\n", 1);
-            break;
-        };
+        if (gameFlowController.hasUserRequestedToRestart() || hostController.hasEitherPlayerLost()) break;
 
-        if (hostController.hasEitherPlayerLost()){
-            hostController.renderWinConditionInterface();
-            break;
-        } else {
-            Player *currentPlayer = hostController.isPlayerOneTurn() ? &hostPlayer : &secondaryPlayer;
+        Player *currentPlayer = &hostController.getPlayer();
 
-            if (currentPlayer->getPlayerType() == PLAYER){
-                currentPlayer->renderPlayerUserInterface();
-                if (gameConfiguration.salvoGameMode){
-                    currentPlayer->renderSalvoWarheadStrikeInterface();
-                } else {
-                    currentPlayer->renderWarheadStrikeInterface();
-                }
+        if (currentPlayer->getPlayerType() == PLAYER){
+            currentPlayer->renderPlayerUserInterface();
+            if (gameConfiguration.salvoGameMode){
+                currentPlayer->renderSalvoWarheadStrikeInterface();
             } else {
-                if (gameConfiguration.salvoGameMode){
-                    currentPlayer->deployWarheadStrikesAutomatically();
-                } else {
-                    currentPlayer->deployWarheadStrikeAutomatically();
-                }
+                currentPlayer->renderWarheadStrikeInterface();
             }
+        } else {
+            if (gameConfiguration.salvoGameMode){
+                currentPlayer->deployWarheadStrikesAutomatically();
+            } else {
+                currentPlayer->deployWarheadStrikeAutomatically();
+            }
+        }
 
-            hostController.switchCurrentPlayer();
-        };
+        hostController.switchCurrentPlayer();
+    };
+
+    if (gameFlowController.hasUserRequestedToRestart()){
+        clearConsole();
+        displayInformation("Resetting board. Stand by...\n", 1);
+        return main();
     }
+
+    if (hostController.hasEitherPlayerLost()){
+        hostController.renderWinConditionInterface();
+    };
 
     return EXIT_SUCCESS;
 }
@@ -128,10 +123,10 @@ int debugMode() {
             hostController.renderWinConditionInterface();
             break;
         } else {
-//            Player *currentPlayer = hostController.isPlayerOneTurn() ? &hostPlayer : &secondaryPlayer;
             hostPlayer.deployWarheadStrikeAutomatically();
             secondaryPlayer.deployWarheadStrikeAutomatically();
-//            hostController.switchCurrentPlayer();
         };
     }
+
+    return EXIT_SUCCESS;
 };

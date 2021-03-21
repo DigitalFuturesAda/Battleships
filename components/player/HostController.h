@@ -24,7 +24,7 @@ public:
 
     void switchCurrentPlayer();
 
-    bool isPlayerOneTurn();
+    Player &getPlayer();
 
 private:
     bool isPlayerOneTurnBool = true;
