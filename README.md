@@ -888,7 +888,8 @@ void displayError(const std::string error, int pruneMessagesAmount){
 }
 ```
 
-[comment]: <> (TODO - slyo: Put video here)
+[See video](https://user-images.githubusercontent.com/58537339/111922568-7d7af300-8a92-11eb-962e-d4bf71aafb3b.mp4)
+
 
 #### Displaying multiple boards next to each other
 Initially I was just printing out the boards on top of each other, however I then realised that the vertical screen real 
