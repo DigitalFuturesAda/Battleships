@@ -15,13 +15,15 @@ struct MenuGameConfiguration {
 
     bool salvoGameMode = false;
     bool hiddenMinesGameMode = false;
+    bool enhancedAlgorithm = false;
 
     bool requestToQuit = false;
 
     MenuGameConfiguration(PlayerType playerOneType, PlayerType playerTwoType, bool salvoGameMode,
-                          bool hiddenMinesGameMode) : playerOneType(playerOneType), playerTwoType(playerTwoType),
-                                                      salvoGameMode(salvoGameMode),
-                                                      hiddenMinesGameMode(hiddenMinesGameMode) {}
+                          bool hiddenMinesGameMode, bool enhancedAlgorithm):
+                            playerOneType(playerOneType), playerTwoType(playerTwoType),
+                            salvoGameMode(salvoGameMode), hiddenMinesGameMode(hiddenMinesGameMode),
+                            enhancedAlgorithm(enhancedAlgorithm) {}
 
     static MenuGameConfiguration ofEmpty(){
         return MenuGameConfiguration();

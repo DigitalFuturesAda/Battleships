@@ -13,35 +13,39 @@ MenuHelper::MenuHelper() = default;
 void MenuHelper::renderMenu() {
     std::vector<std::pair<std::string, MenuGameConfiguration>> gameConfiguration = {
             {
-                "Player vs Computer",
-                MenuGameConfiguration(/* playerOneType = */ PLAYER, /* playerTwoType = */ COMPUTER, /* salvoGameMode = */ false, /* hiddenMinesGameMode = */ false)
+                    "Player vs Computer",
+                    MenuGameConfiguration(PLAYER, COMPUTER, false, false, false)
             },
             {
-                "Player vs Player",
-                MenuGameConfiguration(/* playerOneType = */ PLAYER, /* playerTwoType = */ PLAYER, /* salvoGameMode = */ false, /* hiddenMinesGameMode = */ false)
+                    "Player vs Player",
+                    MenuGameConfiguration(PLAYER, PLAYER, false, false, false)
             },
             {
-                "Player vs Computer Salvo game mode",
-                MenuGameConfiguration(/* playerOneType = */ PLAYER, /* playerTwoType = */ COMPUTER, /* salvoGameMode = */ true, /* hiddenMinesGameMode = */ false)
+                    "Player vs Computer Salvo game mode",
+                    MenuGameConfiguration(PLAYER, COMPUTER, true, false, false)
             },
             {
-                "Player vs Player Salvo game mode",
-                MenuGameConfiguration(/* playerOneType = */ PLAYER, /* playerTwoType = */ PLAYER, /* salvoGameMode = */ true, /* hiddenMinesGameMode = */ false)
+                    "Player vs Player Salvo game mode",
+                    MenuGameConfiguration(PLAYER, PLAYER, true, false, false)
             },
             {
-                "Player vs Computer Hidden Mines game mode",
-                MenuGameConfiguration(/* playerOneType = */ PLAYER, /* playerTwoType = */ COMPUTER, /* salvoGameMode = */ false, /* hiddenMinesGameMode = */ true)
+                    "Player vs Computer Hidden Mines game mode",
+                    MenuGameConfiguration(PLAYER, COMPUTER, false, true, false)
             },
             {
-                "Player vs Player Hidden Mines game mode",
-                MenuGameConfiguration(/* playerOneType = */ PLAYER, /* playerTwoType = */ PLAYER, /* salvoGameMode = */ false, /* hiddenMinesGameMode = */ true)
+                    "Player vs Player Hidden Mines game mode",
+                    MenuGameConfiguration(PLAYER, PLAYER, false, true, false)
             },
             {
-                "Computer vs Computer simulation Hidden Mines game mode",
-                MenuGameConfiguration(/* playerOneType = */ COMPUTER, /* playerTwoType = */ COMPUTER, /* salvoGameMode = */ false, /* hiddenMinesGameMode = */ true)
+                    "Computer vs Computer simulation Hidden Mines game mode",
+                    MenuGameConfiguration(COMPUTER, COMPUTER, false, true, false)
             },
             {
-                "Quit", MenuGameConfiguration::ofEmpty()
+                    "Player vs Computer with enhanced algorithm",
+                    MenuGameConfiguration(PLAYER, COMPUTER, false, false, true)
+            },
+            {
+                    "Quit", MenuGameConfiguration::ofEmpty()
             }
     };
 
@@ -60,7 +64,7 @@ void MenuHelper::renderMenu() {
     regexMatch numberInput = getRegexInputWithPromptAsRegex("Select one of the options: ",
                                                             std::regex("^([1-" + std::to_string(gameConfiguration.size()) + "])"));
 
-    gameConfigurationCache = gameConfiguration.at(stoi(numberInput.match) - 1).second;
+    gameConfigurationCache = gameConfiguration.at(stoi(numberInput.match)).second;
 }
 
 MenuGameConfiguration MenuHelper::getGameConfiguration() {

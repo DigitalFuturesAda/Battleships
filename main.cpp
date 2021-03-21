@@ -70,7 +70,11 @@ int main() {
             if (gameConfiguration.salvoGameMode){
                 currentPlayer->deployWarheadStrikesAutomatically();
             } else {
-                currentPlayer->deployWarheadStrikeAutomatically();
+                if (gameConfiguration.enhancedAlgorithm){
+                    currentPlayer->executeAutomaticEnhancedAlgorithmWarheadStrike();
+                } else {
+                    currentPlayer->deployWarheadStrikeAutomatically();
+                };
             }
         }
 

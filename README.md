@@ -1,5 +1,15 @@
 # Advanced Programming 2 - Battleships
 
+## Implemented features
+    - Player vs Computer
+    - Player vs Player
+    - Player vs Computer Salvo gamemode
+    - Player vs Plyer Salvo gamemode
+    - Player vs Computer Hidden Mines gamemode
+    - Player vs Player Hidden Mines gamemode
+    - Computer vs Computer simulation Hidden mines gamemode
+    - Player vs Computer with enhanced algorithm
+
 ## Challenge Outline
 ### Summary & Overview
 
