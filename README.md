@@ -52,6 +52,11 @@ an advanced warhead deployment algorithm has been developed for the player vs co
 simulation game modes which instead of being random would use a number of heuristics to choose where to fire the next
 warheads (rather than a random algorithm).
 
+Whilst playing against the computer both the players hit board and game board should be shown as well as the computers
+boards to aid in testing. Below is a screenshot of what this looks like:
+
+![Player vs Computer](readme-assets/images/player-vs-computer-starter.png)
+
 ### Proposed Solution
 #### Proposed components
 - `GameGrid Class` 
@@ -155,3 +160,83 @@ warheads (rather than a random algorithm).
       
 #### UML diagram
 ![UML diagram](readme-assets/images/UML.png)
+
+### Initial working plan
+#### Overall approach
+
+The overall approach to this coursework was to test early and push the limits of my code as far as possible, by doing
+this I would discovered any faults early on and thus, be able to fix them whilst the code was still fresh in my mind.
+I followed a sprint like pattern to software development, where I quickly iterated on different ideas to test them for
+robustness and feasibility, for instance I wasn't sure what the technical constraints for displaying the grid would be,
+so I was crossed between representing the grid as a matrix (an array of arrays) or instead a more abstract data structure.
+I tested both of these different approaches and settled with using a matrix. Once I had prototyped what I believed to be
+a feasible starter product, I then followed the waterfall methodology. This meant that I wrote and took a hermetic approach
+to testing. 
+
+I also wanted to make sure I made good use of Object Orientated Programming in this assignment, coming from a Java background,
+thinking of different components as objects came naturally. My approach for this was to have as little code as possible
+in the `main.cpp` file, ideally different objects would be instantiated in the `main` and various public APIs would be
+called which would independently mutate various properties in the object and it's child objects. In C++ you can specify
+public and private methods and properties, my approach for naming was to keep my code as self documenting as possible.
+Any API you call would take logical parameters and give a response which could be inspected for correctness. I planned
+on making heavy use of structures, which provide great type completion across different classes.
+
+#### Development Strategy
+I created a components folder which contains various folders containing the different classes. To make the separation clear
+each class had a header and a cpp file, any structs would be defined in the header and code would never be placed in the
+header file as per Google's style guide (https://google.github.io/styleguide/cppguide.html) which I followed for the
+duration of this coursework. Each components will be tested manually before being commited to Github to ensure their
+quality.
+
+For instance the `Player` class is positioned in: `components/player/...` which contains the `Player` class and a number
+of utilities and classes which complement the functionality of the `Player` class. I decided not to create a unique folder
+for each class as that would clutter the codebase too much. Instead the folder names have been used to let the programmer
+quickly identify the main use of the code positioned within the folder:
+
+- `components/config:` Handles parsing, validating and providing a singleton entry point.
+    - `ConfigFileParser, ConfigSingleton, ConfigSingleton`
+- `components/grid:` Handles the hit grid and main game grid.
+    - `GameGrid, HitGrid`
+- `components/menu:` Displays the grid to the user and validates their inputs
+    - `MenuHelper`
+- `components/player:` Handles all player interaction, detects if either player has won, holds a reference to each player
+                       and provides a two way reactive data binding between the player class, the inputs and the main
+                       program file.
+    - `Player, HostController, GameFlowController`
+- `components/ship:` Stores the ship class and information pertaining to the ship
+    - `Ship`
+- `components/util:` Various utility methods such as IO functions, random methods and string manipulation.
+    - `io, rand, strings`
+
+#### Approach to quality
+Due to time and technical constraints, I decided not to write any tests, however as previously noted I thoroughly tested
+all code. Whilst implementing the different objects, I followed the programming technique of defensive programming
+(https://en.wikipedia.org/wiki/Defensive_programming). Defensive programming is a form of defensive design, in which 
+the program should be able to mitigate unforeseen circumstances -  each component is designed with the assumption people 
+will try and break it, meaning every single edge case was accounted for and code put in place to mitigate erroneous 
+inputs. I also followed a structured testing schedule, testing my inputs and functions with erroneous, boundary extreme  
+and normal data to make sure erroneous and extreme data did not cause my program to stop functioning or break in
+unintended ways (logic errors).
+
+### Decomposition into Epics
+To help me plan and manage the implementation of the game, I've broken the various components down into epics:
+    - Epic 1: Main file
+    - Epic 2: Board
+    - Epic 3: Ship
+    - Epic 4: Player
+    - Epic 5: Parsing
+
+None of these epics strictly required the other to be created, I decided to handle the parsing epic last because that was
+a rather self contained project. Due to the object orientated approach, configuration could be passed into any of the
+other objects from the `ConfigSingleton` during the instantiation phase of each object.
+
+### Object-Oriented Design Ideas and Phased Breakdown
+All but epic 1 will be implemented as classes with each epic being developed in a non linear order; rather ad-hoc when
+needed. Generally each epic asides from the 5th will be developed in parallel. As I broke these problems down into
+sub-problems, I realised there was a great need for interoperability between the different classes, for instance the Player
+class would hold each Board and the Board class would require knowledge of which ships the player had, but the Player
+would directly own the a vector of the players ships, rather than the board owning the ships. 
+
+The first epic also included a number of miscellaneous tasks, such as writing functions to generate random numbers, get
+input from the user and validate them in self contained methods and a number of time saving utility-focused string and
+number methods.
