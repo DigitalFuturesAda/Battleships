@@ -37,12 +37,11 @@ int main() {
 
     HostController hostController(&hostPlayer, &secondaryPlayer);
 
-    for (Player player : {hostPlayer, secondaryPlayer}){
-        if (player.isComputer){
-            player.deployWarshipsAutomatically();
-        } else {
-            player.showShipDeploymentInterface();
-        }
+    for (Player* player : {&hostPlayer, &secondaryPlayer}){
+        if (player->isComputer)
+            player->deployWarshipsAutomatically();
+        else
+            player->showShipDeploymentInterface();
     }
 
     // We call this afterwards, as this augments the computer board onto the player board

@@ -154,4 +154,4 @@ warheads (rather than a random algorithm).
       once either player has won/lost.
       
 #### UML diagram
-TODO...
+![UML diagram](readme-assets/images/UML.png)
