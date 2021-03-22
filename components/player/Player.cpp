@@ -722,7 +722,7 @@ attemptHitResponse Player::executeDestroyModeWarheadStrikeEnhancedAlgorithm(){
 
     if (shipHuntIdQueue.empty()){
         targetMode = HUNT;
-        // TODO(slyo): There are no pending ships in the queue, switch back to the HUNT mode
+        // There are no pending ships in the queue, switch back to the HUNT mode
         return executeAutomaticEnhancedAlgorithmWarheadStrike();
     }
 

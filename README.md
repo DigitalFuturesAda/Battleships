@@ -169,7 +169,7 @@ boards to aid in testing. Below is a screenshot of what this looks like:
       once either player has won/lost.
       
 #### UML diagram
-![UML diagram](readme-assets/images/UML.png)
+![UML diagram](readme-assets/images/uml.png)
 
 ### Initial working plan
 #### Overall approach
@@ -773,11 +773,70 @@ ConfigValidator ConfigSingleton::getValidator() {
 ```
 
 ## Evaluation
-### Advanced Programming Techniques - TODO
-#### UI/UX
+### Advanced Programming Techniques
 #### Defensive Programming
+As previously mentioned, I've used defensive programming techniques throughout my code. Any and all user inputs are
+validated using RegEx expressions and use my own utility for reporting input validation errors. By following these
+standards I help ensure that my program is robust and not likely to break under pressure.
+```c++
+std::string getStringWithPrompt(const std::string& prompt) {
+    std::cout << "\033[1;33m" << "[INPUT]: " << "\033[0m";
+    std::cout << prompt;
+    return getInput();
+}
+
+std::string getRegexInputWithPromptAsString(const std::string& prompt, const std::regex& regex) {
+    std::string input = getStringWithPrompt(prompt);
+
+    while (!regex_match(input, regex)) {
+        displayError("Invalid input! - ", 1);
+        input = getStringWithPrompt(prompt);
+    }
+
+    return input;
+}
+```
+
 #### Method visibility
-#### Class architecture
+C++ allows you to define private and public methods and properties within your classes, to help ensure my code is self
+documenting, I only publicly define what absolutely needs to be public, otherwise it remains private. Coming from a Java
+background I am used to getters for various properties, for instance to get the property name you might do `class#getName()`
+where as in C++ the approach would be `class->name` or `class.name`. To prevent accidental mutation of private properties 
+from external classes, I've defined getters for private properties, this allows other classes to inspect the contents
+but not mutate them, as we only return the value, not a reference to the values. By doing this, I give absolute freedom 
+to any engineer who touches my code, but at the same time prevent them from doing something which might break the code.
+For example placing nodes on the grid is extremely delicate and complex to get right for a number of reasons, if you overwrite
+a node you could completely break the game, therefore only one method exists to mutate the grid, this method has been
+thoroughly tested and allows the caller to do pretty much anything to the grid within the confines of what is and is not
+legal in battleships. By making the `battleShipGameGrid` property private with no getter, there is less of a chance of
+someone accidentally messing something up.
+
+#### Code reuse
+[Here](https://github.com/DigitalFuturesAda/Battleships/blob/master/components/player/Player.cpp#L136) is an example of
+me using code re-use to recursively call a method which handles mine explosions, by recursively implementing this feature,
+it means that technically one mine explosion has the capabilities to detonate all 5 other mines - or if more are placed - 
+all of them.
+
+Another example of me implementing the technique of reusable code was by writing a method to check if any given coordinate
+was out of bounds, initially I was using the same line in multiple places, so I refactored it into an `isOutOfBounds` helper
+function:
+```c++
+bool Player::isOutOfBounds(int x, int y){
+    return (x < 1 || y < 1 || y > getGameGrid()->getGridHeight() || x > getGameGrid()->getGridWidth());
+}
+```
+
+#### Code smells
+In [this](https://github.com/DigitalFuturesAda/Battleships/commit/5c08b44b5184c674cc457057d7ad827c7aa4707d) example, I
+had a particularly gnarly bug which was occurring due to a form of memory leaks, in which attempting to place a node on
+a boundary array would cause it to leak into an adjacent field in the memory. I had a few issues like this due to how
+I was thinking about the matrix and how I was indexing values in the matrix. In mathematics (0,0) refers to the bottom
+left of a graph, however in CS (0,0) refers to the top left. Furthermore the A1 is the (0,0) element in the matrix, however
+as a programmer I found it hard to keep track of all these different conversions in my head. Especially when comparing
+against the height and with, for example the width of the grid might be 10, however `grid[0][10]` would be out of bounds,
+so if I wasn't offsetting this I would be indexing invalid positions, and in C++ this wasn't halting the program execution,
+however this was resulting in logic errors. If I had more time I would have created some utilities which would convert
+between different notations, and these would all be stored in their own structures as to give us type safety.
 
 ### Demonstration of innovation
 There were multiple challenging problem spaces whilst developing this game, some more of these have been detailed below.
