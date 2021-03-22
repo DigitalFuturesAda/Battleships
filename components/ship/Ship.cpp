@@ -6,6 +6,7 @@
 #include "../util/rand.h"
 
 #include <utility>
+#include <climits>
 
 Ship::Ship(GridNodes type, bool deployed) : type(type), deployed(deployed) {
     this->maxLives = GameGrid::getEntityConstraints(type);

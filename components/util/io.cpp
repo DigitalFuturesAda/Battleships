@@ -75,7 +75,7 @@ void displayBlankInputDialog() {
 }
 
 void displayContinueGameConfirmationDialogWithPrompt(GameFlowController *gameFlowController, const std::string& prompt) {
-    std::string input = getStringWithPrompt(prompt);
+    std::string input = getRegexInputWithPromptAsString(prompt, std::regex("$^|^([Rr]{1}|[Qq]{1})"));
 
     if (input.empty()){
         return;

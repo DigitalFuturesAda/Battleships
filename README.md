@@ -1125,10 +1125,11 @@ note book (below) and implemented this.
 ![Enhanced algorithm](readme-assets/images/enhanced_algorithm.png)
 
 ##### Analysis of the enhanced algorithm
-To validate that the enhanced algorithm is more efficient than the random algorithm, I can a sample of 25k games and
+To validate that the enhanced algorithm is more efficient than the random algorithm, I simulated a sample of 25k games and
 plotted their distribution using their normal distribution, see the findings attached below.
 
-The blue line represents the normal distribution, and the *y* axis the amount of attempts.
+The blue line represents the normal distribution, the *x* axis the amount of attempts and the *y* axis, the amount of 
+games which ended in that amount of attempts.
 
 **Normal distribution of 25k games using the random algorithm**
 As detailed below, the computer regularly maxed out at 100 attempts before winning with the mean being ~92.
