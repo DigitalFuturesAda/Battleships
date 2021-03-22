@@ -59,14 +59,7 @@ int main() {
 
         Player *currentPlayer = &hostController.getPlayer();
 
-        if (currentPlayer->getPlayerType() == PLAYER){
-            currentPlayer->renderPlayerUserInterface();
-            if (gameConfiguration.salvoGameMode){
-                currentPlayer->renderSalvoWarheadStrikeInterface();
-            } else {
-                currentPlayer->renderWarheadStrikeInterface();
-            }
-        } else {
+        if (currentPlayer->isComputer){
             if (gameConfiguration.salvoGameMode){
                 currentPlayer->deployWarheadStrikesAutomatically();
             } else {
@@ -75,6 +68,13 @@ int main() {
                 } else {
                     currentPlayer->deployWarheadStrikeAutomatically();
                 };
+            }
+        } else {
+            currentPlayer->renderPlayerUserInterface();
+            if (gameConfiguration.salvoGameMode){
+                currentPlayer->renderSalvoWarheadStrikeInterface();
+            } else {
+                currentPlayer->renderWarheadStrikeInterface();
             }
         }
 

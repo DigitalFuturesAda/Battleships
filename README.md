@@ -660,6 +660,39 @@ The parsing tasks were split into three distinct phases:
     - A specific validator which parses the values of the keys and values
     - A singleton which provides a unified point of access (POA) to the validator
 
+##### Defining ships in the INI file
+One of the pass requirements as per the brief was the ability for ships to be defined in this INI file, the format had to
+match:
+```ini
+Boat: Carrier, 5
+Boat: Battleship, 4
+Boat: Destroyer, 3
+Boat: Submarine, 3
+Boat: Patrol Boat, 2
+```
+However it wasn't clear whether custom ships could be defined, for instance corvettes or frigates, as the brief was unclear
+I decided not to allow custom ships.
+
+As per the distinction criteria, the program should allow an "unlimited" amount of ships, from reading the brief it seemed
+that this should be done by defining the same ship multiple times, for instance to have 5 carriers on the board, you
+would have to do something like:
+```
+Boat: Carrier, 5
+Boat: Carrier, 5
+Boat: Carrier, 5
+Boat: Carrier, 5
+Boat: Carrier, 5
+```
+
+I didn't think this was an ideal solution, as it would be lots of work to add 100 ships or remove them. It also isn't
+explicitly readable, you'd have to manually add up the different ships to work out how many there would be on the board.
+So instead I decided to specify the number of ships after the ship type and health, for instance under the new format, to
+specify 5 carriers, you would do something like:
+```
+Boat: Carrier, 5, 5
+```
+I think this is a much more logical approach.
+
 #### Code Review
 As mentioned I used RegEx to pattern match the INI format, valid INI files follow the format `{key} = {value}`, the key
 can not have a space in it, however the equal symbol may have a trailing and leading space, the value can be anything,
