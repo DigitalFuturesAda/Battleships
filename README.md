@@ -1,14 +1,32 @@
 # Advanced Programming 2 - Battleships
 
 ## Implemented features
-    - Player vs Computer
-    - Player vs Player
-    - Player vs Computer Salvo gamemode
-    - Player vs Plyer Salvo gamemode
-    - Player vs Computer Hidden Mines gamemode
-    - Player vs Player Hidden Mines gamemode
-    - Computer vs Computer simulation Hidden mines gamemode
-    - Player vs Computer with enhanced algorithm
+
+- Intuitive user interfaces and inputs
+- Player vs player or computer
+- Fully autonomous computer simulation modes
+- Salvo game mode
+- Hidden mines game mode
+- Enhanced ship targeting algorithm
+
+### Screenshots
+#### Ship deployment interface
+![Ship Deployment](readme-assets/mp4/ship_deployer.webp)
+
+#### Player vs computer - hidden mines game mode
+![Hidden Mines](https://suraj.codes/player_vs_computer_mines.webp)
+
+#### Player vs computer - salvo game mode
+![Salvo](https://suraj.codes/salvo.webp)
+
+#### Computer simulation - random algorithm
+![Random](readme-assets/mp4/simulation_random.webp)
+
+#### Computer simulation - enhanced algorithm
+![Enhanced](readme-assets/mp4/enhanced.webp)
+
+#### Intuitive user inputs
+![Input](readme-assets/mp4/user_input.webp)
 
 ## Challenge Outline
 ### Summary & Overview

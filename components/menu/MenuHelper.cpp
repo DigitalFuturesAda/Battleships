@@ -14,39 +14,43 @@ void MenuHelper::renderMenu() {
     std::vector<std::pair<std::string, MenuGameConfiguration>> gameConfiguration = {
             {
                     "Player vs Computer",
-                    MenuGameConfiguration(PLAYER, COMPUTER, false, false, false)
+                            MenuGameConfiguration(PLAYER, COMPUTER, false, false, false)
             },
             {
                     "Player vs Player",
-                    MenuGameConfiguration(PLAYER, PLAYER, false, false, false)
+                            MenuGameConfiguration(PLAYER, PLAYER, false, false, false)
             },
             {
                     "Player vs Computer Salvo game mode",
-                    MenuGameConfiguration(PLAYER, COMPUTER, true, false, false)
+                            MenuGameConfiguration(PLAYER, COMPUTER, true, false, false)
             },
             {
                     "Player vs Player Salvo game mode",
-                    MenuGameConfiguration(PLAYER, PLAYER, true, false, false)
+                            MenuGameConfiguration(PLAYER, PLAYER, true, false, false)
             },
             {
                     "Player vs Computer Hidden Mines game mode",
-                    MenuGameConfiguration(PLAYER, COMPUTER, false, true, false)
+                            MenuGameConfiguration(PLAYER, COMPUTER, false, true, false)
             },
             {
                     "Player vs Player Hidden Mines game mode",
-                    MenuGameConfiguration(PLAYER, PLAYER, false, true, false)
+                            MenuGameConfiguration(PLAYER, PLAYER, false, true, false)
             },
             {
-                    "Computer vs Computer simulation Hidden Mines game mode",
-                    MenuGameConfiguration(COMPUTER, COMPUTER, false, true, false)
+                    "Computer simulation Hidden Mines game mode",
+                            MenuGameConfiguration(COMPUTER, COMPUTER, false, true, false)
             },
             {
                     "Player vs Computer with enhanced algorithm",
-                    MenuGameConfiguration(PLAYER, COMPUTER, false, false, true)
+                            MenuGameConfiguration(PLAYER, COMPUTER, false, false, true)
+            },
+            {
+                    "Computer simulation with enhanced algorithm",
+                            MenuGameConfiguration(COMPUTER, COMPUTER, false, false, true)
             },
             {
                     "Quit", MenuGameConfiguration::ofEmpty()
-            }
+            },
     };
 
     clearConsole();
@@ -60,11 +64,26 @@ void MenuHelper::renderMenu() {
         counter ++;
     }
 
-    std::cout << std::endl;
-    regexMatch numberInput = getRegexInputWithPromptAsRegex("Select one of the options: ",
-                                                            std::regex("^([1-" + std::to_string(gameConfiguration.size()) + "])"));
+    std::string numberInput;
 
-    gameConfigurationCache = gameConfiguration.at(stoi(numberInput.match)).second;
+    std::cout << std::endl;
+    while (true){
+        numberInput = getStringWithPrompt("Select one of the options: ");
+        int intInput;
+
+        try {
+            intInput = std::stoi(numberInput);
+        } catch (std::exception const & e) {
+            displayError("Invalid option - ", 1);
+        }
+
+        if (intInput >= 1 && intInput <= gameConfiguration.size()){
+            gameConfigurationCache = gameConfiguration.at(intInput - 1).second;
+            return;
+        } else {
+            displayError("Invalid number - ", 1);
+        }
+    }
 }
 
 MenuGameConfiguration MenuHelper::getGameConfiguration() {
