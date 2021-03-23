@@ -16,8 +16,11 @@
 #### Player vs computer - hidden mines game mode
 ![Hidden Mines](https://suraj.codes/player_vs_computer_mines.webp)
 
-#### Player vs computer - salvo game mode
-![Salvo](https://suraj.codes/salvo.webp)
+#### Player vs computer salvo game mode
+![salvo](readme-assets/mp4/salvo.webp)
+
+#### Player vs computer - hidden mines game mode
+![hidden](readme-assets/mp4/hidden_mines.webp)
 
 #### Computer simulation - random algorithm
 ![Random](readme-assets/mp4/simulation_random.webp)

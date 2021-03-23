@@ -14,39 +14,39 @@ void MenuHelper::renderMenu() {
     std::vector<std::pair<std::string, MenuGameConfiguration>> gameConfiguration = {
             {
                     "Player vs Computer",
-                            MenuGameConfiguration(PLAYER, COMPUTER, false, false, false)
+                    MenuGameConfiguration(PLAYER, COMPUTER, false, false, false)
             },
             {
                     "Player vs Player",
-                            MenuGameConfiguration(PLAYER, PLAYER, false, false, false)
+                    MenuGameConfiguration(PLAYER, PLAYER, false, false, false)
             },
             {
                     "Player vs Computer Salvo game mode",
-                            MenuGameConfiguration(PLAYER, COMPUTER, true, false, false)
+                    MenuGameConfiguration(PLAYER, COMPUTER, true, false, false)
             },
             {
                     "Player vs Player Salvo game mode",
-                            MenuGameConfiguration(PLAYER, PLAYER, true, false, false)
+                    MenuGameConfiguration(PLAYER, PLAYER, true, false, false)
             },
             {
                     "Player vs Computer Hidden Mines game mode",
-                            MenuGameConfiguration(PLAYER, COMPUTER, false, true, false)
+                    MenuGameConfiguration(PLAYER, COMPUTER, false, true, false)
             },
             {
                     "Player vs Player Hidden Mines game mode",
-                            MenuGameConfiguration(PLAYER, PLAYER, false, true, false)
+                    MenuGameConfiguration(PLAYER, PLAYER, false, true, false)
             },
             {
                     "Computer simulation Hidden Mines game mode",
-                            MenuGameConfiguration(COMPUTER, COMPUTER, false, true, false)
+                    MenuGameConfiguration(COMPUTER, COMPUTER, false, true, false)
             },
             {
                     "Player vs Computer with enhanced algorithm",
-                            MenuGameConfiguration(PLAYER, COMPUTER, false, false, true)
+                    MenuGameConfiguration(PLAYER, COMPUTER, false, false, true)
             },
             {
                     "Computer simulation with enhanced algorithm",
-                            MenuGameConfiguration(COMPUTER, COMPUTER, false, false, true)
+                    MenuGameConfiguration(COMPUTER, COMPUTER, false, false, true)
             },
             {
                     "Quit", MenuGameConfiguration::ofEmpty()
