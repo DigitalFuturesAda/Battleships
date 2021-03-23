@@ -60,6 +60,7 @@ int main() {
         Player *currentPlayer = &hostController.getPlayer();
 
         if (currentPlayer->isComputer){
+            hostPlayer.renderPlayerUserInterface();
             if (gameConfiguration.salvoGameMode){
                 currentPlayer->deployWarheadStrikesAutomatically();
             } else {
@@ -78,6 +79,7 @@ int main() {
             }
         }
 
+        std::this_thread::sleep_for(std::chrono::milliseconds(15));
         hostController.switchCurrentPlayer();
     };
 

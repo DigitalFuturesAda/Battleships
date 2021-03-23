@@ -105,7 +105,7 @@ public:
     /**
      * Controls whether any log statements should be output.
      */
-    static const bool SHOULD_SHOW_LOG_STATEMENTS_DURING_AUTOMATION = false;
+    static const bool SHOULD_SHOW_LOG_STATEMENTS_DURING_AUTOMATION = true;
     
     explicit Player(std::string playerName, GameFlowController& gameFlowController);
 

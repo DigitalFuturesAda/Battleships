@@ -1,5 +1,4 @@
 # Advanced Programming 2 - Battleships
-
 ## Implemented features
 
 - Intuitive user interfaces and inputs
@@ -11,25 +10,25 @@
 
 ### Screenshots
 #### Ship deployment interface
-![Ship Deployment](readme-assets/mp4/ship_deployer.webp)
+![Ship Deployment](readme-assets/mp4/placement.webp)
 
-#### Player vs computer - hidden mines game mode
-![Hidden Mines](https://suraj.codes/player_vs_computer_mines.webp)
+#### Warhead deployment UI
+![Warhead Deployment](readme-assets/mp4/shooting.webp)
 
 #### Player vs computer salvo game mode
 ![salvo](readme-assets/mp4/salvo.webp)
 
 #### Player vs computer - hidden mines game mode
-![hidden](readme-assets/mp4/hidden_mines.webp)
+![hidden](readme-assets/mp4/mines.webp)
 
 #### Computer simulation - random algorithm
-![Random](readme-assets/mp4/simulation_random.webp)
+![Random](readme-assets/mp4/random.webp)
 
 #### Computer simulation - enhanced algorithm
 ![Enhanced](readme-assets/mp4/enhanced.webp)
 
 #### Intuitive user inputs
-![Input](readme-assets/mp4/user_input.webp)
+![Input](readme-assets/mp4/inputs.webp)
 
 ## Challenge Outline
 ### Summary & Overview
