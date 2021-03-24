@@ -1,6 +1,7 @@
 # Advanced Programming 2 - Battleshi
 
-Play the game - **https://replit.com/@B3GHU8/Battleships-Final#config.ini**
+Play the game - **https://replit.com/@B3GHU8/Battleships-Final#config.ini** - you have to fork it, for some reason the output isn't shown on replit's fancy showcase screen
+
 - The repl is set to always on, so you should benefit from a shared CMake cache.
 - Initial CMake builds take a while, but they then benefit from a cache and only incrementally rebuilds what's changed, so changes to the INI file will result in near instant recompilation and execution.
 
