@@ -16,22 +16,22 @@ Play the game - **https://replit.com/@B3GHU8/Battleships-Final-Prod** - you have
 
 ### Screenshots
 #### Ship deployment interface
-![Ship Deployment](readme-assets/mp4/placement.webp)
+![Ship Deployment](https://suraj.codes/mp4/placement.webp)
 
 #### Warhead deployment UI
-![Warhead Deployment](readme-assets/mp4/shooting.webp)
+![Warhead Deployment](https://suraj.codes/mp4/shooting.webp)
 
 #### Player vs computer salvo game mode
-![salvo](readme-assets/mp4/salvo.webp)
+![salvo](https://suraj.codes/mp4/salvo.webp)
 
 #### Player vs computer - hidden mines game mode
-![hidden](readme-assets/mp4/mines.webp)
+![hidden](https://suraj.codes/mp4/mines.webp)
 
 #### Computer simulation - random algorithm
-![Random](readme-assets/mp4/random.webp)
+![Random](https://suraj.codes/mp4/random.webp)
 
 #### Computer simulation - enhanced algorithm
-![Enhanced](readme-assets/mp4/enhanced.webp)
+![Enhanced](https://suraj.codes/mp4/enhanced.webp)
 
 #### Intuitive user inputs
 ![Input](readme-assets/mp4/inputs.webp)
