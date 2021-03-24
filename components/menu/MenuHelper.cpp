@@ -55,6 +55,15 @@ void MenuHelper::renderMenu() {
 
     clearConsole();
 
+    std::cout << "\033[1;31m__________         __    __  .__                .__    .__              \n"
+                 "\\______   \\_____ _/  |__/  |_|  |   ____   _____|  |__ |__|_____  ______\n"
+                 " |    |  _/\\__  \\\\   __\\   __\\  | _/ __ \\ /  ___/  |  \\|  \\____ \\/  ___/\n"
+                 " |    |   \\ / __ \\|  |  |  | |  |_\\  ___/ \\___ \\|   Y  \\  |  |_> >___ \\ \n"
+                 " |______  /(____  /__|  |__| |____/\\___  >____  >___|  /__|   __/____  >\n"
+                 "        \\/      \\/                     \\/     \\/     \\/   |__|       \\/\033[0m"
+                 << std::endl
+                 << std::endl;
+
     std::cout << "\033[1;31m···\033[0m Welcome to Battleships \033[1;31m···\033[0m" << std::endl;
     std::cout << "\033[1;31m···\033[0m Please select one of the following options by entering the corresponding number:" << std::endl;
 
