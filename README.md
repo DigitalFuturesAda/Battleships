@@ -1,9 +1,11 @@
-# Advanced Programming 2 - Battleships
-
-Play the game - **https://replit.com/@B3GHU8/Battleships-prod-release** - you have to fork it, for some reason the output isn't shown on replit's fancy (and useless) showcase screen
-
-- The repl is set to always on, so you should benefit from a shared CMake cache.
-- Initial CMake builds take a while on repl, but they then benefit from a cache and only incrementally rebuilds what's changed, so changes to the INI file will result in near instant recompilation and execution.
+```
+__________         __    __  .__                .__    .__              
+\______   \_____ _/  |__/  |_|  |   ____   _____|  |__ |__|_____  ______
+ |    |  _/\__  \\   __\   __\  | _/ __ \ /  ___/  |  \|  \____ \/  ___/
+ |    |   \ / __ \|  |  |  | |  |_\  ___/ \___ \|   Y  \  |  |_> >___ \ 
+ |______  /(____  /__|  |__| |____/\___  >____  >___|  /__|   __/____  >
+        \/      \/                     \/     \/     \/   |__|       \/
+```
 
 ## Implemented features
 
@@ -13,28 +15,6 @@ Play the game - **https://replit.com/@B3GHU8/Battleships-prod-release** - you ha
 - Salvo game mode
 - Hidden mines game mode
 - Enhanced ship targeting algorithm
-
-### Screenshots
-#### Ship deployment interface
-![Ship Deployment](https://suraj.codes/mp4/placement.webp)
-
-#### Warhead deployment UI
-![Warhead Deployment](https://suraj.codes/mp4/shooting.webp)
-
-#### Player vs computer salvo game mode
-![salvo](https://suraj.codes/mp4/salvo.webp)
-
-#### Player vs computer - hidden mines game mode
-![hidden](https://suraj.codes/mp4/mines.webp)
-
-#### Computer simulation - random algorithm
-![Random](https://suraj.codes/mp4/random.webp)
-
-#### Computer simulation - enhanced algorithm
-![Enhanced](https://suraj.codes/mp4/enhanced.webp)
-
-#### Intuitive user inputs
-![Input](readme-assets/mp4/inputs.webp)
 
 ## Challenge Outline
 ### Summary & Overview
